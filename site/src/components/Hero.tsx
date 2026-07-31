@@ -1,4 +1,4 @@
-import { useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 import { Menu, X } from 'lucide-react'
 
 const VIDEO_URL =
@@ -6,13 +6,75 @@ const VIDEO_URL =
 
 const NAV_ITEMS = ['Start', 'Story', 'Rates', 'Benefits', 'FAQ']
 
+// The source clip dollies back from an engine close-up to a wide shot; the move
+// is effectively finished by 8s. Looping only the tail keeps the jet cruising at
+// a fixed size instead of receding.
+const LOOP_START = 8.0
+const LOOP_END = 9.6
+
+// The tail window already frames the whole jet; anything above ~1.05 crops the
+// nose and tail on a 16:9 viewport. Scaling happens around the jet's centre of
+// mass so the counter-scale below doesn't shift it.
+const ZOOM = 1.0
+const ZOOM_ORIGIN = '48% 76%'
+
+// The tail still creeps back ~6% across the window. Growing the scale by the
+// same amount cancels it, and resetting at the loop point offsets the frame
+// jump rather than compounding it.
+const RESIDUAL_DRIFT = 0.06
+
 export default function Hero() {
   const [menuOpen, setMenuOpen] = useState(false)
+  const videoRef = useRef<HTMLVideoElement>(null)
+
+  useEffect(() => {
+    const video = videoRef.current
+    if (!video) return
+
+    let frame = 0
+
+    // Keeps the jet inside the cruising window and scales out the drift left in
+    // it. rAF drives the scale; timeupdate is the backstop for when the browser
+    // throttles rAF in a background tab and playback would otherwise run past
+    // LOOP_END into the loop attribute's restart at 0.
+    const hold = () => {
+      if (video.currentTime >= LOOP_END || video.currentTime < LOOP_START - 0.1) {
+        video.currentTime = LOOP_START
+      }
+      const progress = (video.currentTime - LOOP_START) / (LOOP_END - LOOP_START)
+      const scale = ZOOM * (1 + RESIDUAL_DRIFT * Math.min(Math.max(progress, 0), 1))
+      video.style.transform = `scale(${scale.toFixed(4)})`
+    }
+
+    const start = () => {
+      hold()
+      void video.play().catch(() => {})
+    }
+
+    const tick = () => {
+      hold()
+      frame = requestAnimationFrame(tick)
+    }
+
+    if (video.readyState >= 1) start()
+    else video.addEventListener('loadedmetadata', start, { once: true })
+
+    video.addEventListener('timeupdate', hold)
+    frame = requestAnimationFrame(tick)
+
+    return () => {
+      cancelAnimationFrame(frame)
+      video.removeEventListener('loadedmetadata', start)
+      video.removeEventListener('timeupdate', hold)
+    }
+  }, [])
 
   return (
-    <section className="relative h-screen overflow-hidden">
+    <section className="relative h-screen overflow-hidden bg-gray-100">
       <video
+        ref={videoRef}
         className="absolute inset-0 h-full w-full object-cover"
+        style={{ transform: `scale(${ZOOM})`, transformOrigin: ZOOM_ORIGIN }}
         src={VIDEO_URL}
         autoPlay
         muted

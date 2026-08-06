@@ -1,8 +1,8 @@
-import { getCollection, subscribe } from "./store.js?v=29";
-import { createNavigation } from "./navigation.js?v=29";
-import { icon } from "../data/icons.js?v=29";
-import { priceLabel } from "../data/packages.js?v=29";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=29";
+import { getCollection, subscribe } from "./store.js?v=33";
+import { createNavigation } from "./navigation.js?v=33";
+import { icon } from "../data/icons.js?v=33";
+import { priceLabel } from "../data/packages.js?v=33";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=33";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -79,6 +79,12 @@ const SHAPES = {
 };
 
 function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [] }) {
+  // Package photography is stored as { src, alt } while destination and visa
+  // images are plain strings, so accept either rather than forcing one shape.
+  const src = typeof image === "string" ? image : image?.src;
+  const altText = (typeof image === "object" && image?.alt) || alt || title;
+  image = src;
+  alt = altText;
   return `
     <li class="item-card reveal" role="button" tabindex="0"
         aria-label="${esc(title)} — enquire on WhatsApp" data-title="${esc(title)}">

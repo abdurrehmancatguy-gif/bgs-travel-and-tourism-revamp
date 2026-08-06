@@ -1,3 +1,4 @@
+import { PHOTOS } from "./photos.js?v=33";
 /**
  * Content for the category pages that is not a package or an activity.
  *
@@ -25,7 +26,7 @@ export const DESTINATIONS = [
     blurb:
       "Desert, skyline and old trading creek in one city — the easiest place in the world to combine a beach week with a proper adventure.",
     bestTime: "November to March",
-    image: commons("Burj Khalifa (Dubai) - 2023.jpg"),
+    image: PHOTOS.uaeDubai,
   },
   {
     key: "tanzania",
@@ -34,7 +35,7 @@ export const DESTINATIONS = [
     blurb:
       "The Serengeti migration, Ngorongoro Crater and the spice islands of Zanzibar — Africa's most complete safari-and-beach pairing.",
     bestTime: "June to October",
-    image: commons("Serengeti Elefantenherde1.jpg"),
+    image: PHOTOS.tanzania,
   },
   {
     key: "south-africa",
@@ -43,7 +44,7 @@ export const DESTINATIONS = [
     blurb:
       "Big Five game drives in Kruger, then Table Mountain, the Cape winelands and a coastline that runs two oceans together.",
     bestTime: "May to September",
-    image: commons("Table Mountain DanieVDM.jpg"),
+    image: PHOTOS.southAfricaDest,
   },
   {
     key: "ethiopia",
@@ -52,7 +53,7 @@ export const DESTINATIONS = [
     blurb:
       "Rock-hewn churches at Lalibela, the highlands, and a coffee culture older than almost anywhere else on earth.",
     bestTime: "October to March",
-    image: commons("Bete Giyorgis 03.jpg"),
+    image: PHOTOS.ethiopiaDest,
   },
   {
     key: "uganda",
@@ -61,7 +62,7 @@ export const DESTINATIONS = [
     blurb:
       "Mountain gorillas in Bwindi's forest, the source of the Nile, and some of the greenest country in East Africa.",
     bestTime: "June to September",
-    image: commons("Mountain gorilla (Gorilla beringei beringei) 05.jpg"),
+    image: PHOTOS.uganda,
   },
   {
     key: "zambia",
@@ -70,7 +71,7 @@ export const DESTINATIONS = [
     blurb:
       "Victoria Falls at full thunder, walking safaris in South Luangwa, and camps far from anyone else.",
     bestTime: "May to October",
-    image: commons("Victoria Falls, Zambia.jpg"),
+    image: PHOTOS.zambia,
   },
   {
     key: "malawi",
@@ -79,7 +80,7 @@ export const DESTINATIONS = [
     blurb:
       "A freshwater lake big enough to have its own horizon, quiet highlands, and a reputation for warmth that precedes it.",
     bestTime: "May to October",
-    image: commons("Lake Malawi Cape Maclear.jpg"),
+    image: PHOTOS.malawi,
   },
   {
     key: "mozambique",
@@ -88,7 +89,7 @@ export const DESTINATIONS = [
     blurb:
       "Indian Ocean archipelagos, Portuguese-era towns and diving that rivals anywhere in the region.",
     bestTime: "May to November",
-    image: commons("Bazaruto Archipelago.jpg"),
+    image: PHOTOS.mozambique,
   },
   {
     key: "india",
@@ -97,7 +98,7 @@ export const DESTINATIONS = [
     blurb:
       "Rajasthan's forts and palaces, the backwaters of the south, and food worth the trip on its own.",
     bestTime: "October to March",
-    image: commons("Taj Mahal (Edited).jpeg"),
+    image: PHOTOS.india,
   },
   {
     key: "pakistan",
@@ -106,7 +107,7 @@ export const DESTINATIONS = [
     blurb:
       "The Karakoram highway, Hunza in autumn, and mountain scenery that stands with anywhere on the planet.",
     bestTime: "April to October",
-    image: commons("Passu Cones, Gojal Hunza.jpg"),
+    image: PHOTOS.pakistan,
   },
   {
     key: "indonesia",
@@ -115,7 +116,7 @@ export const DESTINATIONS = [
     blurb:
       "Bali's temples and rice terraces, volcanoes at sunrise, and thousands of islands beyond the ones everyone knows.",
     bestTime: "April to October",
-    image: commons("Tegallalang Rice Terraces, Bali, Indonesia.jpg"),
+    image: PHOTOS.indonesia,
   },
   {
     key: "germany",
@@ -124,7 +125,7 @@ export const DESTINATIONS = [
     blurb:
       "Christmas markets, castles above the Rhine, and cities that reward slow days as much as long lists.",
     bestTime: "May to September",
-    image: commons("Neuschwanstein Castle from Marienbrucke.jpg"),
+    image: PHOTOS.germany,
   },
   {
     key: "united-kingdom",
@@ -133,7 +134,7 @@ export const DESTINATIONS = [
     blurb:
       "London in full swing, the Scottish Highlands, and enough coastline and countryside to fill a fortnight.",
     bestTime: "May to September",
-    image: commons("Palace of Westminster from the dome on Methodist Central Hall.jpg"),
+    image: PHOTOS.unitedKingdom,
   },
   {
     key: "moldova",
@@ -142,7 +143,7 @@ export const DESTINATIONS = [
     blurb:
       "Underground wine cellars measured in kilometres, monasteries in the hills, and almost no crowds.",
     bestTime: "May to October",
-    image: commons("Cricova winery.jpg"),
+    image: PHOTOS.moldova,
   },
   {
     key: "panama",
@@ -151,7 +152,7 @@ export const DESTINATIONS = [
     blurb:
       "The canal, Caribbean islands on one side and the Pacific on the other, and rainforest an hour from the capital.",
     bestTime: "December to April",
-    image: commons("Panama Canal Miraflores Locks.jpg"),
+    image: PHOTOS.panama,
   },
 ];
 
@@ -174,7 +175,7 @@ export const VISA_TYPES = [
       "Confirmed return ticket",
       "Hotel booking or host details",
     ],
-    image: commons("Dubai skyline 2015.jpg"),
+    image: PHOTOS.dubaiVisa,
   },
   {
     key: "saudi-multiple-entry-visa",
@@ -190,7 +191,7 @@ export const VISA_TYPES = [
       "Proof of accommodation",
       "Travel insurance for the period of stay",
     ],
-    image: commons("Al Masjid an Nabawi in Medina.jpg"),
+    image: PHOTOS.saudiVisa,
   },
 ];
 

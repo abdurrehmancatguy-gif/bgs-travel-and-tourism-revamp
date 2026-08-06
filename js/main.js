@@ -1,7 +1,7 @@
-import { SCENE } from "../data/images.js?v=23";
-import { SCENES, SERVICES } from "../data/navigation.js?v=23";
-import { findPackageBySlug } from "../data/packages.js?v=23";
-import { icon } from "../data/icons.js?v=23";
+import { SCENE } from "../data/images.js?v=25";
+import { SCENES, SERVICES } from "../data/navigation.js?v=25";
+import { findPackageBySlug } from "../data/packages.js?v=25";
+import { icon } from "../data/icons.js?v=25";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -10,10 +10,10 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=23";
-import { createNavigation } from "./navigation.js?v=23";
-import { createCarousel } from "./carousel.js?v=23";
-import { createPackageDialog } from "./package-dialog.js?v=23";
+} from "../utils/whatsapp.js?v=25";
+import { createNavigation } from "./navigation.js?v=25";
+import { createCarousel } from "./carousel.js?v=25";
+import { createPackageDialog } from "./package-dialog.js?v=25";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -382,6 +382,13 @@ browseAll?.addEventListener("click", () => {
 
 function handleAction(action) {
   if (!action) return;
+  // Every dropdown item now opens its category page with the search pre-filled.
+  if (action.kind === "page") {
+    location.href = action.q
+      ? `${action.page}.html?q=${encodeURIComponent(action.q)}`
+      : `${action.page}.html`;
+    return;
+  }
   if (action.kind === "filter") {
     const matched = carousel.setFilter(action.filter, action.label);
     if (matched > 0) goToScene("packages");

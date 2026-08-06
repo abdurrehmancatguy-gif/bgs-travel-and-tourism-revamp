@@ -1,7 +1,7 @@
-import { SCENE } from "../data/images.js?v=25";
-import { SCENES, SERVICES } from "../data/navigation.js?v=25";
-import { findPackageBySlug } from "../data/packages.js?v=25";
-import { icon } from "../data/icons.js?v=25";
+import { SCENE } from "../data/images.js?v=27";
+import { SCENES, SERVICES } from "../data/navigation.js?v=27";
+import { findPackageBySlug } from "../data/packages.js?v=27";
+import { icon } from "../data/icons.js?v=27";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -10,10 +10,10 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=25";
-import { createNavigation } from "./navigation.js?v=25";
-import { createCarousel } from "./carousel.js?v=25";
-import { createPackageDialog } from "./package-dialog.js?v=25";
+} from "../utils/whatsapp.js?v=27";
+import { createNavigation } from "./navigation.js?v=27";
+import { createCarousel } from "./carousel.js?v=27";
+import { createPackageDialog } from "./package-dialog.js?v=27";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -376,8 +376,7 @@ const showBrowseAll = (show) => {
 };
 
 browseAll?.addEventListener("click", () => {
-  carousel.setFilter({ type: "all" }, "All Packages");
-  showBrowseAll(false);
+  window.location.href = "packages.html";
 });
 
 function handleAction(action) {
@@ -426,23 +425,16 @@ document.querySelectorAll(".hero-pill").forEach((pill) => {
       openWhatsApp(buildCustomTripUrl());
       return;
     }
-    const filter =
-      kind === "dubai"
-        ? { type: "region", value: "Dubai" }
-        : { type: "region", value: "Africa" };
-    const label = kind === "dubai" ? "Dubai Escapes" : "African Safaris";
-    if (carousel.setFilter(filter, label) > 0) goToScene("packages");
-    else openWhatsApp(buildDestinationEnquiryUrl(label));
+    // Every Dubai item is a day tour, so "Dubai Escapes" belongs on Activities;
+    // the safaris are multi-day, so they belong on Packages.
+    window.location.href =
+      kind === "dubai" ? "activities.html?q=Dubai" : "packages.html?q=Africa";
   });
 });
 
 /* --- scene CTAs --- */
 document.querySelector("#explore-packages").addEventListener("click", () => {
-  carousel.showHome();
-  showBrowseAll(true);
-  goToScene("packages");
-  // Let the scroll settle before handing focus to the row.
-  window.setTimeout(() => carousel.restart(), reduceMotion.matches ? 0 : 700);
+  window.location.href = "packages.html";
 });
 
 document.querySelector("#plan-trip").addEventListener("click", () => {
@@ -450,9 +442,7 @@ document.querySelector("#plan-trip").addEventListener("click", () => {
 });
 
 document.querySelector("#view-all-packages").addEventListener("click", () => {
-  carousel.setFilter({ type: "all" }, "All Packages");
-  showBrowseAll(false);
-  goToScene("packages");
+  window.location.href = "packages.html";
 });
 
 /* --- logo returns to scene one --- */
@@ -476,10 +466,25 @@ document.querySelectorAll("#contact-email").forEach((el) => {
   el.textContent = CONTACT_EMAIL;
 });
 
-/* --- service cards select on click --- */
+/* --- service cards open the page that covers them --- */
+
+/**
+ * Visa and Activities have pages of their own; everything else is a section of
+ * the Services page, reached with its name already searched.
+ */
+const SERVICE_PAGE = {
+  visa: "visa.html",
+  activities: "activities.html",
+};
+
 document.querySelector("#service-list").addEventListener("click", (event) => {
   const card = event.target.closest(".service-card");
-  if (card) selectService(card.dataset.service);
+  if (!card) return;
+  const key = card.dataset.service;
+  selectService(key);
+  const name = card.querySelector(".service-card-name")?.textContent.trim() ?? "";
+  window.location.href =
+    SERVICE_PAGE[key] || `services.html?q=${encodeURIComponent(name)}`;
 });
 
 /* ---------------------------------------------------------------- listeners */

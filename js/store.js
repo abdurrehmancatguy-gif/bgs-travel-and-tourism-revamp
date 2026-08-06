@@ -1,6 +1,6 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=34";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=34";
-import { SERVICES } from "../data/navigation.js?v=34";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=37";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=37";
+import { SERVICES } from "../data/navigation.js?v=37";
 
 /**
  * The single door between the site's content and where that content lives.

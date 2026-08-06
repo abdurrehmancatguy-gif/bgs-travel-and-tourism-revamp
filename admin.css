@@ -408,3 +408,9 @@ body.admin {
 }
 .admin-editor h2 { color: var(--navy); }
 .admin-editor::backdrop { background: rgba(13, 27, 42, 0.42); }
+
+/* An author `display` rule beats the `hidden` attribute's UA style, so setting
+   .hidden on the login section did nothing — `display: grid` kept winning and
+   the login card stayed on top of the signed-in view. This is the fix, and the
+   reason to keep it broad: any element here hidden by script must actually go. */
+[hidden] { display: none !important; }

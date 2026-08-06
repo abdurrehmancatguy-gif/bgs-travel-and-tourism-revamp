@@ -414,3 +414,6 @@ body.admin {
    the login card stayed on top of the signed-in view. This is the fix, and the
    reason to keep it broad: any element here hidden by script must actually go. */
 [hidden] { display: none !important; }
+
+/* Monogram beside the console eyebrow. */
+.admin-mark { vertical-align: -4px; margin-right: 6px; }

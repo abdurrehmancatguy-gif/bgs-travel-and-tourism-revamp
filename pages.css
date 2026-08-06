@@ -34,9 +34,38 @@ body.page {
   --card-line: rgba(255, 246, 232, 0.16);
 
   min-height: 100vh;
-  background: var(--page-bg);
   color: var(--page-ink);
   overflow-x: clip;
+
+  /* Travel texture, drawn rather than downloaded — no extra request and no
+     image that can 404. Two layers of hairlines at 90 degrees make a map
+     graticule (the lat/long grid on a chart), and two wide radial washes stop
+     it reading as a flat sheet by suggesting light falling across it. Kept at
+     2-4% alpha: felt rather than seen, so it never competes with the cards.
+     Fixed attachment so the grid stays put and the content travels over it. */
+  background-color: var(--page-bg);
+  background-image:
+    radial-gradient(
+      120vw 80vh at 78% -8%,
+      rgba(232, 148, 26, 0.06) 0%,
+      rgba(232, 148, 26, 0) 60%
+    ),
+    radial-gradient(
+      110vw 70vh at 8% 42%,
+      rgba(90, 140, 210, 0.07) 0%,
+      rgba(90, 140, 210, 0) 62%
+    ),
+    repeating-linear-gradient(
+      to right,
+      rgba(255, 246, 232, 0.035) 0 1px,
+      transparent 1px 92px
+    ),
+    repeating-linear-gradient(
+      to bottom,
+      rgba(255, 246, 232, 0.035) 0 1px,
+      transparent 1px 92px
+    );
+  background-attachment: fixed;
 }
 
 /* Liquid glass header — category pages only.

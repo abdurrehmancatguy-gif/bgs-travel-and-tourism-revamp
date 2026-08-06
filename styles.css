@@ -176,14 +176,28 @@ button { border: 0; font: inherit; }
   pointer-events: auto;
 }
 
+/* The monogram sits immediately before the name, so the logo becomes a row
+   holding the mark and a stacked text block rather than two stacked lines. */
 .site-logo {
   justify-self: start;
-  display: grid;
-  gap: 4px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
   color: rgba(255, 246, 232, 0.94);
   text-decoration: none;
   white-space: nowrap;
 }
+
+.site-logo-mark {
+  flex: none;
+  width: clamp(30px, 2.6vw, 40px);
+  height: auto;
+  /* The mark is flat gold on transparent; a soft glow keeps it from
+     disappearing into a pale sky on the homepage hero. */
+  filter: drop-shadow(0 2px 8px rgba(4, 10, 18, 0.45));
+}
+
+.site-logo-text { display: grid; gap: 4px; }
 
 .site-logo-name {
   font-family: var(--font-display);

@@ -1434,10 +1434,35 @@ button { border: 0; font: inherit; }
 
 @media (max-width: 1180px) {
   .site-header { grid-template-columns: 1fr auto; gap: 18px; }
-  /* The menus stay on screen at every width. Collapsing them behind a burger
-     buries the six things the site is actually for, so instead the header
-     becomes two rows and the menu row scrolls sideways if it has to. The
-     drawer markup stays in the DOM as the fallback, just not reached here. */
+  /* The menus stay on screen at every width — collapsing them behind a burger
+     buries the six things the site is actually for. Down to ~760px the header
+     stays a single row and the *logo* gives up space instead of the menus: the
+     wordmark scales down, the mark with it, and the place line goes. Below that
+     there is genuinely not enough width, so it becomes two rows with the menu
+     row scrolling sideways. The drawer markup stays in the DOM as a fallback,
+     just not reached here. */
+  .site-header { gap: 14px; }
+
+  .site-logo-name { font-size: clamp(15px, 1.7vw, 19px); }
+  .site-logo-mark { width: clamp(24px, 2.2vw, 30px); }
+  .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
+
+  .site-nav { gap: clamp(6px, 1vw, 16px); }
+  .nav-trigger {
+    padding: 8px 2px;
+    font-size: clamp(13px, 1.35vw, 16px);
+    white-space: nowrap;
+  }
+  .nav-trigger-caret { width: 6px; height: 6px; }
+  .nav-toggle { display: none; }
+
+@media (max-width: 900px) {
+  /* The place line is the first thing that can go without losing meaning. */
+  .site-logo-place { display: none; }
+}
+
+@media (max-width: 760px) {
+  /* Out of width for one row, so the menus move to their own scrolling row. */
   .site-header {
     grid-template-columns: 1fr auto;
     grid-template-areas:
@@ -1447,12 +1472,15 @@ button { border: 0; font: inherit; }
   }
   .site-logo { grid-area: logo; }
   .header-utility { grid-area: utility; }
+  .site-logo-name { font-size: 17px; }
+  .site-logo-mark { width: 28px; }
+  .site-logo-place { display: block; }
+
   .site-nav {
     grid-area: nav;
     display: flex;
     justify-content: flex-start;
     gap: 6px;
-    /* Sideways scroll rather than wrapping to three rows on a small phone. */
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -1463,19 +1491,13 @@ button { border: 0; font: inherit; }
   .site-nav::-webkit-scrollbar { display: none; }
   .site-nav-list { display: contents; }
   .nav-item { scroll-snap-align: start; }
-  .nav-trigger {
-    padding: 8px 12px;
-    border-radius: 999px;
-    font-size: 15px;
-    white-space: nowrap;
-  }
-  .nav-toggle { display: none; }
+  .nav-trigger { padding: 8px 12px; border-radius: 999px; font-size: 15px; }
 
   /* A dropdown anchored to a scrolling row would be clipped, and on touch the
-     trigger opens its page anyway, so the panels stand down. Every filter in
-     them is a chip on the page it opens. */
+     trigger opens its page anyway. Every filter inside is a chip on that page. */
   .nav-panel { display: none; }
   .nav-trigger-caret { display: none; }
+  }
   /* Small enough that each authored line still fits on one row — a re-wrapped
      headline doubles the panel height and pushes it up behind the header. */
   .scene-panel h2 { font-size: clamp(1.7rem, 4vw, 3rem); }

@@ -125,7 +125,10 @@ body.page .page-hero { margin-top: calc(-1 * (var(--nav-h) + var(--nav-inset) * 
    though the page ink is now cream. */
 body.page .site-logo,
 body.page .site-logo-name { color: var(--navy); }
-body.page .site-logo-name { font-size: 22px; }
+/* Responsive, not fixed: a flat 22px here outranks the shrink in styles.css on
+   specificity and would keep the wordmark at full size while the menus ran out
+   of room. */
+body.page .site-logo-name { font-size: clamp(15px, 1.7vw, 22px); }
 body.page .site-logo-place { color: rgba(13, 27, 42, 0.6); }
 
 body.page .nav-trigger {

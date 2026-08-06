@@ -21,13 +21,14 @@ body.page {
   --page-line: rgba(255, 246, 232, 0.14);
   --page-raise: rgba(255, 246, 232, 0.06);
 
-  /* Deep forest green for the cards. Green sits beside navy without competing
-     for the same part of the spectrum, and green–navy–gold is a settled
-     combination — brown would land too close to the gold and muddy it. Two
-     stops rather than a flat fill so the surface has some depth under the
-     photography. */
-  --card-bg: #143a2e;
-  --card-bg-soft: #174535;
+  /* The cards are navy lifted off the page, not a fourth colour. The site runs
+     on navy, gold and cream; brown, green and oxblood all introduced a hue the
+     brand does not have, which is why none of them sat right. Elevation here is
+     the same navy raised two steps, which is how a dark surface is meant to
+     show depth — the gold and cream then read as the only accents, because they
+     are. */
+  --card-bg: #10203a;
+  --card-bg-soft: #16294a;
   --card-ink: var(--cream);
   --card-muted: rgba(255, 246, 232, 0.72);
   --card-line: rgba(255, 246, 232, 0.16);
@@ -284,9 +285,9 @@ body.page .nav-toggle-bar { background: var(--navy); }
   list-style: none;
 }
 
-/* Forest green card on the navy page — close enough in weight to belong to the
-   same family, far enough apart in hue to lift off it. The hairline and shadow
-   do the separating; the gradient keeps it from reading as a flat block. */
+/* Raised navy card on the deeper navy page. They separate by elevation rather
+   than by hue: a hairline catching the light, a gradient running lighter at the
+   top, and a shadow beneath. */
 .item-card {
   position: relative;
   display: flex;

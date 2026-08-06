@@ -1420,8 +1420,48 @@ button { border: 0; font: inherit; }
 
 @media (max-width: 1180px) {
   .site-header { grid-template-columns: 1fr auto; gap: 18px; }
-  .site-nav { display: none; }
-  .nav-toggle { display: inline-flex; }
+  /* The menus stay on screen at every width. Collapsing them behind a burger
+     buries the six things the site is actually for, so instead the header
+     becomes two rows and the menu row scrolls sideways if it has to. The
+     drawer markup stays in the DOM as the fallback, just not reached here. */
+  .site-header {
+    grid-template-columns: 1fr auto;
+    grid-template-areas:
+      "logo utility"
+      "nav  nav";
+    row-gap: 10px;
+  }
+  .site-logo { grid-area: logo; }
+  .header-utility { grid-area: utility; }
+  .site-nav {
+    grid-area: nav;
+    display: flex;
+    justify-content: flex-start;
+    gap: 6px;
+    /* Sideways scroll rather than wrapping to three rows on a small phone. */
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    margin: 0 -20px;
+    padding: 2px 20px 4px;
+  }
+  .site-nav::-webkit-scrollbar { display: none; }
+  .site-nav-list { display: contents; }
+  .nav-item { scroll-snap-align: start; }
+  .nav-trigger {
+    padding: 8px 12px;
+    border-radius: 999px;
+    font-size: 15px;
+    white-space: nowrap;
+  }
+  .nav-toggle { display: none; }
+
+  /* A dropdown anchored to a scrolling row would be clipped, and on touch the
+     trigger opens its page anyway, so the panels stand down. Every filter in
+     them is a chip on the page it opens. */
+  .nav-panel { display: none; }
+  .nav-trigger-caret { display: none; }
   /* Small enough that each authored line still fits on one row — a re-wrapped
      headline doubles the panel height and pushes it up behind the header. */
   .scene-panel h2 { font-size: clamp(1.7rem, 4vw, 3rem); }

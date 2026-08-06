@@ -1,8 +1,8 @@
-import { getCollection, subscribe } from "./store.js?v=38";
-import { createNavigation } from "./navigation.js?v=38";
-import { icon } from "../data/icons.js?v=38";
-import { priceLabel } from "../data/packages.js?v=38";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=38";
+import { getCollection, subscribe } from "./store.js?v=41";
+import { createNavigation } from "./navigation.js?v=41";
+import { icon } from "../data/icons.js?v=41";
+import { priceLabel } from "../data/packages.js?v=41";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=41";
 
 /**
  * Every category page runs this one module. The page declares which collection

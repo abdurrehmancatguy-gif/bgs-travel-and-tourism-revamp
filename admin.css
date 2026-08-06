@@ -311,3 +311,100 @@ body.admin {
   .admin-row { flex-wrap: wrap; }
   .admin-row-name { flex-basis: 100%; }
 }
+
+/* =========================================================================
+   Light theme
+   -------------------------------------------------------------------------
+   Brand order is white, then gold, then royal navy, so the console follows the
+   public pages onto a white surface. Declared as an override block at the end
+   rather than edited inline above, so the structural rules and the palette
+   stay separable — a future theme is this block, not a rewrite.
+   ========================================================================= */
+
+body.admin {
+  background: var(--white);
+  color: var(--navy);
+}
+
+.admin-login-card {
+  border-color: rgba(13, 27, 42, 0.12);
+  background: var(--white);
+  box-shadow: 0 22px 60px rgba(13, 27, 42, 0.14);
+}
+.admin-login-card h1 { color: var(--navy); }
+.admin-login-hint { color: rgba(13, 27, 42, 0.62); }
+
+.admin-heading, .admin-subheading { color: var(--navy); }
+
+.admin-panel {
+  border-color: rgba(13, 27, 42, 0.12);
+  background: var(--white);
+  box-shadow: 0 12px 34px rgba(13, 27, 42, 0.07);
+}
+
+.admin-count, .admin-note, .admin-empty { color: rgba(13, 27, 42, 0.6); }
+
+.admin-tab {
+  border-color: rgba(13, 27, 42, 0.14);
+  color: rgba(13, 27, 42, 0.72);
+  background: var(--white);
+}
+.admin-tab:hover { border-color: var(--gold); color: var(--navy); background: var(--white); }
+.admin-tab[data-active="true"] {
+  color: var(--navy);
+  background: var(--gold-light);
+  border-color: var(--gold-light);
+}
+
+.admin-row { border-bottom-color: rgba(13, 27, 42, 0.1); }
+.admin-row-name { color: var(--navy); }
+.admin-row-meta { color: rgba(13, 27, 42, 0.5); }
+.admin-row-copy label { color: rgba(13, 27, 42, 0.66); }
+
+.admin-btn {
+  border-color: rgba(13, 27, 42, 0.18);
+  color: var(--navy);
+  background: var(--white);
+}
+.admin-btn:hover { background: rgba(13, 27, 42, 0.05); border-color: var(--gold); }
+.admin-btn-primary { color: var(--navy); background: var(--gold); border-color: var(--gold); }
+.admin-btn-primary:hover { background: var(--gold-light); }
+.admin-btn-danger { color: #b3261e; border-color: rgba(179, 38, 30, 0.4); }
+.admin-btn-danger:hover { background: rgba(179, 38, 30, 0.08); }
+
+.admin-field { color: rgba(13, 27, 42, 0.66); }
+
+.admin-field input,
+.admin-field textarea,
+.admin-row-copy input,
+.admin-row-copy textarea {
+  border-color: rgba(13, 27, 42, 0.16);
+  color: var(--navy);
+  background: var(--white);
+}
+.admin-field input:focus,
+.admin-field textarea:focus,
+.admin-row-copy input:focus,
+.admin-row-copy textarea:focus {
+  border-color: var(--gold);
+  box-shadow: 0 0 0 3px rgba(232, 148, 26, 0.16);
+}
+
+.admin-error { color: #b3261e; }
+
+.admin-warning {
+  border-color: rgba(232, 148, 26, 0.55);
+  background: rgba(232, 148, 26, 0.12);
+  color: #8a5a06;
+}
+
+/* The editor keeps a navy shell: it is a modal over the page, and the contrast
+   is what separates it from everything behind. */
+.admin-editor {
+  border-color: rgba(13, 27, 42, 0.14);
+  color: var(--navy);
+  background: var(--white);
+  box-shadow: 0 30px 80px rgba(13, 27, 42, 0.28);
+}
+.admin-editor h2 { color: var(--navy); }
+.admin-editor::backdrop { background: rgba(13, 27, 42, 0.42); }

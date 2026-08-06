@@ -1,7 +1,7 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised,
-} from "./store.js?v=27";
+} from "./store.js?v=29";
 
 /**
  * The admin console.

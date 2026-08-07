@@ -1,5 +1,5 @@
-import { PRIMARY_NAV, DRAWER_MENUS } from "../data/navigation.js?v=52";
-import { icon } from "../data/icons.js?v=52";
+import { PRIMARY_NAV, DRAWER_MENUS } from "../data/navigation.js?v=54";
+import { icon } from "../data/icons.js?v=54";
 
 /**
  * Header dropdowns and the mobile drawer.

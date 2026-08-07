@@ -76,6 +76,34 @@ export const ICONS = {
     `<path d="M3 17h18"/><path d="M4.8 17a7.2 7.2 0 0 1 14.4 0"/>` +
       `<path d="M12 6.4V5"/><circle cx="12" cy="7.6" r="1.2"/><path d="M2.5 20.5h19"/>`
   ),
+  /* ---- MICE ----
+     Each section gets its own glyph. They all shared `concierge` before, which
+     is a room-service cloche — five cards in a row each stamped with a serving
+     dome read as a food menu rather than corporate travel. */
+  meetings: svg(
+    // Four people round a table, from above.
+    `<circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="4.7" r="1.9"/>` +
+      `<circle cx="12" cy="19.3" r="1.9"/><circle cx="4.7" cy="12" r="1.9"/>` +
+      `<circle cx="19.3" cy="12" r="1.9"/>`
+  ),
+  incentive: svg(
+    `<path d="M8 4h8v5a4 4 0 0 1-8 0Z"/><path d="M8 5.6H5.6A2.4 2.4 0 0 0 8 9.6"/>` +
+      `<path d="M16 5.6h2.4A2.4 2.4 0 0 1 16 9.6"/><path d="M12 13v3.4"/>` +
+      `<path d="M8.8 20h6.4l-.8-3.6H9.6Z"/>`
+  ),
+  conference: svg(
+    `<rect x="9.6" y="2.8" width="4.8" height="9" rx="2.4"/>` +
+      `<path d="M6.4 10.6a5.6 5.6 0 0 0 11.2 0"/><path d="M12 16.2V20"/>` +
+      `<path d="M8.8 20h6.4"/>`
+  ),
+  exhibition: svg(
+    // A stand: canopy, uprights, counter.
+    `<path d="M3 4h18l-1.8 4H4.8Z"/><path d="M5 8v12"/><path d="M19 8v12"/>` +
+      `<path d="M5 20h14"/><path d="M9 20v-6h6v6"/>`
+  ),
+  corporateEvent: svg(
+    `<path d="M12 2.8 14 9.2l6.4 2-6.4 2-2 6.4-2-6.4-6.4-2 6.4-2Z"/>`
+  ),
   activities: svg(
     `<path d="M3 8.2a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4Z"/>` +
       `<path d="M9.5 6.2v8"/>`

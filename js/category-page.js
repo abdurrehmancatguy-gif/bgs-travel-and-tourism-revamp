@@ -1,9 +1,9 @@
-import { getCollection, subscribe } from "./store.js?v=52";
-import { createNavigation } from "./navigation.js?v=52";
-import { icon } from "../data/icons.js?v=52";
-import { priceLabel } from "../data/packages.js?v=52";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=52";
-import { MICE_SERVICES } from "../data/mice.js?v=52";
+import { getCollection, subscribe } from "./store.js?v=54";
+import { createNavigation } from "./navigation.js?v=54";
+import { icon } from "../data/icons.js?v=54";
+import { priceLabel } from "../data/packages.js?v=54";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=54";
+import { MICE_SERVICES } from "../data/mice.js?v=54";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -74,7 +74,7 @@ const SHAPES = {
     // though the section is not called that.
     search: (i) => [i.name, ...(i.items ?? [])],
     card: (i) => cardMarkup({
-      image: i.image, alt: i.name, iconName: "concierge", kicker: "MICE",
+      image: i.image, alt: i.name, iconName: i.icon, kicker: "MICE",
       title: i.name, body: i.blurb, list: i.items,
     }),
   },

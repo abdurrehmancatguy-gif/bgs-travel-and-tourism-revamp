@@ -138,6 +138,13 @@ body.page .nav-trigger {
 body.page .nav-trigger:hover,
 body.page .nav-item[data-open="true"] .nav-trigger { color: var(--gold); }
 
+/* On the white glass bar the cream-tinted icon well is invisible, so it gets
+   an ink-tinted one instead. */
+body.page .nav-toggle {
+  background: rgba(13, 27, 42, 0.06);
+  border: 1px solid rgba(13, 27, 42, 0.1);
+}
+body.page .nav-toggle:hover { background: rgba(13, 27, 42, 0.1); }
 body.page .nav-toggle-bar { background: var(--navy); }
 
 /* ------------------------------------------------------------------- hero */

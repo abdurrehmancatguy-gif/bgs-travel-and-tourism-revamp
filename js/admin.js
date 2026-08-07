@@ -1,7 +1,7 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised,
-} from "./store.js?v=52";
+} from "./store.js?v=54";
 
 /**
  * The admin console.
@@ -89,6 +89,7 @@ const FIELDS = {
     ["name", "Section name", "text"], ["key", "Key", "text"],
     ["blurb", "Description", "textarea"],
     ["items", "Services in this section (comma separated)", "list"],
+    ["icon", "Icon key", "text"],
     ["image", "Image URL", "text"],
   ],
   visa: [

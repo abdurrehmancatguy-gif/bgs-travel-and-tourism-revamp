@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=52";
+import { PACKAGE_IMAGES } from "./images.js?v=54";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here

@@ -167,20 +167,37 @@ button { border: 0; font: inherit; }
   left: 0;
   right: 0;
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr);
+  /* Three tracks, so the menus sit in the true middle of the bar rather than in
+     the middle of whatever is left over: the lead group and an empty trailing
+     track are both 1fr, so they balance each other whatever the lead measures.
+     minmax(0, …) is what lets the lead compress — with a floor of 240px the row
+     could not shrink below its content and the header broke instead. */
+  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
   align-items: center;
-  gap: 32px;
+  gap: clamp(12px, 2.2vw, 32px);
   padding: 32px;
   padding-top: max(32px, env(safe-area-inset-top));
   color: rgba(255, 246, 232, 0.86);
   pointer-events: auto;
 }
 
+/* The trailing track. A pseudo-element is a grid item, so it balances the lead
+   group without carrying dead markup on seven pages. */
+.site-header::after { content: ""; }
+
+/* Menu icon then wordmark, as one shrinkable unit on the left. */
+.header-lead {
+  display: flex;
+  align-items: center;
+  gap: clamp(10px, 1.2vw, 16px);
+  min-width: 0;
+}
+
 /* The monogram sits immediately before the name, so the logo becomes a row
    holding the mark and a stacked text block rather than two stacked lines. */
 .site-logo {
-  justify-self: start;
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 10px;
   color: rgba(255, 246, 232, 0.94);
@@ -217,6 +234,7 @@ button { border: 0; font: inherit; }
 
 .site-nav {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: center;
   gap: clamp(14px, 1.6vw, 34px);
@@ -384,8 +402,6 @@ button { border: 0; font: inherit; }
   background: rgba(255, 246, 232, 0.14);
   cursor: pointer;
 }
-
-.header-utility { justify-self: end; display: flex; justify-content: flex-end; }
 
 .nav-toggle-bar {
   position: absolute;
@@ -1436,7 +1452,6 @@ button { border: 0; font: inherit; }
    ========================================================================= */
 
 @media (max-width: 1180px) {
-  .site-header { grid-template-columns: 1fr auto; gap: 18px; }
   /* The menus stay on screen at every width — collapsing them behind a burger
      buries the six things the site is actually for. Down to ~760px the header
      stays a single row and the *logo* gives up space instead of the menus: the
@@ -1444,8 +1459,6 @@ button { border: 0; font: inherit; }
      there is genuinely not enough width, so it becomes two rows with the menu
      row scrolling sideways. The drawer markup stays in the DOM as a fallback,
      just not reached here. */
-  .site-header { gap: 14px; }
-
   .site-logo-name { font-size: clamp(15px, 1.7vw, 19px); }
   .site-logo-mark { width: clamp(24px, 2.2vw, 30px); }
   .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
@@ -1466,14 +1479,16 @@ button { border: 0; font: inherit; }
 @media (max-width: 760px) {
   /* Out of width for one row, so the menus move to their own scrolling row. */
   .site-header {
-    grid-template-columns: 1fr auto;
+    grid-template-columns: 1fr;
     grid-template-areas:
-      "logo utility"
-      "nav  nav";
+      "lead"
+      "nav";
     row-gap: 10px;
   }
-  .site-logo { grid-area: logo; }
-  .header-utility { grid-area: utility; }
+  .header-lead { grid-area: lead; }
+  /* Nothing to balance on a single-column row, and an unplaced grid item would
+     add an empty third one. */
+  .site-header::after { display: none; }
   .site-logo-name { font-size: 17px; }
   .site-logo-mark { width: 28px; }
   .site-logo-place { display: block; }

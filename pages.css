@@ -509,61 +509,18 @@ body.page .nav-toggle-bar { background: var(--navy); }
 }
 
 @media (max-width: 640px) {
-  /* The floating pill costs an inset on all four sides plus a rounded end at
-     each edge that the menu row has to stay clear of — expensive on a 375px
-     screen, and it is why the menus had to shrink to 11px to fit. Edge to edge
-     instead: the same glass material, spanning the full width, with only the
-     bottom corners rounded so it reads as an app bar rather than a floating
-     lozenge. The whole width becomes usable, which buys the menus their size
-     back.
+  /* The bar stays the floating pill it is everywhere else on these pages —
+     only the homepage header is flat. With the menus behind the icon it is a
+     single row, so the pill no longer has to keep a menu rail clear of its
+     rounded ends, which is what made it expensive here in the first place.
 
      --nav-h must match what the bar actually measures; guessing low tucks the
      eyebrow under the glass. */
   body.page {
-    --nav-inset: 0px;
-    --nav-h: 78px;
+    --nav-inset: 10px;
+    --nav-h: 54px;
   }
-  body.page .site-header {
-    top: 0;
-    width: 100%;
-    margin: 0;
-    padding: 6px 16px 8px;
-    padding-top: max(6px, env(safe-area-inset-top));
-    row-gap: 2px;
-    border-width: 0 0 1px;
-    border-radius: 0 0 22px 22px;
-    /* Three tracks with an empty leading one, so the wordmark sits in the true
-       centre. The icon is narrower than its 1fr track, so the two flanks stay
-       equal and centring holds. Named areas from the shared stylesheet describe
-       a two-column row, so they have to go rather than be worked around. */
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-areas: none;
-    box-shadow:
-      0 10px 26px rgba(13, 27, 42, 0.16),
-      inset 0 -1px 0 rgba(13, 27, 42, 0.05);
-  }
-  /* A full-width rail to work with, so these come back up to a readable size. */
-  body.page .site-logo {
-    grid-area: 1 / 2 / 2 / 3;
-    justify-self: center;
-  }
-  body.page .header-utility { grid-area: 1 / 3 / 2 / 4; }
-  body.page .site-nav { grid-area: 2 / 1 / 3 / 4; }
-
-  /* Sized to the rail that is left once the row is inset to match the header
-     edge — that inset costs about 19px, which is the difference between six
-     menus fitting and Visa hanging off the end. */
-  body.page .nav-trigger {
-    padding: 4px clamp(2px, 1.1vw, 10px);
-    font-size: clamp(10px, 2.75vw, 13px);
-  }
-  /* Pull the row out by exactly one trigger padding, so the first label lines
-     up with the wordmark and the last with the icon. -16px only cancelled the
-     rows own padding, which left the labels flush against the screen edge. */
-  body.page .site-nav {
-    margin: 0 calc(-1 * clamp(2px, 1.1vw, 10px));
-    padding: 2px 0;
-  }
+  body.page .site-header { padding: 8px 10px 8px 18px; }
   .page-hero {
     min-height: clamp(240px, 40vh, 340px);
     padding: calc(var(--nav-h) + var(--nav-inset) * 2 + 14px) 16px 24px;

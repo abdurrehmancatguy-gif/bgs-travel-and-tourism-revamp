@@ -1481,49 +1481,22 @@ button { border: 0; font: inherit; }
 }
 
 @media (max-width: 760px) {
-  /* Out of width for one row, so the menus move to their own scrolling row. */
+  /* The menus leave the bar here and live behind the icon instead. Six of them
+     cannot be both legible and complete in a 375px rail — fitting them meant
+     10px labels, and not fitting them meant three sat off the right edge. The
+     drawer carries every category, so the bar is one row: wordmark, icon. */
+  .site-nav { display: none; }
+
   .site-header {
     grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "logo utility"
-      "nav  nav";
-    row-gap: 10px;
+    grid-template-areas: "logo utility";
+    row-gap: 0;
   }
   .site-logo { grid-area: logo; }
   .header-utility { grid-area: utility; }
   .site-logo-name { font-size: 17px; }
   .site-logo-mark { width: 28px; }
   .site-logo-place { display: block; }
-
-  .site-nav {
-    grid-area: nav;
-    display: flex;
-    justify-content: space-between;
-    gap: clamp(2px, 0.8vw, 8px);
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    margin: 0 -20px;
-    padding: 2px 20px 4px;
-  }
-  .site-nav::-webkit-scrollbar { display: none; }
-  .site-nav-list { display: contents; }
-  .nav-item { scroll-snap-align: start; }
-  /* Scales with the viewport so all six fit from 360px up, rather than three
-     of them living off the right edge. */
-  .nav-trigger {
-    /* Padding scales too — at 375px the font had already hit its floor and
-       "Visa" was still clipping off the end. */
-    padding: 7px clamp(3px, 1.15vw, 10px);
-    border-radius: 999px;
-    font-size: clamp(11px, 3.05vw, 15px);
-  }
-
-  /* A dropdown anchored to a scrolling row would be clipped, and on touch the
-     trigger opens its page anyway. Every filter inside is a chip on that page. */
-  .nav-panel { display: none; }
-  .nav-trigger-caret { display: none; }
   }
   /* Small enough that each authored line still fits on one row — a re-wrapped
      headline doubles the panel height and pushes it up behind the header. */
@@ -1573,9 +1546,6 @@ button { border: 0; font: inherit; }
   .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
   .site-logo-mark { width: 24px; }
   .nav-toggle { width: 36px; height: 36px; }
-  /* Matches the reduced header padding, so a menu cannot sit under the rounded
-     corner of the glass bar. */
-  .site-nav { margin: 0 -14px; padding: 2px 14px 4px; }
 
   /* On desktop the second line meets the top of the arch. On a phone the arch
      sits far lower, so 14vh left the title pinned under the header with ~300px

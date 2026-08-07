@@ -228,11 +228,12 @@ export const UTILITY_NAV = {
   ],
 };
 
-/**
- * The drawer behind the menu icon. Only the utility items: every category is
- * already a menu in the header, so repeating them here would be duplication
- * rather than navigation.
- */
-export const DRAWER_MENUS = [UTILITY_NAV];
-
 export const ALL_MENUS = [...PRIMARY_NAV, UTILITY_NAV];
+
+/**
+ * Everything, because below 760px the header row is gone and the icon is the
+ * only way to the categories. On a wider screen the drawer then repeats what
+ * the header already shows, which is the cheaper of the two mistakes: the menus
+ * have to be reachable at the width where nothing else offers them.
+ */
+export const DRAWER_MENUS = ALL_MENUS;

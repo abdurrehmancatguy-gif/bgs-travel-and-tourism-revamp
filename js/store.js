@@ -1,7 +1,7 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=63";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=63";
-import { MICE_SECTIONS } from "../data/mice.js?v=63";
-import { SERVICES } from "../data/navigation.js?v=63";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=68";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=68";
+import { MICE_SECTIONS } from "../data/mice.js?v=68";
+import { SERVICES } from "../data/navigation.js?v=68";
 
 /**
  * The single door between the site's content and where that content lives.

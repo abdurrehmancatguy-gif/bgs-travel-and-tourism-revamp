@@ -134,6 +134,28 @@ export const PRIMARY_NAV = [
     ],
   },
   {
+    // MICE sections are families of services, so the dropdown lists the five
+    // sections and the page shows what each one covers.
+    id: "mice",
+    label: "MICE",
+    kind: "list",
+    page: "mice",
+    items: [
+      { label: "All MICE Services", action: toPage("mice") },
+      { label: "Meetings", action: toPage("mice", "Meetings") },
+      { label: "Incentive Travel", action: toPage("mice", "Incentive Travel") },
+      {
+        label: "Conferences & Conventions",
+        action: toPage("mice", "Conferences & Conventions"),
+      },
+      {
+        label: "Exhibitions & Trade Shows",
+        action: toPage("mice", "Exhibitions & Trade Shows"),
+      },
+      { label: "Corporate Events", action: toPage("mice", "Corporate Events") },
+    ],
+  },
+  {
     id: "packages",
     label: "Packages",
     kind: "list",
@@ -174,28 +196,6 @@ export const PRIMARY_NAV = [
       icon: service.icon,
       action: toPage("services", service.label),
     })),
-  },
-  {
-    // MICE sections are families of services, so the dropdown lists the five
-    // sections and the page shows what each one covers.
-    id: "mice",
-    label: "MICE",
-    kind: "list",
-    page: "mice",
-    items: [
-      { label: "All MICE Services", action: toPage("mice") },
-      { label: "Meetings", action: toPage("mice", "Meetings") },
-      { label: "Incentive Travel", action: toPage("mice", "Incentive Travel") },
-      {
-        label: "Conferences & Conventions",
-        action: toPage("mice", "Conferences & Conventions"),
-      },
-      {
-        label: "Exhibitions & Trade Shows",
-        action: toPage("mice", "Exhibitions & Trade Shows"),
-      },
-      { label: "Corporate Events", action: toPage("mice", "Corporate Events") },
-    ],
   },
   {
     id: "destinations",

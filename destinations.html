@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+  <title>Destinations — BGS Travel &amp; Tourism</title>
+  <meta name="description" content="Fifteen countries we know well enough to plan around you, from the UAE on your doorstep to the far side of the world." />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=48" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=48" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=48" />
+  <link rel="preconnect" href="https://commons.wikimedia.org" />
+  <link rel="preconnect" href="https://upload.wikimedia.org" />
+  <link rel="stylesheet" href="styles.css?v=48" />
+  <link rel="stylesheet" href="pages.css?v=48" />
+  <script type="module" src="js/category-page.js?v=48"></script>
+</head>
+<body class="page" data-collection="destinations">
+  <a class="skip-link" href="#card-grid">Skip to content</a>
+
+  <header class="site-header" aria-label="Primary navigation">
+    <a class="site-logo" href="index.html">
+      <img class="site-logo-mark" src="assets/monogram-96.png?v=48" alt="" width="40" height="40" />
+      <span class="site-logo-text">
+        <span class="site-logo-name">BGS Travel &amp; Tourism</span>
+        <span class="site-logo-place">Dubai, UAE</span>
+      </span>
+    </a>
+    <nav class="site-nav" id="site-nav" aria-label="Main menu"></nav>
+    <div class="header-utility">
+      <button class="nav-toggle" id="nav-toggle" type="button" aria-expanded="false"
+              aria-controls="nav-drawer" aria-label="Open menu">
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+        <span class="nav-toggle-bar" aria-hidden="true"></span>
+      </button>
+    </div>
+  </header>
+
+  <main>
+    <section class="page-hero">
+      <img class="page-hero-media" src="https://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Cape_Town_%28ZA%29%2C_Table_Mountain_--_2024_--_2794%2B96%2B98%2B2800%2B01.jpg/3840px-Cape_Town_%28ZA%29%2C_Table_Mountain_--_2024_--_2794%2B96%2B98%2B2800%2B01.jpg?utm_source=commons.wikimedia.org&utm_campaign=imageinfo&utm_content=thumbnail" alt="" />
+      <p class="page-eyebrow">Where to go</p>
+      <h1 class="page-title" id="page-title">Destinations</h1>
+      <p class="page-intro" id="page-intro">Fifteen countries we know well enough to plan around you, from the UAE on your doorstep to the far side of the world.</p>
+      <div class="page-search">
+        <label class="visually-hidden" for="page-search-input">Search Destinations</label>
+        <input id="page-search-input" type="search" autocomplete="off"
+               placeholder="Search Dubai, Tanzania, Bali…" aria-label="Search Destinations" />
+        <button class="page-search-clear" id="page-search-clear" type="button"
+                aria-label="Clear search" hidden>&times;</button>
+      </div>
+      <div class="page-chips" id="page-chips"></div>
+      <p class="page-count" id="page-count" role="status" aria-live="polite"></p>
+    </section>
+
+    <div class="page-body">
+      <ul class="card-grid" id="card-grid"></ul>
+      <div class="page-empty" id="page-empty" hidden>
+        <h3>Nothing matches &ldquo;<span data-empty-query></span>&rdquo;</h3>
+        <p>Try a different search, or ask us to build something around you.</p>
+        <button class="pill-button" type="button"
+                onclick="document.querySelector(&quot;#page-search-clear&quot;).click()">
+          <span>Clear search</span>
+        </button>
+      </div>
+    </div>
+  </main>
+
+  <footer class="page-footer">
+    <div class="page-footer-links">
+      <a href="index.html">Home</a>
+      <a href="destinations.html">Destinations</a>
+      <a href="packages.html">Packages</a>
+      <a href="activities.html">Activities</a>
+      <a href="services.html">Services</a>
+      <a href="visa.html">Visa</a>
+    </div>
+    <p>BGS Travel &amp; Tourism — Dubai, UAE</p>
+  </footer>
+
+  <div class="nav-drawer" id="nav-drawer" hidden>
+    <div class="nav-drawer-backdrop" data-drawer-close></div>
+    <div class="nav-drawer-panel" role="dialog" aria-modal="true" aria-label="Menu">
+      <div class="nav-drawer-head">
+        <span class="nav-drawer-title">BGS Travel &amp; Tourism</span>
+        <button class="nav-drawer-close" type="button" data-drawer-close aria-label="Close menu">&times;</button>
+      </div>
+      <div class="nav-drawer-body" id="nav-drawer-body"></div>
+    </div>
+  </div>
+</body>
+</html>

@@ -1,5 +1,5 @@
-import { PRIMARY_NAV, UTILITY_NAV, ALL_MENUS } from "../data/navigation.js?v=23";
-import { icon } from "../data/icons.js?v=23";
+import { PRIMARY_NAV, UTILITY_NAV, ALL_MENUS } from "../data/navigation.js?v=48";
+import { icon } from "../data/icons.js?v=48";
 
 /**
  * Header dropdowns and the mobile drawer.
@@ -84,7 +84,8 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
         <li class="nav-item" data-menu="${menu.id}">
           <button class="nav-trigger" type="button"
                   id="nav-trigger-${menu.id}" aria-haspopup="true"
-                  aria-expanded="false" aria-controls="nav-panel-${menu.id}">
+                  aria-expanded="false" aria-controls="nav-panel-${menu.id}"
+                  ${menu.page ? `data-nav-page="${menu.page}"` : ""}>
             <span>${menu.label}</span>
             <span class="nav-trigger-caret" aria-hidden="true"></span>
           </button>
@@ -145,6 +146,12 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
       trigger.addEventListener("click", (event) => {
         event.stopPropagation();
         cancelClose();
+        // A menu that owns a page opens it on click; hover still reveals the
+        // dropdown, so both the overview and the shortcuts stay reachable.
+        if (trigger.dataset.navPage) {
+          window.location.href = `${trigger.dataset.navPage}.html`;
+          return;
+        }
         setOpen(item, item.dataset.open !== "true");
       });
 

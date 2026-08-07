@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=23";
+import { PACKAGE_IMAGES } from "./images.js?v=48";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -11,10 +11,11 @@ import { PACKAGE_IMAGES } from "./images.js?v=23";
  * `tags` drive every filter in the navigation (packages, activities and
  * destination menus all resolve down to tags, regions or destination keys).
  */
-export const PACKAGES = [
+const CATALOGUE = [
   {
     id: 1,
     slug: "evening-desert-safari",
+    kind: "activity",
     title: "Evening Desert Safari with BBQ Dinner",
     destination: "Dubai, UAE",
     destinationKey: "uae-dubai",
@@ -52,6 +53,7 @@ export const PACKAGES = [
   {
     id: 2,
     slug: "luxury-dhow-cruise-dinner",
+    kind: "activity",
     title: "Luxury Dhow Cruise Dinner",
     destination: "Dubai, UAE",
     destinationKey: "uae-dubai",
@@ -81,6 +83,7 @@ export const PACKAGES = [
   {
     id: 3,
     slug: "private-dubai-city-tour-helicopter",
+    kind: "activity",
     title: "Private Dubai City Tour + Helicopter",
     destination: "Dubai, UAE",
     destinationKey: "uae-dubai",
@@ -110,6 +113,7 @@ export const PACKAGES = [
   {
     id: 4,
     slug: "dubai-frame-gold-souk-cultural-tour",
+    kind: "activity",
     title: "Dubai Frame + Gold Souk Cultural Tour",
     destination: "Dubai, UAE",
     destinationKey: "uae-dubai",
@@ -140,6 +144,7 @@ export const PACKAGES = [
   {
     id: 5,
     slug: "hot-air-balloon-dubai-desert",
+    kind: "activity",
     title: "Hot Air Balloon over Dubai Desert",
     destination: "Dubai, UAE",
     destinationKey: "uae-dubai",
@@ -169,6 +174,7 @@ export const PACKAGES = [
   {
     id: 6,
     slug: "ultimate-dubai-family-day",
+    kind: "activity",
     title: "Ultimate Dubai Family Day",
     destination: "Dubai, UAE",
     destinationKey: "uae-dubai",
@@ -198,6 +204,7 @@ export const PACKAGES = [
   {
     id: 7,
     slug: "serengeti-safari-zanzibar",
+    kind: "package",
     title: "Classic Serengeti Safari + Zanzibar Extension",
     destination: "Tanzania",
     destinationKey: "tanzania",
@@ -227,6 +234,7 @@ export const PACKAGES = [
   {
     id: 8,
     slug: "bwindi-gorilla-trekking-uganda",
+    kind: "package",
     title: "Bwindi Gorilla Trekking Uganda",
     destination: "Uganda",
     destinationKey: "uganda",
@@ -256,6 +264,7 @@ export const PACKAGES = [
   {
     id: 9,
     slug: "south-africa-kruger-cape-town",
+    kind: "package",
     title: "South Africa Highlights: Kruger + Cape Town",
     destination: "South Africa",
     destinationKey: "south-africa",
@@ -286,6 +295,7 @@ export const PACKAGES = [
   {
     id: 10,
     slug: "ethiopia-lalibela-addis",
+    kind: "package",
     title: "Ethiopia Historical Circuit: Lalibela + Addis",
     destination: "Ethiopia",
     destinationKey: "ethiopia",
@@ -316,6 +326,7 @@ export const PACKAGES = [
   {
     id: 11,
     slug: "bali-discovery",
+    kind: "package",
     title: "Bali Discovery: Temples, Rice Terraces + Beaches",
     destination: "Indonesia",
     destinationKey: "indonesia",
@@ -346,6 +357,7 @@ export const PACKAGES = [
   {
     id: 12,
     slug: "rajasthan-royal-heritage",
+    kind: "package",
     title: "Rajasthan Royal Heritage Tour",
     destination: "India",
     destinationKey: "india",
@@ -374,6 +386,17 @@ export const PACKAGES = [
     icon: "heritage",
   },
 ];
+
+/**
+ * Two products, one source. An activity is a single experience booked for a
+ * day or less; a package is a multi-day journey. They get their own pages and,
+ * later, their own Firestore collections — `kind` is the seam.
+ */
+export const ACTIVITIES = CATALOGUE.filter((item) => item.kind === "activity");
+export const PACKAGES = CATALOGUE.filter((item) => item.kind === "package");
+
+/** Everything, for slug lookups and searches that span both products. */
+export const ALL_ITEMS = CATALOGUE;
 
 /**
  * The home page rail. The full catalogue opens with six Dubai day-tours, which
@@ -408,17 +431,17 @@ export const formatPrice = (pkg) =>
 export const priceLabel = (pkg) => `From ${formatPrice(pkg)}`;
 
 export const findPackageBySlug = (slug) =>
-  PACKAGES.find((pkg) => pkg.slug === slug) || null;
+  CATALOGUE.find((pkg) => pkg.slug === slug) || null;
 
 /**
  * Resolve a filter descriptor to a package list. `all` returns everything;
  * unknown filters return an empty list so callers can fall back to WhatsApp.
  */
-export function filterPackages({ type, value } = {}) {
-  if (!type || type === "all") return PACKAGES;
-  if (type === "region") return PACKAGES.filter((p) => p.region === value);
+export function filterPackages({ type, value } = {}, list = CATALOGUE) {
+  if (!type || type === "all") return list;
+  if (type === "region") return list.filter((p) => p.region === value);
   if (type === "destination")
-    return PACKAGES.filter((p) => p.destinationKey === value);
-  if (type === "tag") return PACKAGES.filter((p) => p.tags.includes(value));
+    return list.filter((p) => p.destinationKey === value);
+  if (type === "tag") return list.filter((p) => p.tags.includes(value));
   return [];
 }

@@ -3,10 +3,11 @@
  * so nothing in the menus is a dead `#` link.
  *
  * Action shapes:
- *   { kind: "filter", filter: {type, value}, label }  filter the carousel, go
- *       to the package scene; falls back to a WhatsApp enquiry when the filter
- *       matches no packages yet (see js/navigation.js).
- *   { kind: "scene", scene }                          scroll to a scene.
+ *   { kind: "page", page, q }                         open a category page with
+ *       its search box pre-filled with `q` and already filtered. This is how
+ *       every dropdown item behaves: pick "Desert" and you land on Activities
+ *       with "Desert" searched.
+ *   { kind: "scene", scene }                          scroll to a home scene.
  *   { kind: "service", service }                      scroll to Services and
  *       select that service panel.
  *   { kind: "whatsapp", intent }                      open a WhatsApp enquiry.
@@ -102,21 +103,33 @@ export const SERVICES = [
   },
 ];
 
+/** Package regions and themes, and the activity categories. */
+const PACKAGE_FILTERS = ["Africa", "Asia", "Europe", "Luxury", "Family", "Adventure"];
+const ACTIVITY_FILTERS = [
+  "Desert",
+  "Water",
+  "Sightseeing",
+  "Luxury",
+  "Family",
+  "Adventure",
+  "Cultural",
+];
+
+const toPage = (page, q = "") => ({ kind: "page", page, q });
+
 /** The primary menus, centred in the header. */
 export const PRIMARY_NAV = [
   {
     id: "destinations",
     label: "Destinations",
     kind: "groups",
+    page: "destinations",
     groups: DESTINATION_GROUPS.map((group) => ({
       label: group.label,
       items: group.items.map((item) => ({
         label: item.label,
-        action: {
-          kind: "filter",
-          filter: { type: "destination", value: item.value },
-          label: item.label,
-        },
+        // Destinations search by place name, so the label is the query.
+        action: toPage("destinations", item.label),
       })),
     })),
   },
@@ -124,60 +137,63 @@ export const PRIMARY_NAV = [
     id: "packages",
     label: "Packages",
     kind: "list",
+    page: "packages",
     items: [
-      { label: "All Packages", action: { kind: "filter", filter: { type: "all" }, label: "All Packages" } },
-      { label: "Dubai", action: { kind: "filter", filter: { type: "region", value: "Dubai" }, label: "Dubai" } },
-      { label: "Africa", action: { kind: "filter", filter: { type: "region", value: "Africa" }, label: "Africa" } },
-      { label: "Asia", action: { kind: "filter", filter: { type: "region", value: "Asia" }, label: "Asia" } },
-      { label: "Europe", action: { kind: "filter", filter: { type: "region", value: "Europe" }, label: "Europe" } },
-      { label: "Luxury", action: { kind: "filter", filter: { type: "tag", value: "luxury" }, label: "Luxury" } },
-      { label: "Family", action: { kind: "filter", filter: { type: "tag", value: "family" }, label: "Family" } },
-      { label: "Adventure", action: { kind: "filter", filter: { type: "tag", value: "adventure" }, label: "Adventure" } },
+      { label: "All Packages", action: toPage("packages") },
+      ...PACKAGE_FILTERS.map((label) => ({
+        label,
+        action: toPage("packages", label),
+      })),
     ],
   },
   {
     id: "activities",
     label: "Activities",
     kind: "list",
+    page: "activities",
     items: [
-      { label: "Desert", action: { kind: "filter", filter: { type: "tag", value: "desert" }, label: "Desert" } },
-      { label: "Water", action: { kind: "filter", filter: { type: "tag", value: "water" }, label: "Water" } },
-      { label: "Sightseeing", action: { kind: "filter", filter: { type: "tag", value: "sightseeing" }, label: "Sightseeing" } },
-      { label: "Luxury", action: { kind: "filter", filter: { type: "tag", value: "luxury" }, label: "Luxury" } },
-      { label: "Family", action: { kind: "filter", filter: { type: "tag", value: "family" }, label: "Family" } },
-      { label: "Adventure", action: { kind: "filter", filter: { type: "tag", value: "adventure" }, label: "Adventure" } },
-      { label: "Cultural", action: { kind: "filter", filter: { type: "tag", value: "cultural" }, label: "Cultural" } },
+      { label: "All Activities", action: toPage("activities") },
+      ...ACTIVITY_FILTERS.map((label) => ({
+        label,
+        action: toPage("activities", label),
+      })),
     ],
   },
   {
     id: "services",
     label: "Services",
     kind: "services",
-    // Visa has its own header menu and Activities has its own, so neither
-    // belongs in this list. Named rather than sliced by position, so reordering
+    page: "services",
+    // Visa has its own menu and Activities has its own page, so neither belongs
+    // in this list. Named rather than sliced by position, so reordering
     // SERVICES cannot quietly change which ones appear here.
     items: SERVICES.filter(
       (service) => service.key !== "visa" && service.key !== "activities"
     ).map((service) => ({
       label: service.label,
       icon: service.icon,
-      action: { kind: "service", service: service.key },
+      action: toPage("services", service.label),
     })),
   },
   {
-    // A category in its own right rather than one row inside Services. It has
-    // no sub-items, so it renders as a plain trigger that jumps straight to the
-    // visa panel — see the "action" branch in js/navigation.js.
     id: "visa",
     label: "Visa",
-    kind: "action",
-    action: { kind: "service", service: "visa" },
+    kind: "list",
+    page: "visa",
+    items: [
+      { label: "All Visa Services", action: toPage("visa") },
+      { label: "Dubai Visa", action: toPage("visa", "Dubai Visa") },
+      {
+        label: "Saudi Multiple Entry Visa",
+        action: toPage("visa", "Saudi Multiple Entry Visa"),
+      },
+    ],
   },
 ];
 
 /**
- * About and Contact sit in a compact "More" menu so the four primary items stay
- * centred and the header keeps its minimal weight (see the brief's fallback).
+ * About and Contact sit in a compact "More" menu so the primary items stay
+ * centred and the header keeps its minimal weight.
  */
 export const UTILITY_NAV = {
   id: "more",

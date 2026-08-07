@@ -1,3 +1,4 @@
+import { PHOTOS } from "./photos.js?v=48";
 /**
  * Every image URL used by the site lives here — swap a value and the whole
  * page follows. Nothing else in the codebase hardcodes an image address.
@@ -64,51 +65,51 @@ export const SCENE = {
 /** Package photography — shown inside the detail dialog, loaded on demand. */
 export const PACKAGE_IMAGES = {
   desertSafari: {
-    src: commons("Desert Safari - Dubai.JPG", 1600),
+    src: PHOTOS.desertSafari,
     alt: "Four-wheel drives crossing the dunes on a Dubai desert safari",
   },
   dhowCruise: {
-    src: commons("Trading Dhow, Dubai Creek (12869781453).jpg", 1600),
+    src: PHOTOS.dhowCruise,
     alt: "A traditional wooden dhow moored on Dubai Creek",
   },
   helicopter: {
-    src: commons("Palm Jumeirah,Dubai (15048707596).jpg", 1600),
+    src: PHOTOS.helicopter,
     alt: "Aerial view of the Palm Jumeirah island in Dubai",
   },
   dubaiFrame: {
-    src: commons("The Dubai Frame Observation Deck in Dubai, United Arab Emirates.jpg", 1600),
+    src: PHOTOS.dubaiFrame,
     alt: "The observation deck of the Dubai Frame looking out over the city",
   },
   hotAirBalloon: {
-    src: commons("Ballooning, Swakopmund Namibia (3052369581).jpg", 1600),
+    src: PHOTOS.hotAirBalloon,
     alt: "A hot air balloon drifting low over desert dunes at sunrise",
   },
   familyDay: {
-    src: commons("The Dubai Fountain & Burj Khalifa Pixabay.jpg", 1600),
+    src: PHOTOS.familyDay,
     alt: "The Dubai Fountain performing in front of the Burj Khalifa",
   },
   serengeti: {
-    src: commons("Serengeti wildebeest migration JF.jpg", 1600),
+    src: PHOTOS.serengeti,
     alt: "Wildebeest crossing the plains during the Serengeti migration",
   },
   gorilla: {
-    src: commons("Mountain gorilla (Gorilla beringei beringei) female eating root.jpg", 1600),
+    src: PHOTOS.bwindi,
     alt: "A mountain gorilla feeding in dense forest undergrowth",
   },
   krugerCape: {
-    src: commons("Cape Town (ZA), Table Mountain -- 2024 -- 2825.jpg", 1600),
+    src: PHOTOS.southAfrica,
     alt: "Table Mountain rising behind the city of Cape Town",
   },
   ethiopia: {
-    src: commons("Ethiopia - sunset at Church of Saint George, Lalibela 01.jpg", 1600),
+    src: PHOTOS.ethiopia,
     alt: "The rock-hewn Church of Saint George at Lalibela at sunset",
   },
   bali: {
-    src: commons("Rice terraces, Bali.jpg", 1600),
+    src: PHOTOS.bali,
     alt: "Terraced rice paddies stepping down a hillside in Bali",
   },
   rajasthan: {
-    src: commons("Taj Mahal, Agra, India edit2.jpg", 1600),
+    src: PHOTOS.rajasthan,
     alt: "The Taj Mahal reflected in its watercourse at Agra",
   },
 };

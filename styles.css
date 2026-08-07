@@ -170,9 +170,12 @@ button { border: 0; font: inherit; }
   /* Three tracks, so the menus sit in the true middle of the bar rather than in
      the middle of whatever is left over: the lead group and an empty trailing
      track are both 1fr, so they balance each other whatever the lead measures.
-     minmax(0, …) is what lets the lead compress — with a floor of 240px the row
-     could not shrink below its content and the header broke instead. */
-  grid-template-columns: minmax(0, 1fr) auto minmax(0, 1fr);
+     The floor is min-content — a fixed 240px stopped the row shrinking at all,
+     and 0 let the lead be handed a track narrower than itself, which the nowrap
+     wordmark answered by spilling out over the menus. min-content makes that
+     overlap impossible; the wordmark shrinking (below) is what keeps the logo
+     inside its 1fr share so the menus stay centred rather than nudged along. */
+  grid-template-columns: minmax(min-content, 1fr) auto minmax(min-content, 1fr);
   align-items: center;
   gap: clamp(12px, 2.2vw, 32px);
   padding: 32px;
@@ -181,15 +184,13 @@ button { border: 0; font: inherit; }
   pointer-events: auto;
 }
 
-/* The trailing track. A pseudo-element is a grid item, so it balances the lead
-   group without carrying dead markup on seven pages. */
-.site-header::after { content: ""; }
-
-/* Menu icon then wordmark, as one shrinkable unit on the left. */
-.header-lead {
+/* The icon sits at the right end, in the third track. Its track and the logo's
+   are both 1fr, and neither one's content is wide enough to claim more than an
+   equal share, so the menus land dead centre. */
+.header-utility {
+  justify-self: end;
   display: flex;
-  align-items: center;
-  gap: clamp(10px, 1.2vw, 16px);
+  justify-content: flex-end;
   min-width: 0;
 }
 
@@ -214,11 +215,15 @@ button { border: 0; font: inherit; }
   filter: drop-shadow(0 2px 8px rgba(4, 10, 18, 0.45));
 }
 
-.site-logo-text { display: grid; gap: 4px; }
+.site-logo-text { display: grid; gap: 4px; min-width: 0; }
 
 .site-logo-name {
   font-family: var(--font-display);
-  font-size: 24px;
+  /* Responsive at every width, not just below 1180. A flat 24px here is what
+     let the wordmark run into "Destinations" between 1180 and ~1300: the menus
+     had already claimed the centre track and the name would not give any width
+     back. It still reaches full size on a wide screen. */
+  font-size: clamp(15px, 1.35vw, 24px);
   font-weight: 500;
   line-height: 1;
 }
@@ -395,8 +400,8 @@ button { border: 0; font: inherit; }
   display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   padding: 0;
   border-radius: 999px;
   background: rgba(255, 246, 232, 0.14);
@@ -1459,7 +1464,6 @@ button { border: 0; font: inherit; }
      there is genuinely not enough width, so it becomes two rows with the menu
      row scrolling sideways. The drawer markup stays in the DOM as a fallback,
      just not reached here. */
-  .site-logo-name { font-size: clamp(15px, 1.7vw, 19px); }
   .site-logo-mark { width: clamp(24px, 2.2vw, 30px); }
   .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
 
@@ -1479,16 +1483,14 @@ button { border: 0; font: inherit; }
 @media (max-width: 760px) {
   /* Out of width for one row, so the menus move to their own scrolling row. */
   .site-header {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr auto;
     grid-template-areas:
-      "lead"
-      "nav";
+      "logo utility"
+      "nav  nav";
     row-gap: 10px;
   }
-  .header-lead { grid-area: lead; }
-  /* Nothing to balance on a single-column row, and an unplaced grid item would
-     add an empty third one. */
-  .site-header::after { display: none; }
+  .site-logo { grid-area: logo; }
+  .header-utility { grid-area: utility; }
   .site-logo-name { font-size: 17px; }
   .site-logo-mark { width: 28px; }
   .site-logo-place { display: block; }
@@ -1496,8 +1498,8 @@ button { border: 0; font: inherit; }
   .site-nav {
     grid-area: nav;
     display: flex;
-    justify-content: flex-start;
-    gap: 6px;
+    justify-content: space-between;
+    gap: clamp(2px, 0.8vw, 8px);
     overflow-x: auto;
     scrollbar-width: none;
     -webkit-overflow-scrolling: touch;
@@ -1508,7 +1510,15 @@ button { border: 0; font: inherit; }
   .site-nav::-webkit-scrollbar { display: none; }
   .site-nav-list { display: contents; }
   .nav-item { scroll-snap-align: start; }
-  .nav-trigger { padding: 8px 12px; border-radius: 999px; font-size: 15px; }
+  /* Scales with the viewport so all six fit from 360px up, rather than three
+     of them living off the right edge. */
+  .nav-trigger {
+    /* Padding scales too — at 375px the font had already hit its floor and
+       "Visa" was still clipping off the end. */
+    padding: 7px clamp(3px, 1.15vw, 10px);
+    border-radius: 999px;
+    font-size: clamp(11px, 3.05vw, 15px);
+  }
 
   /* A dropdown anchored to a scrolling row would be clipped, and on touch the
      trigger opens its page anyway. Every filter inside is a chip on that page. */
@@ -1554,9 +1564,18 @@ button { border: 0; font: inherit; }
      off the bottom edge. Size by height instead and let the sides crop. */
   .layer-city, .layer-glow { width: auto; height: 116%; }
 
-  .site-header { padding: 20px; padding-top: max(20px, env(safe-area-inset-top)); }
-  .site-logo-name { font-size: 19px; }
-  .site-logo-place { font-size: 10px; }
+  .site-header {
+    padding: 12px 14px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    row-gap: 6px;
+  }
+  .site-logo-name { font-size: 16px; }
+  .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
+  .site-logo-mark { width: 24px; }
+  .nav-toggle { width: 36px; height: 36px; }
+  /* Matches the reduced header padding, so a menu cannot sit under the rounded
+     corner of the glass bar. */
+  .site-nav { margin: 0 -14px; padding: 2px 14px 4px; }
 
   /* On desktop the second line meets the top of the arch. On a phone the arch
      sits far lower, so 14vh left the title pinned under the header with ~300px

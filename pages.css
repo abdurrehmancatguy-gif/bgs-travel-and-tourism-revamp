@@ -125,10 +125,6 @@ body.page .page-hero { margin-top: calc(-1 * (var(--nav-h) + var(--nav-inset) * 
    though the page ink is now cream. */
 body.page .site-logo,
 body.page .site-logo-name { color: var(--navy); }
-/* Responsive, not fixed: a flat 22px here outranks the shrink in styles.css on
-   specificity and would keep the wordmark at full size while the menus ran out
-   of room. */
-body.page .site-logo-name { font-size: clamp(15px, 1.7vw, 22px); }
 body.page .site-logo-place { color: rgba(13, 27, 42, 0.6); }
 
 body.page .nav-trigger {
@@ -505,7 +501,7 @@ body.page .nav-toggle-bar { background: var(--navy); }
   }
   .page-hero {
     min-height: clamp(300px, 54vh, 420px);
-    padding: calc(var(--nav-h) + 28px) 20px 34px;
+    padding: calc(var(--nav-h) + var(--nav-inset) * 2 + 20px) 20px 34px;
   }
   .page-title { font-size: clamp(2rem, 8.4vw, 3rem); }
   .page-intro { font-size: 0.98rem; }
@@ -513,11 +509,25 @@ body.page .nav-toggle-bar { background: var(--navy); }
 }
 
 @media (max-width: 640px) {
-  body.page { --nav-h: 112px; }
-  .page-hero { padding-left: 16px; padding-right: 16px; }
-  .page-search input { height: 50px; font-size: 16px; }
-  .page-chips { gap: 6px; }
-  .page-chip { padding: 7px 13px; font-size: 12.5px; }
+  /* Must match the header the bar actually measures (104px here). Guessing
+     low tucks the eyebrow under the glass, which is what 88px did. */
+  body.page { --nav-h: 106px; }
+  .page-hero {
+    min-height: clamp(240px, 40vh, 340px);
+    padding: calc(var(--nav-h) + var(--nav-inset) * 2 + 14px) 16px 24px;
+  }
+  .page-title { font-size: clamp(1.75rem, 7.4vw, 2.4rem); }
+  .page-intro { font-size: 0.92rem; }
+  /* 16px keeps iOS from zooming the page when the field takes focus. */
+  .page-search input { height: 46px; font-size: 16px; }
+  /* The rhythm between these is set for a desktop hero; at 94px of stacked
+     margin it pushed the first card off a 767px screen on its own. */
+  .page-eyebrow { margin-bottom: 10px; }
+  .page-intro { margin-top: 12px; }
+  .page-search { margin-top: 20px; }
+  .page-count { margin-top: 14px; }
+  .page-chips { gap: 5px; margin-top: 12px; }
+  .page-chip { padding: 6px 10px; font-size: 11.5px; }
   .item-card-inner { padding: 18px; }
   .item-card h3 { font-size: 18px; }
   /* Tap targets: the whole card is the control, so it just needs room. */

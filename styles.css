@@ -370,8 +370,11 @@ button { border: 0; font: inherit; }
 }
 .nav-panel-link .nav-panel-icon svg { width: 100%; height: 100%; }
 
+/* The menu icon, right of the menus. It used to be a mobile-only burger that
+   was hidden at every width, leaving the drawer unreachable; now it is the
+   permanent way into About and Contact, which no longer have a header menu. */
 .nav-toggle {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
   width: 46px;
@@ -1454,7 +1457,6 @@ button { border: 0; font: inherit; }
     white-space: nowrap;
   }
   .nav-trigger-caret { width: 6px; height: 6px; }
-  .nav-toggle { display: none; }
 
 @media (max-width: 900px) {
   /* The place line is the first thing that can go without losing meaning. */

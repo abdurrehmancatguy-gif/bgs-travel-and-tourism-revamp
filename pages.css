@@ -517,3 +517,72 @@ body.page .nav-toggle-bar { background: var(--navy); }
   .item-card-meta { flex-wrap: wrap; row-gap: 6px; }
   .page-footer-links { gap: 14px; font-size: 13px; }
 }
+
+/* -------------------------------------------------- MICE section cards --- */
+
+/* A MICE card stands for a whole family of services, so it lists what it
+   covers instead of carrying a price and a duration like the other cards. */
+.item-card-list {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.item-card-list li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--card-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Gold marker rather than a bullet glyph, so it reads as brand rather than
+   as a default list. */
+.item-card-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.55em;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--gold);
+}
+
+/* ------------------------------------------- what every booking covers --- */
+
+.mice-services {
+  margin-top: clamp(30px, 5vw, 56px);
+  padding: clamp(26px, 4vw, 40px);
+  border: 1px solid var(--card-line);
+  border-radius: 26px;
+  background: linear-gradient(165deg, var(--card-bg-soft) 0%, var(--card-bg) 100%);
+}
+
+.mice-services h2 {
+  margin: 0 0 18px;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 500;
+}
+
+.mice-services ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mice-services li {
+  padding: 9px 16px;
+  border: 1px solid var(--card-line);
+  border-radius: 999px;
+  color: rgba(255, 246, 232, 0.86);
+  font-size: 13.5px;
+  font-weight: 500;
+}

@@ -1,8 +1,9 @@
-import { getCollection, subscribe } from "./store.js?v=48";
-import { createNavigation } from "./navigation.js?v=48";
-import { icon } from "../data/icons.js?v=48";
-import { priceLabel } from "../data/packages.js?v=48";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=48";
+import { getCollection, subscribe } from "./store.js?v=52";
+import { createNavigation } from "./navigation.js?v=52";
+import { icon } from "../data/icons.js?v=52";
+import { priceLabel } from "../data/packages.js?v=52";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=52";
+import { MICE_SERVICES } from "../data/mice.js?v=52";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -67,6 +68,16 @@ const SHAPES = {
       iconName: i.icon, kicker: "Service", title: i.label, body: i.blurb, meta: [],
     }),
   },
+  mice: {
+    chips: (items) => items.map((i) => i.name),
+    // Every item name is searchable, so "Gala" finds Corporate Events even
+    // though the section is not called that.
+    search: (i) => [i.name, ...(i.items ?? [])],
+    card: (i) => cardMarkup({
+      image: i.image, alt: i.name, iconName: "concierge", kicker: "MICE",
+      title: i.name, body: i.blurb, list: i.items,
+    }),
+  },
   visa: {
     chips: (items) => [...new Set(items.map((i) => i.country))],
     search: (i) => [i.name, i.country],
@@ -78,7 +89,15 @@ const SHAPES = {
   },
 };
 
-function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [] }) {
+/**
+ * Cards display at roughly 380px while these URLs are 2400-3840px renditions —
+ * six times the pixels needed. Rewriting the width in the path does NOT work:
+ * Wikimedia serves only the exact rendition its API generated, and 640, 800 and
+ * 1024 all 404 for a file whose 3840 loads fine. The fix is to request the
+ * smaller size at resolve time (iiurlwidth) and store both, which is a change to
+ * data/photos.js rather than something this renderer can do.
+ */
+function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list = [] }) {
   // Package photography is stored as { src, alt } while destination and visa
   // images are plain strings, so accept either rather than forcing one shape.
   const src = typeof image === "string" ? image : image?.src;
@@ -96,6 +115,9 @@ function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [] }) {
         ${kicker ? `<p class="item-card-kicker">${esc(kicker)}</p>` : ""}
         <h3>${esc(title)}</h3>
         <p>${esc(body ?? "")}</p>
+        ${list.length ? `<ul class="item-card-list">
+          ${list.map((entry) => `<li>${esc(entry)}</li>`).join("")}
+        </ul>` : ""}
         ${meta.length ? `<p class="item-card-meta">
           ${meta.map((m, n) => `<span class="${
             n === 0 ? "item-card-duration" : n === meta.length - 1 && meta.length > 2
@@ -231,6 +253,13 @@ createNavigation({
   toggle: document.querySelector("#nav-toggle"),
   onAction: routeAction,
 });
+
+/* The MICE page carries a strip of what is handled on any booking. Rendered
+   here rather than hardcoded so the list lives with the rest of the data. */
+const miceServices = document.querySelector("#mice-services-list");
+if (miceServices) {
+  miceServices.innerHTML = MICE_SERVICES.map((s) => `<li>${esc(s)}</li>`).join("");
+}
 
 setupReveal();
 renderCopy();

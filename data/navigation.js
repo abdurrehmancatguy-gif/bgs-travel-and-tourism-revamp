@@ -176,6 +176,28 @@ export const PRIMARY_NAV = [
     })),
   },
   {
+    // MICE sections are families of services, so the dropdown lists the five
+    // sections and the page shows what each one covers.
+    id: "mice",
+    label: "MICE",
+    kind: "list",
+    page: "mice",
+    items: [
+      { label: "All MICE Services", action: toPage("mice") },
+      { label: "Meetings", action: toPage("mice", "Meetings") },
+      { label: "Incentive Travel", action: toPage("mice", "Incentive Travel") },
+      {
+        label: "Conferences & Conventions",
+        action: toPage("mice", "Conferences & Conventions"),
+      },
+      {
+        label: "Exhibitions & Trade Shows",
+        action: toPage("mice", "Exhibitions & Trade Shows"),
+      },
+      { label: "Corporate Events", action: toPage("mice", "Corporate Events") },
+    ],
+  },
+  {
     id: "visa",
     label: "Visa",
     kind: "list",
@@ -192,8 +214,9 @@ export const PRIMARY_NAV = [
 ];
 
 /**
- * About and Contact sit in a compact "More" menu so the primary items stay
- * centred and the header keeps its minimal weight.
+ * About and Contact. No longer a header menu — MICE took that slot, and these
+ * two live behind the menu icon on the right instead. Still exported because
+ * the drawer renders them.
  */
 export const UTILITY_NAV = {
   id: "more",
@@ -204,5 +227,12 @@ export const UTILITY_NAV = {
     { label: "Contact", action: { kind: "scene", scene: "services" } },
   ],
 };
+
+/**
+ * The drawer behind the menu icon. Only the utility items: every category is
+ * already a menu in the header, so repeating them here would be duplication
+ * rather than navigation.
+ */
+export const DRAWER_MENUS = [UTILITY_NAV];
 
 export const ALL_MENUS = [...PRIMARY_NAV, UTILITY_NAV];

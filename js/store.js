@@ -1,6 +1,7 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=48";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=48";
-import { SERVICES } from "../data/navigation.js?v=48";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=52";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=52";
+import { MICE_SECTIONS } from "../data/mice.js?v=52";
+import { SERVICES } from "../data/navigation.js?v=52";
 
 /**
  * The single door between the site's content and where that content lives.
@@ -25,6 +26,7 @@ const DEFAULTS = {
   destinations: DESTINATIONS,
   services: SERVICES,
   visa: VISA_TYPES,
+  mice: MICE_SECTIONS,
   copy: PAGE_COPY,
 };
 

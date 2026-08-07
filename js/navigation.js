@@ -1,5 +1,5 @@
-import { PRIMARY_NAV, UTILITY_NAV, ALL_MENUS } from "../data/navigation.js?v=48";
-import { icon } from "../data/icons.js?v=48";
+import { PRIMARY_NAV, DRAWER_MENUS } from "../data/navigation.js?v=52";
+import { icon } from "../data/icons.js?v=52";
 
 /**
  * Header dropdowns and the mobile drawer.
@@ -67,7 +67,7 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
   }
 
   function buildDesktop() {
-    const html = [...PRIMARY_NAV, UTILITY_NAV]
+    const html = PRIMARY_NAV
       .map((menu) => {
         // A menu with no sub-items is just a button: no caret, no panel, and
         // nothing for the hover/open machinery to attach to.
@@ -99,7 +99,7 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
   }
 
   function buildDrawer() {
-    drawerBody.innerHTML = ALL_MENUS.map((menu) => {
+    drawerBody.innerHTML = DRAWER_MENUS.map((menu) => {
       // Same as the header: nothing to expand, so it is a single button.
       if (menu.kind === "action") {
         return `

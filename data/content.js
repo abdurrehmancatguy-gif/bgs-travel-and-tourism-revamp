@@ -1,4 +1,4 @@
-import { PHOTOS } from "./photos.js?v=48";
+import { PHOTOS } from "./photos.js?v=52";
 /**
  * Content for the category pages that is not a package or an activity.
  *
@@ -219,6 +219,11 @@ export const PAGE_COPY = {
     title: "Services",
     intro:
       "Flights, stays, transfers and a team on call — the parts of a journey that hold everything else together.",
+  },
+  mice: {
+    title: "MICE & Corporate Travel",
+    intro:
+      "Meetings, incentives, conferences and exhibitions — planned, booked and run by one team, from the first flight to the closing dinner.",
   },
   visa: {
     title: "Visa Services",

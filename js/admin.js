@@ -1,7 +1,7 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised,
-} from "./store.js?v=48";
+} from "./store.js?v=52";
 
 /**
  * The admin console.
@@ -85,6 +85,12 @@ const FIELDS = {
     ["label", "Name", "text"], ["key", "Key", "text"], ["icon", "Icon", "text"],
     ["blurb", "Description", "textarea"],
   ],
+  mice: [
+    ["name", "Section name", "text"], ["key", "Key", "text"],
+    ["blurb", "Description", "textarea"],
+    ["items", "Services in this section (comma separated)", "list"],
+    ["image", "Image URL", "text"],
+  ],
   visa: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["country", "Country", "text"],
     ["processing", "Processing time", "text"], ["validity", "Validity", "text"],
@@ -95,7 +101,7 @@ const FIELDS = {
 };
 FIELDS.packages = FIELDS.activities;
 
-const TITLE_KEY = { activities: "title", packages: "title", destinations: "name", services: "label", visa: "name" };
+const TITLE_KEY = { activities: "title", packages: "title", destinations: "name", services: "label", visa: "name", mice: "name" };
 
 /** A blank record with every field the collection expects. */
 function blankItem(collection) {

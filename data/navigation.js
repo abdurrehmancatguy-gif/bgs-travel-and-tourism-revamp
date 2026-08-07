@@ -120,18 +120,18 @@ const toPage = (page, q = "") => ({ kind: "page", page, q });
 /** The primary menus, centred in the header. */
 export const PRIMARY_NAV = [
   {
-    id: "destinations",
-    label: "Destinations",
-    kind: "groups",
-    page: "destinations",
-    groups: DESTINATION_GROUPS.map((group) => ({
-      label: group.label,
-      items: group.items.map((item) => ({
-        label: item.label,
-        // Destinations search by place name, so the label is the query.
-        action: toPage("destinations", item.label),
-      })),
-    })),
+    id: "visa",
+    label: "Visa",
+    kind: "list",
+    page: "visa",
+    items: [
+      { label: "All Visa Services", action: toPage("visa") },
+      { label: "Dubai Visa", action: toPage("visa", "Dubai Visa") },
+      {
+        label: "Saudi Multiple Entry Visa",
+        action: toPage("visa", "Saudi Multiple Entry Visa"),
+      },
+    ],
   },
   {
     id: "packages",
@@ -198,18 +198,18 @@ export const PRIMARY_NAV = [
     ],
   },
   {
-    id: "visa",
-    label: "Visa",
-    kind: "list",
-    page: "visa",
-    items: [
-      { label: "All Visa Services", action: toPage("visa") },
-      { label: "Dubai Visa", action: toPage("visa", "Dubai Visa") },
-      {
-        label: "Saudi Multiple Entry Visa",
-        action: toPage("visa", "Saudi Multiple Entry Visa"),
-      },
-    ],
+    id: "destinations",
+    label: "Destinations",
+    kind: "groups",
+    page: "destinations",
+    groups: DESTINATION_GROUPS.map((group) => ({
+      label: group.label,
+      items: group.items.map((item) => ({
+        label: item.label,
+        // Destinations search by place name, so the label is the query.
+        action: toPage("destinations", item.label),
+      })),
+    })),
   },
 ];
 

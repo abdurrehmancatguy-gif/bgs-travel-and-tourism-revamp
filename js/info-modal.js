@@ -1,4 +1,4 @@
-import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=76";
+import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=77";
 
 /**
  * The Contacts and legal panels. One <dialog> is built lazily and reused for
@@ -54,10 +54,16 @@ function contactMarkup(doc) {
 }
 
 function documentMarkup(doc) {
+  const sections = doc.sections ?? [];
+  // The notices ship empty on purpose, so an unwritten one has to say so rather
+  // than open as a blank pane that reads like a rendering fault.
+  if (!sections.length && !doc.intro) {
+    return `<p class="info-dialog-empty">This notice has not been published yet.</p>`;
+  }
   return `
     ${doc.updated ? `<p class="info-dialog-updated">Last updated ${esc(doc.updated)}</p>` : ""}
     ${doc.intro ? `<p class="info-dialog-intro">${esc(doc.intro)}</p>` : ""}
-    ${(doc.sections ?? []).map((section) => `
+    ${sections.map((section) => `
       <section class="info-dialog-section">
         <h3>${esc(section.heading)}</h3>
         ${section.body.map((p) => `<p>${esc(p)}</p>`).join("")}

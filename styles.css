@@ -287,6 +287,14 @@ button { border: 0; font: inherit; }
   color: rgba(13, 27, 42, 0.86);
 }
 
+.info-dialog-empty {
+  margin: 0;
+  padding: 26px 0 30px;
+  text-align: center;
+  color: rgba(13, 27, 42, 0.5);
+  font-size: 0.94rem;
+}
+
 .info-dialog-foot {
   display: flex;
   flex-wrap: wrap;

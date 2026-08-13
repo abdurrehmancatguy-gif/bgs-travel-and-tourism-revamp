@@ -1,10 +1,11 @@
-import { getCollection, subscribe } from "./store.js?v=82";
-import "./info-modal.js?v=82";
-import { createNavigation } from "./navigation.js?v=82";
-import { icon } from "../data/icons.js?v=82";
-import { priceLabel } from "../data/packages.js?v=82";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=82";
-import { MICE_SERVICES } from "../data/mice.js?v=82";
+import { getCollection, subscribe } from "./store.js?v=83";
+import "./info-modal.js?v=83";
+import { createNavigation } from "./navigation.js?v=83";
+import { icon } from "../data/icons.js?v=83";
+import { priceLabel } from "../data/packages.js?v=83";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=83";
+import { MICE_SERVICES } from "../data/mice.js?v=83";
+import { openItem } from "./item-dialog.js?v=83";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -133,6 +134,10 @@ function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list
 
 const shape = SHAPES[page];
 let items = getCollection(page);
+/* What is on screen right now, in DOM order. The click handler indexes into
+   this rather than searching by title — two records may share a title, and the
+   filtered order is the only thing the grid and this array agree on. */
+let visibleItems = [];
 let query = new URLSearchParams(location.search).get("q") || "";
 
 const matches = (item, q) => {
@@ -146,10 +151,13 @@ const matches = (item, q) => {
 
 function render() {
   const visible = items.filter((item) => matches(item, query));
+  visibleItems = visible;
 
   grid.innerHTML = visible.length
     ? visible.map(shape.card).join("")
     : "";
+  // Stamped after render rather than woven through every shape's card builder.
+  grid.querySelectorAll(".item-card").forEach((el, i) => { el.dataset.idx = i; });
 
   const empty = document.querySelector("#page-empty");
   empty.hidden = visible.length > 0;
@@ -277,9 +285,11 @@ chipRow.addEventListener("click", (event) => {
   setQuery(chip.dataset.active === "true" ? "" : chip.dataset.value);
 });
 
+/* A card opens its detail panel. The WhatsApp enquiry moved inside that panel,
+   so it happens after someone has read the detail rather than instead of it. */
 grid.addEventListener("click", (event) => {
   const card = event.target.closest(".item-card");
-  if (card) openWhatsApp(buildWhatsAppUrl(`I'd like to know more about ${card.dataset.title}`));
+  if (card) openItem(visibleItems[Number(card.dataset.idx)], page);
 });
 
 grid.addEventListener("keydown", (event) => {
@@ -287,7 +297,7 @@ grid.addEventListener("keydown", (event) => {
   const card = event.target.closest(".item-card");
   if (!card) return;
   event.preventDefault();
-  openWhatsApp(buildWhatsAppUrl(`I'd like to know more about ${card.dataset.title}`));
+  openItem(visibleItems[Number(card.dataset.idx)], page);
 });
 
 // The admin saves to the same store; this is what makes an edit appear on an

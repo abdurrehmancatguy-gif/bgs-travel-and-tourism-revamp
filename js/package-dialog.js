@@ -1,5 +1,5 @@
-import { formatPrice, priceLabel } from "../data/packages.js?v=82";
-import { buildWhatsAppPackageUrl } from "../utils/whatsapp.js?v=82";
+import { formatPrice, priceLabel } from "../data/packages.js?v=83";
+import { buildWhatsAppPackageUrl } from "../utils/whatsapp.js?v=83";
 
 /**
  * Package detail dialog.

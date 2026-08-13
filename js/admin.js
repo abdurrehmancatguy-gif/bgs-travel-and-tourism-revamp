@@ -1,7 +1,7 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised,
-} from "./store.js?v=82";
+} from "./store.js?v=83";
 
 /**
  * The admin console.
@@ -74,21 +74,31 @@ const FIELDS = {
     ["fullDescription", "Full description", "textarea"],
     ["highlights", "Highlights (comma separated)", "list"],
     ["included", "Included (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
     ["image", "Image URL", "text"], ["icon", "Icon", "text"],
   ],
   destinations: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["region", "Region", "text"],
     ["bestTime", "Best time to go", "text"],
-    ["blurb", "Description", "textarea"], ["image", "Image URL", "text"],
+    ["blurb", "Description", "textarea"],
+    ["fullDescription", "Full description", "textarea"],
+    ["highlights", "Highlights (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+    ["image", "Image URL", "text"],
   ],
   services: [
     ["label", "Name", "text"], ["key", "Key", "text"], ["icon", "Icon", "text"],
     ["blurb", "Description", "textarea"],
+    ["fullDescription", "Full description", "textarea"],
+    ["included", "Included (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
   ],
   mice: [
     ["name", "Section name", "text"], ["key", "Key", "text"],
     ["blurb", "Description", "textarea"],
     ["items", "Services in this section (comma separated)", "list"],
+    ["fullDescription", "Full description", "textarea"],
+    ["requirements", "What you'll need (comma separated)", "list"],
     ["icon", "Icon key", "text"],
     ["image", "Image URL", "text"],
   ],
@@ -96,7 +106,8 @@ const FIELDS = {
     ["name", "Name", "text"], ["key", "Key", "text"], ["country", "Country", "text"],
     ["processing", "Processing time", "text"], ["validity", "Validity", "text"],
     ["blurb", "Description", "textarea"],
-    ["requirements", "Requirements (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+    ["fullDescription", "Full description", "textarea"],
     ["image", "Image URL", "text"],
   ],
 };

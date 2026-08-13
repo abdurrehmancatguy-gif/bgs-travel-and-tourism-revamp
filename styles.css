@@ -130,10 +130,11 @@ button { border: 0; font: inherit; }
 
 .info-actions {
   display: flex;
-  flex-wrap: wrap;
+  /* Contacts on its own line with the legal links under it, rather than the
+     four sharing a row — the button is the one that matters. */
+  flex-direction: column;
   align-items: center;
-  justify-content: center;
-  gap: 12px 20px;
+  gap: 10px;
   pointer-events: auto;
 }
 
@@ -295,6 +296,32 @@ button { border: 0; font: inherit; }
   font-size: 0.94rem;
 }
 
+/* Gold markers, the same device the MICE cards use for their item lists. */
+.info-dialog-list {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+.info-dialog-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(13, 27, 42, 0.86);
+}
+.info-dialog-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
 .info-dialog-foot {
   display: flex;
   flex-wrap: wrap;
@@ -317,8 +344,11 @@ button { border: 0; font: inherit; }
 
 .info-contact-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
 .info-contact-list li {
+  /* Text left, channel mark held at the right edge of the pill. */
   display: grid;
-  gap: 3px;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
   padding: 14px 16px;
   border: 1px solid rgba(13, 27, 42, 0.1);
   border-radius: 16px;
@@ -340,6 +370,19 @@ button { border: 0; font: inherit; }
 }
 a.info-contact-value:hover { color: var(--gold); }
 .info-contact-note { color: rgba(13, 27, 42, 0.58); font-size: 0.82rem; }
+
+.info-contact-text { display: grid; gap: 3px; min-width: 0; }
+
+.info-contact-icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  color: var(--gold);
+}
+.info-contact-icon svg { width: 100%; height: 100%; }
+/* WhatsApp keeps its own green — it is the colour people scan for, and the
+   codebase already names it. */
+.info-contact-icon[data-channel="whatsapp"] { color: var(--wa-green); }
 
 @media (max-width: 640px) {
   .info-dialog { width: calc(100vw - 20px); }
@@ -937,7 +980,11 @@ a.info-contact-value:hover { color: var(--gold); }
 /* Six service cards plus a CTA and contact block is the densest panel in the
    deck, so it runs a tighter scale than the two editorial scenes. */
 .panel-services {
-  top: 50%;
+  /* Centred on the space BELOW the header, not on the whole viewport: half the
+     header height (~106px) pushed down. Centred on the viewport, the headline
+     rode up under the bar every time the panel gained a row, and the fix kept
+     being a percentage re-tuned per breakpoint. */
+  top: calc(50% + 53px);
   opacity: var(--panel-services-opacity);
   transform: translate3d(-50%, var(--panel-services-y), 0);
 }
@@ -1042,7 +1089,10 @@ a.info-contact-value:hover { color: var(--gold); }
   line-height: 1.15;
 }
 
-.service-card-blurb {
+/* Scoped past `.scene-panel p`, which outranks a lone class and was adding
+   18px above every blurb — 36px of panel height across the two card rows,
+   against a panel that has to fit between the header and the fold. */
+.scene-panel .service-card-blurb {
   margin: 0;
   color: rgba(255, 246, 232, 0.78);
   font-size: 0.78rem;
@@ -1847,9 +1897,10 @@ a.info-contact-value:hover { color: var(--gold); }
   .panel-services .pill-button { min-height: 46px; margin-top: 12px; }
   .services-actions { gap: 8px; }
   .services-actions .pill-button.pill-button-quiet { margin-top: 0; }
-  /* The last 5px: the panel is centred on 45%, which still put its foot just
-     past the fold at 768px tall. */
-  .panel-services { top: 43%; }
+  .panel-services .pill-button { margin-top: 8px; }
+  .panel-services .service-list { margin-top: 10px; }
+  .panel-services > p { margin-top: 12px; }
+  .service-card { padding: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

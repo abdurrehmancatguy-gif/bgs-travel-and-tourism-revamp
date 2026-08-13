@@ -1,4 +1,5 @@
-import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=77";
+import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=82";
+import { icon } from "../data/icons.js?v=82";
 
 /**
  * The Contacts and legal panels. One <dialog> is built lazily and reused for
@@ -42,13 +43,17 @@ function contactMarkup(doc) {
     <ul class="info-contact-list">
       ${CONTACT_CHANNELS.map((c) => `
         <li>
-          <span class="info-contact-label">${esc(c.label)}</span>
-          ${c.href
-            ? `<a class="info-contact-value" href="${esc(c.href)}"${
-                c.href.startsWith("http") ? ` target="_blank" rel="noopener"` : ""
-              }>${esc(c.value)}</a>`
-            : `<span class="info-contact-value">${esc(c.value)}</span>`}
-          ${c.note ? `<span class="info-contact-note">${esc(c.note)}</span>` : ""}
+          <span class="info-contact-text">
+            <span class="info-contact-label">${esc(c.label)}</span>
+            ${c.href
+              ? `<a class="info-contact-value" href="${esc(c.href)}"${
+                  c.href.startsWith("http") ? ` target="_blank" rel="noopener"` : ""
+                }>${esc(c.value)}</a>`
+              : `<span class="info-contact-value">${esc(c.value)}</span>`}
+            ${c.note ? `<span class="info-contact-note">${esc(c.note)}</span>` : ""}
+          </span>
+          ${c.icon ? `<span class="info-contact-icon" data-channel="${esc(c.key)}"
+            aria-hidden="true">${icon(c.icon)}</span>` : ""}
         </li>`).join("")}
     </ul>`;
 }
@@ -66,8 +71,19 @@ function documentMarkup(doc) {
     ${sections.map((section) => `
       <section class="info-dialog-section">
         <h3>${esc(section.heading)}</h3>
-        ${section.body.map((p) => `<p>${esc(p)}</p>`).join("")}
+        ${section.body.map(blockMarkup).join("")}
       </section>`).join("")}`;
+}
+
+/** A body entry is a paragraph, or { list } for one of the bulleted runs. */
+function blockMarkup(block) {
+  if (typeof block === "string") return `<p>${esc(block)}</p>`;
+  if (block?.list) {
+    return `<ul class="info-dialog-list">${
+      block.list.map((item) => `<li>${esc(item)}</li>`).join("")
+    }</ul>`;
+  }
+  return "";
 }
 
 export function openInfo(key) {

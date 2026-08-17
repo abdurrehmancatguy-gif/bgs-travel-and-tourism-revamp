@@ -1,16 +1,22 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=83";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=83";
-import { MICE_SECTIONS } from "../data/mice.js?v=83";
-import { SERVICES } from "../data/navigation.js?v=83";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=84";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=84";
+import { MICE_SECTIONS } from "../data/mice.js?v=84";
+import { SERVICES } from "../data/navigation.js?v=84";
+import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=84";
 
 /**
  * The single door between the site's content and where that content lives.
  *
- * Today it is the bundled `data/*.js` files with any admin edits layered on top
- * from localStorage. Tomorrow it is Firestore: only the four functions at the
- * bottom of this file change, and every page keeps working untouched. That is
- * the whole point of routing reads through here rather than importing the data
- * modules directly.
+ * Content is the bundled `data/*.js` files with any edits layered over them.
+ * Those edits live in localStorage and, once a Firebase project is configured,
+ * in Firestore as well.
+ *
+ * localStorage is not bypassed when the cloud is on — it becomes the cache the
+ * page renders from. That is what keeps getCollection() synchronous: a page
+ * paints immediately from the last known content instead of waiting on a
+ * network round trip, and the Firestore snapshot writes through the same
+ * overlay a moment later, firing the same subscribers an admin save does. A
+ * page therefore does not know or care where its content came from.
  *
  * Edits are stored as a full replacement list per collection, not as a diff.
  * Diffs are smaller but they rot the moment the shipped defaults change, and a
@@ -49,6 +55,30 @@ function writeOverlay(overlay) {
   listeners.forEach((fn) => fn());
 }
 
+/**
+ * Applies a document that arrived from Firestore. Identical payloads are
+ * dropped rather than written: a local save echoes back through the snapshot
+ * listener, and re-rendering every open page for content it already has is
+ * wasted work at best and a flicker at worst.
+ */
+function applyRemote(name, data) {
+  if (!(name in DEFAULTS)) return;
+  const overlay = readOverlay();
+  const incoming = data === null ? undefined : data;
+  if (JSON.stringify(overlay[name]) === JSON.stringify(incoming)) return;
+  if (incoming === undefined) delete overlay[name];
+  else overlay[name] = incoming;
+  writeOverlay(overlay);
+}
+
+/* Starts as the module loads, so the first snapshot is usually in before anyone
+   scrolls. No-ops entirely when no project is configured. */
+if (cloudEnabled()) {
+  watchContent(applyRemote);
+}
+
+export const isCloudEnabled = cloudEnabled;
+
 /** Deep clone so callers cannot mutate the defaults by accident. */
 const clone = (value) => JSON.parse(JSON.stringify(value));
 
@@ -86,17 +116,36 @@ export function saveCollection(name, items) {
   const overlay = readOverlay();
   overlay[name] = items;
   writeOverlay(overlay);
+  // Local first, cloud after: the editor sees the change instantly and a failed
+  // write surfaces as a warning rather than as lost typing.
+  if (cloudEnabled()) {
+    pushCollection(name, items).catch((error) =>
+      console.warn(`store: could not sync "${name}" —`, error.message)
+    );
+  }
 }
 
 export function resetCollection(name) {
   const overlay = readOverlay();
   delete overlay[name];
   writeOverlay(overlay);
+  if (cloudEnabled()) {
+    removeCollection(name).catch((error) =>
+      console.warn(`store: could not clear "${name}" —`, error.message)
+    );
+  }
 }
 
 export function resetAll() {
   localStorage.removeItem(STORAGE_KEY);
   listeners.forEach((fn) => fn());
+  if (cloudEnabled()) {
+    COLLECTIONS.forEach((name) =>
+      removeCollection(name).catch((error) =>
+        console.warn(`store: could not clear "${name}" —`, error.message)
+      )
+    );
+  }
 }
 
 /** Everything the admin has changed, for backup before a risky edit. */
@@ -114,4 +163,11 @@ export function importAll(json) {
   const unknown = Object.keys(parsed).filter((k) => !(k in DEFAULTS));
   if (unknown.length) throw new Error(`unknown collections: ${unknown.join(", ")}`);
   writeOverlay(parsed);
+  if (cloudEnabled()) {
+    Object.entries(parsed).forEach(([name, items]) =>
+      pushCollection(name, items).catch((error) =>
+        console.warn(`store: could not sync "${name}" —`, error.message)
+      )
+    );
+  }
 }

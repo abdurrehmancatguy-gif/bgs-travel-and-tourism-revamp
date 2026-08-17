@@ -119,6 +119,522 @@ button { border: 0; font: inherit; }
 }
 
 /* =========================================================================
+   Contacts + legal: buttons and the frosted panel they open
+   -------------------------------------------------------------------------
+   Same glass language as the category-page navbar — a white pane, navy ink,
+   gold for anything interactive — so the panel belongs to the site rather than
+   arriving from a component library. It has to read over two very different
+   backdrops: the homepage's bright sky and the category pages' near-black
+   navy, which is why the fill is white rather than a navy tint.
+   ========================================================================= */
+
+.info-actions {
+  display: flex;
+  /* Contacts on its own line with the legal links under it, rather than the
+     four sharing a row — the button is the one that matters. */
+  flex-direction: column;
+  align-items: center;
+  gap: 10px;
+  pointer-events: auto;
+}
+
+.info-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 9px;
+  padding: 11px 22px;
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 999px;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.82);
+  backdrop-filter: blur(18px) saturate(180%);
+  -webkit-backdrop-filter: blur(18px) saturate(180%);
+  box-shadow:
+    0 10px 26px rgba(4, 10, 18, 0.22),
+    inset 0 1px 0 rgba(255, 255, 255, 0.9);
+  font-size: 0.92rem;
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  cursor: pointer;
+  transition: transform 200ms ease, background 200ms ease;
+}
+.info-button:hover { transform: translateY(-1px); background: rgba(255, 255, 255, 0.94); }
+
+/* The gold marker carries the accent without the button becoming a gold slab. */
+.info-button-dot {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--gold);
+  box-shadow: 0 0 0 3px rgba(232, 148, 26, 0.22);
+}
+
+.info-legal { display: inline-flex; flex-wrap: wrap; gap: 6px 16px; }
+
+.info-legal-link {
+  padding: 4px 2px;
+  border: 0;
+  background: none;
+  color: rgba(255, 246, 232, 0.72);
+  font-size: 0.84rem;
+  cursor: pointer;
+  border-bottom: 1px solid rgba(232, 148, 26, 0.45);
+  transition: color 180ms ease, border-color 180ms ease;
+}
+.info-legal-link:hover { color: var(--gold-light); border-color: var(--gold-light); }
+
+/* ------------------------------------------------------------- the panel */
+
+.info-dialog {
+  width: min(660px, calc(100vw - 32px));
+  max-height: min(78vh, 760px);
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
+}
+
+/* Without a blurred backdrop the panel is translucent over nothing in
+   particular; this is what makes the frost read as frost. */
+.info-dialog::backdrop {
+  background: rgba(6, 14, 24, 0.55);
+  backdrop-filter: blur(12px) saturate(120%);
+  -webkit-backdrop-filter: blur(12px) saturate(120%);
+}
+
+.info-dialog-panel {
+  display: flex;
+  flex-direction: column;
+  max-height: min(78vh, 760px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 26px;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  box-shadow:
+    0 30px 80px rgba(4, 10, 18, 0.4),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92),
+    inset 0 -1px 0 rgba(13, 27, 42, 0.06);
+  overflow: hidden;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .info-dialog-panel { background: rgba(255, 255, 255, 0.97); }
+}
+
+.info-dialog-head {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 24px 26px 14px;
+  border-bottom: 1px solid rgba(13, 27, 42, 0.1);
+}
+.info-dialog-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.25rem, 3vw, 1.6rem);
+  font-weight: 500;
+  line-height: 1.2;
+}
+
+.info-dialog-close {
+  flex: none;
+  width: 34px;
+  height: 34px;
+  border-radius: 999px;
+  color: var(--navy);
+  background: rgba(13, 27, 42, 0.07);
+  font-size: 20px;
+  line-height: 1;
+  cursor: pointer;
+}
+.info-dialog-close:hover { background: rgba(13, 27, 42, 0.13); }
+
+.info-dialog-body {
+  padding: 18px 26px 24px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.info-dialog-updated {
+  margin: 0 0 12px;
+  color: rgba(13, 27, 42, 0.5);
+  font-size: 0.78rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+.info-dialog-intro {
+  margin: 0 0 20px;
+  font-size: 1rem;
+  line-height: 1.6;
+  color: rgba(13, 27, 42, 0.82);
+}
+
+.info-dialog-section { margin-bottom: 22px; }
+.info-dialog-section h3 {
+  margin: 0 0 8px;
+  color: var(--gold);
+  font-size: 0.78rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.info-dialog-section p {
+  margin: 0 0 10px;
+  font-size: 0.94rem;
+  line-height: 1.62;
+  color: rgba(13, 27, 42, 0.86);
+}
+
+.info-dialog-empty {
+  margin: 0;
+  padding: 26px 0 30px;
+  text-align: center;
+  color: rgba(13, 27, 42, 0.5);
+  font-size: 0.94rem;
+}
+
+/* Gold markers, the same device the MICE cards use for their item lists. */
+.info-dialog-list {
+  margin: 0 0 12px;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+.info-dialog-list li {
+  position: relative;
+  padding-left: 16px;
+  font-size: 0.92rem;
+  line-height: 1.55;
+  color: rgba(13, 27, 42, 0.86);
+}
+.info-dialog-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.62em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.info-dialog-foot {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  padding: 14px 26px 20px;
+  border-top: 1px solid rgba(13, 27, 42, 0.1);
+}
+.info-dialog-swap {
+  padding: 8px 16px;
+  border: 1px solid rgba(13, 27, 42, 0.14);
+  border-radius: 999px;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.5);
+  font-size: 0.84rem;
+  cursor: pointer;
+}
+.info-dialog-swap:hover { border-color: var(--gold); color: var(--gold); }
+
+/* ----------------------------------------------------------- contact list */
+
+.info-contact-list { margin: 0; padding: 0; list-style: none; display: grid; gap: 16px; }
+.info-contact-list li {
+  /* Text left, channel mark held at the right edge of the pill. */
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  column-gap: 14px;
+  padding: 14px 16px;
+  border: 1px solid rgba(13, 27, 42, 0.1);
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.45);
+}
+.info-contact-label {
+  color: var(--gold);
+  font-size: 0.72rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.info-contact-value {
+  color: var(--navy);
+  font-size: 1.02rem;
+  font-weight: 600;
+  text-decoration: none;
+  word-break: break-word;
+}
+a.info-contact-value:hover { color: var(--gold); }
+.info-contact-note { color: rgba(13, 27, 42, 0.58); font-size: 0.82rem; }
+
+.info-contact-text { display: grid; gap: 3px; min-width: 0; }
+
+.info-contact-icon {
+  display: inline-flex;
+  width: 26px;
+  height: 26px;
+  color: var(--gold);
+}
+.info-contact-icon svg { width: 100%; height: 100%; }
+/* WhatsApp keeps its own green — it is the colour people scan for, and the
+   codebase already names it. */
+.info-contact-icon[data-channel="whatsapp"] { color: var(--wa-green); }
+
+@media (max-width: 640px) {
+  .info-dialog { width: calc(100vw - 20px); }
+  .info-dialog-head { padding: 18px 18px 12px; }
+  .info-dialog-body { padding: 16px 18px 20px; }
+  .info-dialog-foot { padding: 12px 18px 16px; }
+  .info-actions { gap: 10px 14px; }
+  .info-button { padding: 10px 18px; font-size: 0.88rem; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .info-button { transition: none; }
+  .info-button:hover { transform: none; }
+}
+
+/* =========================================================================
+   Card detail panel
+   -------------------------------------------------------------------------
+   Same frosted material as the contacts and legal panels, at the size the
+   content needs: a photograph, the facts, and however many lists the record
+   actually carries. On a phone it becomes a sheet — full width, near-full
+   height — because a centred lozenge with 16px of margin either side wastes
+   the only dimension a phone has.
+   ========================================================================= */
+
+.item-dialog {
+  width: min(880px, calc(100vw - 32px));
+  max-height: min(88vh, 900px);
+  padding: 0;
+  border: 0;
+  background: none;
+  overflow: visible;
+}
+
+.item-dialog::backdrop {
+  background: rgba(6, 14, 24, 0.6);
+  backdrop-filter: blur(14px) saturate(120%);
+  -webkit-backdrop-filter: blur(14px) saturate(120%);
+}
+
+.item-dialog-panel {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  max-height: min(88vh, 900px);
+  border: 1px solid rgba(255, 255, 255, 0.6);
+  border-radius: 26px;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.74);
+  backdrop-filter: blur(30px) saturate(190%);
+  -webkit-backdrop-filter: blur(30px) saturate(190%);
+  box-shadow:
+    0 30px 80px rgba(4, 10, 18, 0.44),
+    inset 0 1px 0 rgba(255, 255, 255, 0.92);
+  overflow: hidden;
+}
+
+@supports not ((backdrop-filter: blur(1px)) or (-webkit-backdrop-filter: blur(1px))) {
+  .item-dialog-panel { background: rgba(255, 255, 255, 0.97); }
+}
+
+/* Over the photograph, so it needs its own ground rather than the ink tint the
+   other close buttons use. */
+.item-dialog-close {
+  position: absolute;
+  top: 14px;
+  right: 14px;
+  z-index: 3;
+  width: 38px;
+  height: 38px;
+  border-radius: 999px;
+  color: var(--navy);
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(10px);
+  box-shadow: 0 4px 14px rgba(4, 10, 18, 0.28);
+  font-size: 22px;
+  line-height: 1;
+  cursor: pointer;
+}
+.item-dialog-close:hover { background: #fff; }
+
+.item-dialog-media {
+  flex: none;
+  height: clamp(180px, 30vh, 280px);
+  overflow: hidden;
+}
+.item-dialog-media img { width: 100%; height: 100%; object-fit: cover; display: block; }
+
+.item-dialog-body {
+  padding: 22px 28px 26px;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+}
+
+.item-dialog-kicker {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 0 6px;
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+.item-dialog-icon { display: inline-flex; width: 18px; height: 18px; }
+.item-dialog-icon svg { width: 100%; height: 100%; }
+
+.item-dialog-head h2 {
+  margin: 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 3.4vw, 2.1rem);
+  font-weight: 500;
+  line-height: 1.14;
+}
+
+.item-dialog-facts {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin: 18px 0 0;
+}
+.item-dialog-facts div {
+  padding: 9px 14px;
+  border: 1px solid rgba(13, 27, 42, 0.12);
+  border-radius: 14px;
+  background: rgba(255, 255, 255, 0.5);
+}
+.item-dialog-facts dt {
+  color: rgba(13, 27, 42, 0.52);
+  font-size: 0.66rem;
+  font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+.item-dialog-facts dd {
+  margin: 3px 0 0;
+  font-size: 0.94rem;
+  font-weight: 600;
+}
+
+.item-dialog-lede {
+  margin: 18px 0 0;
+  font-size: 1rem;
+  line-height: 1.62;
+  color: rgba(13, 27, 42, 0.84);
+}
+
+.item-dialog-section { margin-top: 22px; }
+.item-dialog-section h3 {
+  margin: 0 0 10px;
+  color: var(--gold);
+  font-size: 0.76rem;
+  font-weight: 700;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.item-dialog-list {
+  display: grid;
+  gap: 8px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+.item-dialog-list li {
+  position: relative;
+  padding-left: 18px;
+  font-size: 0.94rem;
+  line-height: 1.5;
+  color: rgba(13, 27, 42, 0.86);
+}
+.item-dialog-list li::before {
+  content: "";
+  position: absolute;
+  left: 2px;
+  top: 0.6em;
+  width: 5px;
+  height: 5px;
+  border-radius: 50%;
+  background: var(--gold);
+}
+
+.item-dialog-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 7px;
+  margin: 20px 0 0;
+  padding: 0;
+  list-style: none;
+}
+.item-dialog-tags li {
+  padding: 5px 12px;
+  border: 1px solid rgba(13, 27, 42, 0.14);
+  border-radius: 999px;
+  color: rgba(13, 27, 42, 0.66);
+  font-size: 0.76rem;
+  text-transform: capitalize;
+}
+
+.item-dialog-foot {
+  flex: none;
+  padding: 14px 28px 20px;
+  border-top: 1px solid rgba(13, 27, 42, 0.1);
+}
+
+.item-dialog-cta {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  min-height: 50px;
+  padding: 0 22px;
+  border-radius: 999px;
+  color: #fff;
+  background: var(--wa-green);
+  font-size: 0.98rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: filter 200ms ease;
+}
+.item-dialog-cta:hover { filter: brightness(1.06); }
+.item-dialog-cta-icon { display: inline-flex; width: 21px; height: 21px; }
+.item-dialog-cta-icon svg { width: 100%; height: 100%; }
+
+@media (max-width: 640px) {
+  /* A sheet rather than a lozenge: the phone has one dimension worth spending
+     and a centred card with margins on all four sides spends it on nothing. */
+  .item-dialog {
+    width: 100vw;
+    max-width: 100vw;
+    max-height: 94vh;
+    margin: auto auto 0;
+  }
+  .item-dialog-panel {
+    max-height: 94vh;
+    border-width: 1px 0 0;
+    border-radius: 24px 24px 0 0;
+  }
+  .item-dialog-media { height: clamp(150px, 24vh, 210px); }
+  .item-dialog-body { padding: 18px 18px 22px; }
+  .item-dialog-foot { padding: 12px 18px max(16px, env(safe-area-inset-bottom)); }
+  .item-dialog-facts { gap: 8px; }
+  .item-dialog-facts div { padding: 8px 12px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .item-dialog-cta { transition: none; }
+}
+
+/* =========================================================================
    Scroll rig
    ========================================================================= */
 
@@ -167,20 +683,38 @@ button { border: 0; font: inherit; }
   left: 0;
   right: 0;
   display: grid;
-  grid-template-columns: minmax(240px, 1fr) auto minmax(240px, 1fr);
+  /* Three tracks, so the menus sit in the true middle of the bar rather than in
+     the middle of whatever is left over: the lead group and an empty trailing
+     track are both 1fr, so they balance each other whatever the lead measures.
+     The floor is min-content — a fixed 240px stopped the row shrinking at all,
+     and 0 let the lead be handed a track narrower than itself, which the nowrap
+     wordmark answered by spilling out over the menus. min-content makes that
+     overlap impossible; the wordmark shrinking (below) is what keeps the logo
+     inside its 1fr share so the menus stay centred rather than nudged along. */
+  grid-template-columns: minmax(min-content, 1fr) auto minmax(min-content, 1fr);
   align-items: center;
-  gap: 32px;
+  gap: clamp(12px, 2.2vw, 32px);
   padding: 32px;
   padding-top: max(32px, env(safe-area-inset-top));
   color: rgba(255, 246, 232, 0.86);
   pointer-events: auto;
 }
 
+/* The icon sits at the right end, in the third track. Its track and the logo's
+   are both 1fr, and neither one's content is wide enough to claim more than an
+   equal share, so the menus land dead centre. */
+.header-utility {
+  justify-self: end;
+  display: flex;
+  justify-content: flex-end;
+  min-width: 0;
+}
+
 /* The monogram sits immediately before the name, so the logo becomes a row
    holding the mark and a stacked text block rather than two stacked lines. */
 .site-logo {
-  justify-self: start;
   display: flex;
+  min-width: 0;
   align-items: center;
   gap: 10px;
   color: rgba(255, 246, 232, 0.94);
@@ -197,11 +731,15 @@ button { border: 0; font: inherit; }
   filter: drop-shadow(0 2px 8px rgba(4, 10, 18, 0.45));
 }
 
-.site-logo-text { display: grid; gap: 4px; }
+.site-logo-text { display: grid; gap: 4px; min-width: 0; }
 
 .site-logo-name {
   font-family: var(--font-display);
-  font-size: 24px;
+  /* Responsive at every width, not just below 1180. A flat 24px here is what
+     let the wordmark run into "Destinations" between 1180 and ~1300: the menus
+     had already claimed the centre track and the name would not give any width
+     back. It still reaches full size on a wide screen. */
+  font-size: clamp(15px, 1.35vw, 24px);
   font-weight: 500;
   line-height: 1;
 }
@@ -217,6 +755,7 @@ button { border: 0; font: inherit; }
 
 .site-nav {
   display: flex;
+  min-width: 0;
   align-items: center;
   justify-content: center;
   gap: clamp(14px, 1.6vw, 34px);
@@ -370,19 +909,20 @@ button { border: 0; font: inherit; }
 }
 .nav-panel-link .nav-panel-icon svg { width: 100%; height: 100%; }
 
+/* The menu icon, right of the menus. It used to be a mobile-only burger that
+   was hidden at every width, leaving the drawer unreachable; now it is the
+   permanent way into About and Contact, which no longer have a header menu. */
 .nav-toggle {
-  display: none;
+  display: inline-flex;
   align-items: center;
   justify-content: center;
-  width: 46px;
-  height: 46px;
+  width: 42px;
+  height: 42px;
   padding: 0;
   border-radius: 999px;
   background: rgba(255, 246, 232, 0.14);
   cursor: pointer;
 }
-
-.header-utility { justify-self: end; display: flex; justify-content: flex-end; }
 
 .nav-toggle-bar {
   position: absolute;
@@ -676,7 +1216,11 @@ button { border: 0; font: inherit; }
 /* Six service cards plus a CTA and contact block is the densest panel in the
    deck, so it runs a tighter scale than the two editorial scenes. */
 .panel-services {
-  top: 50%;
+  /* Centred on the space BELOW the header, not on the whole viewport: half the
+     header height (~106px) pushed down. Centred on the viewport, the headline
+     rode up under the bar every time the panel gained a row, and the fix kept
+     being a percentage re-tuned per breakpoint. */
+  top: calc(50% + 53px);
   opacity: var(--panel-services-opacity);
   transform: translate3d(-50%, var(--panel-services-y), 0);
 }
@@ -781,7 +1325,10 @@ button { border: 0; font: inherit; }
   line-height: 1.15;
 }
 
-.service-card-blurb {
+/* Scoped past `.scene-panel p`, which outranks a lone class and was adding
+   18px above every blurb — 36px of panel height across the two card rows,
+   against a panel that has to fit between the header and the fold. */
+.scene-panel .service-card-blurb {
   margin: 0;
   color: rgba(255, 246, 232, 0.78);
   font-size: 0.78rem;
@@ -819,25 +1366,6 @@ button { border: 0; font: inherit; }
 }
 
 .panel-services .pill-button { margin-top: 20px; }
-
-.services-contact {
-  display: flex;
-  flex-wrap: wrap;
-  align-items: center;
-  justify-content: center;
-  gap: 8px 20px;
-  color: rgba(255, 246, 232, 0.78);
-  font-size: 0.88rem;
-  font-style: normal;
-  pointer-events: auto;
-}
-
-.services-contact a {
-  color: rgba(255, 246, 232, 0.92);
-  text-decoration: none;
-  border-bottom: 1px solid rgba(232, 148, 26, 0.6);
-}
-.services-contact a:hover { color: var(--gold-light); }
 
 /* =========================================================================
    Scroll cue
@@ -1433,7 +1961,6 @@ button { border: 0; font: inherit; }
    ========================================================================= */
 
 @media (max-width: 1180px) {
-  .site-header { grid-template-columns: 1fr auto; gap: 18px; }
   /* The menus stay on screen at every width — collapsing them behind a burger
      buries the six things the site is actually for. Down to ~760px the header
      stays a single row and the *logo* gives up space instead of the menus: the
@@ -1441,9 +1968,6 @@ button { border: 0; font: inherit; }
      there is genuinely not enough width, so it becomes two rows with the menu
      row scrolling sideways. The drawer markup stays in the DOM as a fallback,
      just not reached here. */
-  .site-header { gap: 14px; }
-
-  .site-logo-name { font-size: clamp(15px, 1.7vw, 19px); }
   .site-logo-mark { width: clamp(24px, 2.2vw, 30px); }
   .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
 
@@ -1454,7 +1978,6 @@ button { border: 0; font: inherit; }
     white-space: nowrap;
   }
   .nav-trigger-caret { width: 6px; height: 6px; }
-  .nav-toggle { display: none; }
 
 @media (max-width: 900px) {
   /* The place line is the first thing that can go without losing meaning. */
@@ -1462,41 +1985,22 @@ button { border: 0; font: inherit; }
 }
 
 @media (max-width: 760px) {
-  /* Out of width for one row, so the menus move to their own scrolling row. */
+  /* The menus leave the bar here and live behind the icon instead. Six of them
+     cannot be both legible and complete in a 375px rail — fitting them meant
+     10px labels, and not fitting them meant three sat off the right edge. The
+     drawer carries every category, so the bar is one row: wordmark, icon. */
+  .site-nav { display: none; }
+
   .site-header {
     grid-template-columns: 1fr auto;
-    grid-template-areas:
-      "logo utility"
-      "nav  nav";
-    row-gap: 10px;
+    grid-template-areas: "logo utility";
+    row-gap: 0;
   }
   .site-logo { grid-area: logo; }
   .header-utility { grid-area: utility; }
   .site-logo-name { font-size: 17px; }
   .site-logo-mark { width: 28px; }
   .site-logo-place { display: block; }
-
-  .site-nav {
-    grid-area: nav;
-    display: flex;
-    justify-content: flex-start;
-    gap: 6px;
-    overflow-x: auto;
-    scrollbar-width: none;
-    -webkit-overflow-scrolling: touch;
-    scroll-snap-type: x proximity;
-    margin: 0 -20px;
-    padding: 2px 20px 4px;
-  }
-  .site-nav::-webkit-scrollbar { display: none; }
-  .site-nav-list { display: contents; }
-  .nav-item { scroll-snap-align: start; }
-  .nav-trigger { padding: 8px 12px; border-radius: 999px; font-size: 15px; }
-
-  /* A dropdown anchored to a scrolling row would be clipped, and on touch the
-     trigger opens its page anyway. Every filter inside is a chip on that page. */
-  .nav-panel { display: none; }
-  .nav-trigger-caret { display: none; }
   }
   /* Small enough that each authored line still fits on one row — a re-wrapped
      headline doubles the panel height and pushes it up behind the header. */
@@ -1537,9 +2041,15 @@ button { border: 0; font: inherit; }
      off the bottom edge. Size by height instead and let the sides crop. */
   .layer-city, .layer-glow { width: auto; height: 116%; }
 
-  .site-header { padding: 20px; padding-top: max(20px, env(safe-area-inset-top)); }
-  .site-logo-name { font-size: 19px; }
-  .site-logo-place { font-size: 10px; }
+  .site-header {
+    padding: 12px 14px;
+    padding-top: max(12px, env(safe-area-inset-top));
+    row-gap: 6px;
+  }
+  .site-logo-name { font-size: 16px; }
+  .site-logo-place { font-size: 9px; letter-spacing: 0.1em; }
+  .site-logo-mark { width: 24px; }
+  .nav-toggle { width: 36px; height: 36px; }
 
   /* On desktop the second line meets the top of the arch. On a phone the arch
      sits far lower, so 14vh left the title pinned under the header with ~300px
@@ -1575,7 +2085,6 @@ button { border: 0; font: inherit; }
   .service-list { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; margin-top: 22px; }
   .service-card { padding: 12px; gap: 5px; }
   .service-card-blurb { display: none; }
-  .services-contact { font-size: 0.8rem; }
 
   /* The depth stack's zoom already pushes the track ~71px left of the screen
      edge; the desktop -18vw on top of that buried the active card off-screen.
@@ -1624,9 +2133,10 @@ button { border: 0; font: inherit; }
   .panel-services .pill-button { min-height: 46px; margin-top: 12px; }
   .services-actions { gap: 8px; }
   .services-actions .pill-button.pill-button-quiet { margin-top: 0; }
-  /* The last 5px: the panel is centred on 45%, which still put its foot just
-     past the fold at 768px tall. */
-  .panel-services { top: 43%; }
+  .panel-services .pill-button { margin-top: 8px; }
+  .panel-services .service-list { margin-top: 10px; }
+  .panel-services > p { margin-top: 12px; }
+  .service-card { padding: 11px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -1,5 +1,6 @@
-import { PRIMARY_NAV, UTILITY_NAV, ALL_MENUS } from "../data/navigation.js?v=48";
-import { icon } from "../data/icons.js?v=48";
+import { buildPrimaryNav, buildDrawerMenus } from "./nav-model.js?v=86";
+import { subscribe } from "./store.js?v=86";
+import { icon } from "../data/icons.js?v=86";
 
 /**
  * Header dropdowns and the mobile drawer.
@@ -67,7 +68,7 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
   }
 
   function buildDesktop() {
-    const html = [...PRIMARY_NAV, UTILITY_NAV]
+    const html = buildPrimaryNav()
       .map((menu) => {
         // A menu with no sub-items is just a button: no caret, no panel, and
         // nothing for the hover/open machinery to attach to.
@@ -99,7 +100,7 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
   }
 
   function buildDrawer() {
-    drawerBody.innerHTML = ALL_MENUS.map((menu) => {
+    drawerBody.innerHTML = buildDrawerMenus().map((menu) => {
       // Same as the header: nothing to expand, so it is a single button.
       if (menu.kind === "action") {
         return `
@@ -282,12 +283,29 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
     });
   }
 
-  buildDesktop();
-  buildDrawer();
-  wireDesktop();
-  wireDrawerGroups();
+  /**
+   * The menus are derived from the content, so they are rebuilt whenever the
+   * content changes — an admin save, or a Firestore snapshot landing.
+   *
+   * The per-item listeners live on markup that innerHTML has just replaced, so
+   * they have to be reattached; the registry and the open-menu bookkeeping have
+   * to be cleared or they accumulate stale entries across rebuilds. wireActions
+   * is delegated on nav and drawerBody, which survive, so it is wired once.
+   */
+  function rebuild() {
+    actions.clear();
+    menus.length = 0;
+    openMenu = null;
+    buildDesktop();
+    buildDrawer();
+    wireDesktop();
+    wireDrawerGroups();
+  }
+
+  rebuild();
   wireActions(nav, closeAll);
   wireActions(drawerBody, closeDrawer);
+  subscribe(rebuild);
 
   return { closeAll, closeDrawer };
 }

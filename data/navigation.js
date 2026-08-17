@@ -120,18 +120,40 @@ const toPage = (page, q = "") => ({ kind: "page", page, q });
 /** The primary menus, centred in the header. */
 export const PRIMARY_NAV = [
   {
-    id: "destinations",
-    label: "Destinations",
-    kind: "groups",
-    page: "destinations",
-    groups: DESTINATION_GROUPS.map((group) => ({
-      label: group.label,
-      items: group.items.map((item) => ({
-        label: item.label,
-        // Destinations search by place name, so the label is the query.
-        action: toPage("destinations", item.label),
-      })),
-    })),
+    id: "visa",
+    label: "Visa",
+    kind: "list",
+    page: "visa",
+    items: [
+      { label: "All Visa Services", action: toPage("visa") },
+      { label: "Dubai Visa", action: toPage("visa", "Dubai Visa") },
+      {
+        label: "Saudi Multiple Entry Visa",
+        action: toPage("visa", "Saudi Multiple Entry Visa"),
+      },
+    ],
+  },
+  {
+    // MICE sections are families of services, so the dropdown lists the five
+    // sections and the page shows what each one covers.
+    id: "mice",
+    label: "MICE",
+    kind: "list",
+    page: "mice",
+    items: [
+      { label: "All MICE Services", action: toPage("mice") },
+      { label: "Meetings", action: toPage("mice", "Meetings") },
+      { label: "Incentive Travel", action: toPage("mice", "Incentive Travel") },
+      {
+        label: "Conferences & Conventions",
+        action: toPage("mice", "Conferences & Conventions"),
+      },
+      {
+        label: "Exhibitions & Trade Shows",
+        action: toPage("mice", "Exhibitions & Trade Shows"),
+      },
+      { label: "Corporate Events", action: toPage("mice", "Corporate Events") },
+    ],
   },
   {
     id: "packages",
@@ -176,24 +198,25 @@ export const PRIMARY_NAV = [
     })),
   },
   {
-    id: "visa",
-    label: "Visa",
-    kind: "list",
-    page: "visa",
-    items: [
-      { label: "All Visa Services", action: toPage("visa") },
-      { label: "Dubai Visa", action: toPage("visa", "Dubai Visa") },
-      {
-        label: "Saudi Multiple Entry Visa",
-        action: toPage("visa", "Saudi Multiple Entry Visa"),
-      },
-    ],
+    id: "destinations",
+    label: "Destinations",
+    kind: "groups",
+    page: "destinations",
+    groups: DESTINATION_GROUPS.map((group) => ({
+      label: group.label,
+      items: group.items.map((item) => ({
+        label: item.label,
+        // Destinations search by place name, so the label is the query.
+        action: toPage("destinations", item.label),
+      })),
+    })),
   },
 ];
 
 /**
- * About and Contact sit in a compact "More" menu so the primary items stay
- * centred and the header keeps its minimal weight.
+ * About and Contact. No longer a header menu — MICE took that slot, and these
+ * two live behind the menu icon on the right instead. Still exported because
+ * the drawer renders them.
  */
 export const UTILITY_NAV = {
   id: "more",
@@ -206,3 +229,11 @@ export const UTILITY_NAV = {
 };
 
 export const ALL_MENUS = [...PRIMARY_NAV, UTILITY_NAV];
+
+/**
+ * Everything, because below 760px the header row is gone and the icon is the
+ * only way to the categories. On a wider screen the drawer then repeats what
+ * the header already shows, which is the cheaper of the two mistakes: the menus
+ * have to be reachable at the width where nothing else offers them.
+ */
+export const DRAWER_MENUS = ALL_MENUS;

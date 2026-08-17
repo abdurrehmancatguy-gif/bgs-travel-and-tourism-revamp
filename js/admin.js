@@ -1,7 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
-  exportAll, importAll, isCustomised,
-} from "./store.js?v=48";
+  exportAll, importAll, isCustomised, isCloudEnabled,
+} from "./store.js?v=86";
+import { signIn } from "./cloud.js?v=86";
 
 /**
  * The admin console.
@@ -11,10 +12,14 @@ import {
  * devtools can read the stored hash, bypass the check, or edit localStorage
  * directly. It keeps a casual visitor out of the editor; it is not security.
  *
- * Real protection needs the server side that Firebase provides: Firebase Auth
- * for the login and Firestore rules that reject writes from anyone who is not
- * signed in. Until then, treat this as a convenience lock on a glass door, and
- * do not put anything sensitive behind it.
+ * That is why the login below switches when a Firebase project is configured:
+ * it stops checking a local hash and signs in against Firebase Auth instead,
+ * and the Firestore rules reject writes from anyone who is not signed in. The
+ * gate then lives on Google's servers where a browser cannot argue with it.
+ *
+ * With no project configured it falls back to the local password, which keeps
+ * a casual visitor out of the editor and nothing more. Treat that mode as a
+ * convenience lock on a glass door and put nothing sensitive behind it.
  */
 
 const AUTH_KEY = "bgs.admin.v1";
@@ -74,28 +79,46 @@ const FIELDS = {
     ["fullDescription", "Full description", "textarea"],
     ["highlights", "Highlights (comma separated)", "list"],
     ["included", "Included (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
     ["image", "Image URL", "text"], ["icon", "Icon", "text"],
   ],
   destinations: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["region", "Region", "text"],
     ["bestTime", "Best time to go", "text"],
-    ["blurb", "Description", "textarea"], ["image", "Image URL", "text"],
+    ["blurb", "Description", "textarea"],
+    ["fullDescription", "Full description", "textarea"],
+    ["highlights", "Highlights (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+    ["image", "Image URL", "text"],
   ],
   services: [
     ["label", "Name", "text"], ["key", "Key", "text"], ["icon", "Icon", "text"],
     ["blurb", "Description", "textarea"],
+    ["fullDescription", "Full description", "textarea"],
+    ["included", "Included (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+  ],
+  mice: [
+    ["name", "Section name", "text"], ["key", "Key", "text"],
+    ["blurb", "Description", "textarea"],
+    ["items", "Services in this section (comma separated)", "list"],
+    ["fullDescription", "Full description", "textarea"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+    ["icon", "Icon key", "text"],
+    ["image", "Image URL", "text"],
   ],
   visa: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["country", "Country", "text"],
     ["processing", "Processing time", "text"], ["validity", "Validity", "text"],
     ["blurb", "Description", "textarea"],
-    ["requirements", "Requirements (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+    ["fullDescription", "Full description", "textarea"],
     ["image", "Image URL", "text"],
   ],
 };
 FIELDS.packages = FIELDS.activities;
 
-const TITLE_KEY = { activities: "title", packages: "title", destinations: "name", services: "label", visa: "name" };
+const TITLE_KEY = { activities: "title", packages: "title", destinations: "name", services: "label", visa: "name", mice: "name" };
 
 /** A blank record with every field the collection expects. */
 function blankItem(collection) {
@@ -295,19 +318,47 @@ el("#admin-import").addEventListener("change", async (event) => {
 
 /* ------------------------------------------------------------------- login */
 
+/* Firebase on: real accounts, and the email field appears. Firebase off: the
+   local password, exactly as before. */
+if (isCloudEnabled()) {
+  el("#login-email-field").hidden = false;
+  el("#login-email").required = true;
+  el("#login-hint").textContent =
+    "Sign in with your Firebase admin account to manage site content.";
+}
+
 el("#login-form").addEventListener("submit", async (event) => {
   event.preventDefault();
   const value = el("#login-password").value;
-  if (!(await checkPassword(value))) {
+
+  if (isCloudEnabled()) {
+    try {
+      await signIn(el("#login-email").value.trim(), value);
+    } catch (error) {
+      // Firebase codes are precise but unreadable; the cause is nearly always
+      // one of two things and neither is worth a stack trace.
+      el("#login-error").textContent =
+        /user-not-found|wrong-password|invalid-credential|invalid-email/.test(error.code || "")
+          ? "That email and password do not match an admin account."
+          : `Could not sign in: ${error.message}`;
+      return;
+    }
+  } else if (!(await checkPassword(value))) {
     el("#login-error").textContent = "Wrong password.";
     return;
   }
+
   el("#login-error").textContent = "";
   el("#admin-login").hidden = true;
   el("#admin-app").hidden = false;
   el("#default-password-warning").hidden = !(await isDefaultPassword());
   refresh();
 });
+
+if (isCloudEnabled()) {
+  const card = el("#password-form")?.closest("section, .admin-card") || el("#password-form");
+  if (card) card.hidden = true;
+}
 
 el("#password-form").addEventListener("submit", async (event) => {
   event.preventDefault();

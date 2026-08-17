@@ -1,7 +1,8 @@
-import { SCENE } from "../data/images.js?v=48";
-import { SCENES, SERVICES } from "../data/navigation.js?v=48";
-import { findPackageBySlug } from "../data/packages.js?v=48";
-import { icon } from "../data/icons.js?v=48";
+import { SCENE } from "../data/images.js?v=86";
+import "./info-modal.js?v=86";
+import { SCENES } from "../data/navigation.js?v=86";
+import { findPackageBySlug } from "../data/packages.js?v=86";
+import { icon } from "../data/icons.js?v=86";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -10,10 +11,11 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=48";
-import { createNavigation } from "./navigation.js?v=48";
-import { createCarousel } from "./carousel.js?v=48";
-import { createPackageDialog } from "./package-dialog.js?v=48";
+} from "../utils/whatsapp.js?v=86";
+import { createNavigation } from "./navigation.js?v=86";
+import { getCollection, subscribe } from "./store.js?v=86";
+import { createCarousel } from "./carousel.js?v=86";
+import { createPackageDialog } from "./package-dialog.js?v=86";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -87,7 +89,8 @@ function paintScene() {
 
 function renderServices() {
   const list = document.querySelector("#service-list");
-  list.innerHTML = SERVICES.map(
+  // From the store, so a service added in the admin appears here too.
+  list.innerHTML = getCollection("services").map(
     (service) => `
     <li class="service-card" data-service="${service.key}">
       <span class="service-card-icon" aria-hidden="true">${icon(service.icon)}</span>
@@ -417,18 +420,21 @@ createNavigation({
   onAction: handleAction,
 });
 
-/* --- hero pills --- */
+/* The homepage reads the same store as the category pages, so a service edited
+   in the admin re-renders here too. */
+subscribe(renderServices);
+
+/* --- hero pills ---
+   Each pill declares its own destination in the markup, so changing what they
+   point at is an HTML edit rather than a branch in here. A pill with no page
+   opens a tailor-made enquiry. */
 document.querySelectorAll(".hero-pill").forEach((pill) => {
   pill.addEventListener("click", () => {
-    const kind = pill.dataset.pill;
-    if (kind === "custom") {
-      openWhatsApp(buildCustomTripUrl());
-      return;
-    }
-    // Every Dubai item is a day tour, so "Dubai Escapes" belongs on Activities;
-    // the safaris are multi-day, so they belong on Packages.
-    window.location.href =
-      kind === "dubai" ? "activities.html?q=Dubai" : "packages.html?q=Africa";
+    const { page, query } = pill.dataset;
+    if (!page) { openWhatsApp(buildCustomTripUrl()); return; }
+    window.location.href = query
+      ? `${page}.html?q=${encodeURIComponent(query)}`
+      : `${page}.html`;
   });
 });
 

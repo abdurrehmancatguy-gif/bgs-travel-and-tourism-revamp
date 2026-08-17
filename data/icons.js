@@ -76,6 +76,51 @@ export const ICONS = {
     `<path d="M3 17h18"/><path d="M4.8 17a7.2 7.2 0 0 1 14.4 0"/>` +
       `<path d="M12 6.4V5"/><circle cx="12" cy="7.6" r="1.2"/><path d="M2.5 20.5h19"/>`
   ),
+  /* ---- contact channels ---- */
+  // The WhatsApp mark is a filled glyph rather than a stroke drawing — the
+  // handset-in-a-bubble is only recognisable as itself at this size when solid.
+  whatsapp: svg(
+    `<path d="M17.47 14.38c-.3-.15-1.76-.87-2.03-.97-.27-.1-.47-.15-.67.15-.2.3-.77.97-.94 1.16-.17.2-.35.22-.64.08-.3-.15-1.26-.46-2.39-1.48-.89-.79-1.48-1.76-1.66-2.06-.17-.3-.02-.46.13-.6.13-.14.3-.35.45-.52.15-.18.2-.3.3-.5.1-.2.05-.37-.03-.52-.07-.15-.67-1.61-.91-2.2-.24-.58-.49-.5-.67-.51h-.57c-.2 0-.52.07-.8.37-.27.3-1.04 1.02-1.04 2.48s1.07 2.87 1.22 3.07c.15.2 2.1 3.2 5.08 4.49.7.3 1.26.49 1.69.62.71.23 1.36.2 1.87.12.57-.09 1.76-.72 2-1.41.25-.7.25-1.29.18-1.42-.08-.12-.28-.2-.57-.35"/>` +
+      `<path d="M12.05 21.79a9.87 9.87 0 0 1-5.03-1.38l-.36-.21-3.74.98 1-3.65-.24-.37a9.86 9.86 0 0 1-1.51-5.26A9.88 9.88 0 0 1 18.9 4.9a9.83 9.83 0 0 1 2.9 7 9.88 9.88 0 0 1-9.75 9.89Zm8.41-18.3A11.82 11.82 0 0 0 12.05 0C5.5 0 .16 5.34.16 11.89c0 2.1.55 4.14 1.59 5.95L.06 24l6.3-1.65a11.88 11.88 0 0 0 5.69 1.45c6.55 0 11.89-5.34 11.89-11.9a11.82 11.82 0 0 0-3.48-8.41Z"/>`,
+    { fill: true }
+  ),
+  mail: svg(
+    `<rect x="2.6" y="4.8" width="18.8" height="14.4" rx="2.6"/>` +
+      `<path d="m3.6 6.8 7.5 5.3a1.6 1.6 0 0 0 1.8 0l7.5-5.3"/>`
+  ),
+  pin: svg(
+    `<path d="M12 21.5S19 15.9 19 10.5a7 7 0 1 0-14 0c0 5.4 7 11 7 11Z"/>` +
+      `<circle cx="12" cy="10.3" r="2.6"/>`
+  ),
+
+  /* ---- MICE ----
+     Each section gets its own glyph. They all shared `concierge` before, which
+     is a room-service cloche — five cards in a row each stamped with a serving
+     dome read as a food menu rather than corporate travel. */
+  meetings: svg(
+    // Four people round a table, from above.
+    `<circle cx="12" cy="12" r="3.2"/><circle cx="12" cy="4.7" r="1.9"/>` +
+      `<circle cx="12" cy="19.3" r="1.9"/><circle cx="4.7" cy="12" r="1.9"/>` +
+      `<circle cx="19.3" cy="12" r="1.9"/>`
+  ),
+  incentive: svg(
+    `<path d="M8 4h8v5a4 4 0 0 1-8 0Z"/><path d="M8 5.6H5.6A2.4 2.4 0 0 0 8 9.6"/>` +
+      `<path d="M16 5.6h2.4A2.4 2.4 0 0 1 16 9.6"/><path d="M12 13v3.4"/>` +
+      `<path d="M8.8 20h6.4l-.8-3.6H9.6Z"/>`
+  ),
+  conference: svg(
+    `<rect x="9.6" y="2.8" width="4.8" height="9" rx="2.4"/>` +
+      `<path d="M6.4 10.6a5.6 5.6 0 0 0 11.2 0"/><path d="M12 16.2V20"/>` +
+      `<path d="M8.8 20h6.4"/>`
+  ),
+  exhibition: svg(
+    // A stand: canopy, uprights, counter.
+    `<path d="M3 4h18l-1.8 4H4.8Z"/><path d="M5 8v12"/><path d="M19 8v12"/>` +
+      `<path d="M5 20h14"/><path d="M9 20v-6h6v6"/>`
+  ),
+  corporateEvent: svg(
+    `<path d="M12 2.8 14 9.2l6.4 2-6.4 2-2 6.4-2-6.4-6.4-2 6.4-2Z"/>`
+  ),
   activities: svg(
     `<path d="M3 8.2a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2 2 2 0 0 0 0 4 2 2 0 0 1-2 2H5a2 2 0 0 1-2-2 2 2 0 0 0 0-4Z"/>` +
       `<path d="M9.5 6.2v8"/>`

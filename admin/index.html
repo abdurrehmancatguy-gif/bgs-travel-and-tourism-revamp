@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — BGS Travel &amp; Tourism</title>
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=48" />
-  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icon-512.png?v=48" />
-  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=48" />
-  <link rel="stylesheet" href="../styles.css?v=48" />
-  <link rel="stylesheet" href="../pages.css?v=48" />
-  <link rel="stylesheet" href="../admin.css?v=48" />
-  <script type="module" src="../js/admin.js?v=48"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=86" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icon-512.png?v=86" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=86" />
+  <link rel="stylesheet" href="../styles.css?v=86" />
+  <link rel="stylesheet" href="../pages.css?v=86" />
+  <link rel="stylesheet" href="../admin.css?v=86" />
+  <script type="module" src="../js/admin.js?v=86"></script>
 </head>
 <body class="page admin">
 
@@ -19,7 +19,10 @@
     <form class="admin-login-card" id="login-form">
       <p class="page-eyebrow">BGS Travel &amp; Tourism</p>
       <h1>Admin</h1>
-      <p class="admin-login-hint">Enter the admin password to manage site content.</p>
+      <p class="admin-login-hint" id="login-hint">Enter the admin password to manage site content.</p>
+      <label class="admin-field" id="login-email-field" hidden>Email
+        <input id="login-email" type="email" autocomplete="username" />
+      </label>
       <label class="admin-field">Password
         <input id="login-password" type="password" autocomplete="current-password" required />
       </label>
@@ -32,7 +35,7 @@
     <header class="admin-header">
       <div>
         <p class="page-eyebrow">
-          <img class="admin-mark" src="../assets/monogram-96.png?v=48" alt="" width="20" height="20" />
+          <img class="admin-mark" src="../assets/monogram-96.png?v=86" alt="" width="20" height="20" />
           Content manager
         </p>
         <h1 class="admin-heading">BGS Admin</h1>

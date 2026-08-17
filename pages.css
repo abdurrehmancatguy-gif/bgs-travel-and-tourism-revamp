@@ -125,10 +125,6 @@ body.page .page-hero { margin-top: calc(-1 * (var(--nav-h) + var(--nav-inset) * 
    though the page ink is now cream. */
 body.page .site-logo,
 body.page .site-logo-name { color: var(--navy); }
-/* Responsive, not fixed: a flat 22px here outranks the shrink in styles.css on
-   specificity and would keep the wordmark at full size while the menus ran out
-   of room. */
-body.page .site-logo-name { font-size: clamp(15px, 1.7vw, 22px); }
 body.page .site-logo-place { color: rgba(13, 27, 42, 0.6); }
 
 body.page .nav-trigger {
@@ -138,6 +134,13 @@ body.page .nav-trigger {
 body.page .nav-trigger:hover,
 body.page .nav-item[data-open="true"] .nav-trigger { color: var(--gold); }
 
+/* On the white glass bar the cream-tinted icon well is invisible, so it gets
+   an ink-tinted one instead. */
+body.page .nav-toggle {
+  background: rgba(13, 27, 42, 0.06);
+  border: 1px solid rgba(13, 27, 42, 0.1);
+}
+body.page .nav-toggle:hover { background: rgba(13, 27, 42, 0.1); }
 body.page .nav-toggle-bar { background: var(--navy); }
 
 /* ------------------------------------------------------------------- hero */
@@ -498,7 +501,7 @@ body.page .nav-toggle-bar { background: var(--navy); }
   }
   .page-hero {
     min-height: clamp(300px, 54vh, 420px);
-    padding: calc(var(--nav-h) + 28px) 20px 34px;
+    padding: calc(var(--nav-h) + var(--nav-inset) * 2 + 20px) 20px 34px;
   }
   .page-title { font-size: clamp(2rem, 8.4vw, 3rem); }
   .page-intro { font-size: 0.98rem; }
@@ -506,14 +509,106 @@ body.page .nav-toggle-bar { background: var(--navy); }
 }
 
 @media (max-width: 640px) {
-  body.page { --nav-h: 112px; }
-  .page-hero { padding-left: 16px; padding-right: 16px; }
-  .page-search input { height: 50px; font-size: 16px; }
-  .page-chips { gap: 6px; }
-  .page-chip { padding: 7px 13px; font-size: 12.5px; }
+  /* The bar stays the floating pill it is everywhere else on these pages —
+     only the homepage header is flat. With the menus behind the icon it is a
+     single row, so the pill no longer has to keep a menu rail clear of its
+     rounded ends, which is what made it expensive here in the first place.
+
+     --nav-h must match what the bar actually measures; guessing low tucks the
+     eyebrow under the glass. */
+  body.page {
+    --nav-inset: 10px;
+    --nav-h: 54px;
+  }
+  body.page .site-header { padding: 8px 10px 8px 18px; }
+  .page-hero {
+    min-height: clamp(240px, 40vh, 340px);
+    padding: calc(var(--nav-h) + var(--nav-inset) * 2 + 14px) 16px 24px;
+  }
+  .page-title { font-size: clamp(1.75rem, 7.4vw, 2.4rem); }
+  .page-intro { font-size: 0.92rem; }
+  /* 16px keeps iOS from zooming the page when the field takes focus. */
+  .page-search input { height: 46px; font-size: 16px; }
+  /* The rhythm between these is set for a desktop hero; at 94px of stacked
+     margin it pushed the first card off a 767px screen on its own. */
+  .page-eyebrow { margin-bottom: 10px; }
+  .page-intro { margin-top: 12px; }
+  .page-search { margin-top: 20px; }
+  .page-count { margin-top: 14px; }
+  .page-chips { gap: 5px; margin-top: 12px; }
+  .page-chip { padding: 6px 10px; font-size: 11.5px; }
   .item-card-inner { padding: 18px; }
   .item-card h3 { font-size: 18px; }
   /* Tap targets: the whole card is the control, so it just needs room. */
   .item-card-meta { flex-wrap: wrap; row-gap: 6px; }
   .page-footer-links { gap: 14px; font-size: 13px; }
+}
+
+/* -------------------------------------------------- MICE section cards --- */
+
+/* A MICE card stands for a whole family of services, so it lists what it
+   covers instead of carrying a price and a duration like the other cards. */
+.item-card-list {
+  margin: 14px 0 0;
+  padding: 0;
+  list-style: none;
+  display: grid;
+  gap: 7px;
+}
+
+.item-card-list li {
+  position: relative;
+  padding-left: 18px;
+  color: var(--card-muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+
+/* Gold marker rather than a bullet glyph, so it reads as brand rather than
+   as a default list. */
+.item-card-list li::before {
+  content: "";
+  position: absolute;
+  top: 0.55em;
+  left: 2px;
+  width: 5px;
+  height: 5px;
+  border-radius: 999px;
+  background: var(--gold);
+}
+
+/* ------------------------------------------- what every booking covers --- */
+
+.mice-services {
+  margin-top: clamp(30px, 5vw, 56px);
+  padding: clamp(26px, 4vw, 40px);
+  border: 1px solid var(--card-line);
+  border-radius: 26px;
+  background: linear-gradient(165deg, var(--card-bg-soft) 0%, var(--card-bg) 100%);
+}
+
+.mice-services h2 {
+  margin: 0 0 18px;
+  color: var(--cream);
+  font-family: var(--font-display);
+  font-size: clamp(1.4rem, 2.6vw, 2rem);
+  font-weight: 500;
+}
+
+.mice-services ul {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 9px;
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+.mice-services li {
+  padding: 9px 16px;
+  border: 1px solid var(--card-line);
+  border-radius: 999px;
+  color: rgba(255, 246, 232, 0.86);
+  font-size: 13.5px;
+  font-weight: 500;
 }

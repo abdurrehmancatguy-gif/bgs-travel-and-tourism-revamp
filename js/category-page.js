@@ -1,11 +1,11 @@
-import { getCollection, subscribe } from "./store.js?v=86";
-import "./info-modal.js?v=86";
-import { createNavigation } from "./navigation.js?v=86";
-import { icon } from "../data/icons.js?v=86";
-import { priceLabel } from "../data/packages.js?v=86";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=86";
-import { MICE_SERVICES } from "../data/mice.js?v=86";
-import { openItem } from "./item-dialog.js?v=86";
+import { getCollection, subscribe } from "./store.js?v=87";
+import "./info-modal.js?v=87";
+import { createNavigation } from "./navigation.js?v=87";
+import { icon } from "../data/icons.js?v=87";
+import { priceLabel } from "../data/packages.js?v=87";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=87";
+import { MICE_SERVICES } from "../data/mice.js?v=87";
+import { openItem } from "./item-dialog.js?v=87";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -42,7 +42,7 @@ const SHAPES = {
     card: (i) => cardMarkup({
       image: i.image, alt: i.title, iconName: i.icon, kicker: i.category,
       title: i.title, body: i.shortDescription,
-      meta: [i.duration, priceLabel(i), `${i.rating.toFixed(1)} ★`],
+      meta: [i.duration, priceLabel(i), i.rating ? `${Number(i.rating).toFixed(1)} ★` : ""],
     }),
   },
   packages: {
@@ -52,7 +52,7 @@ const SHAPES = {
     card: (i) => cardMarkup({
       image: i.image, alt: i.title, iconName: i.icon, kicker: i.category,
       title: i.title, body: i.shortDescription,
-      meta: [i.duration, priceLabel(i), `${i.rating.toFixed(1)} ★`],
+      meta: [i.duration, priceLabel(i), i.rating ? `${Number(i.rating).toFixed(1)} ★` : ""],
     }),
   },
   destinations: {
@@ -86,7 +86,7 @@ const SHAPES = {
     card: (i) => cardMarkup({
       image: i.image, alt: i.name, iconName: "visa", kicker: i.country,
       title: i.name, body: i.blurb,
-      meta: [i.processing, i.validity],
+      meta: [i.processing, i.validity, priceLabel(i)],
     }),
   },
 };
@@ -120,8 +120,8 @@ function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list
         ${list.length ? `<ul class="item-card-list">
           ${list.map((entry) => `<li>${esc(entry)}</li>`).join("")}
         </ul>` : ""}
-        ${meta.length ? `<p class="item-card-meta">
-          ${meta.map((m, n) => `<span class="${
+        ${meta.filter(Boolean).length ? `<p class="item-card-meta">
+          ${meta.filter(Boolean).map((m, n) => `<span class="${
             n === 0 ? "item-card-duration" : n === meta.length - 1 && meta.length > 2
               ? "item-card-rating" : "item-card-price"
           }">${esc(m)}</span>`).join("")}

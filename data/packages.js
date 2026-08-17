@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=86";
+import { PACKAGE_IMAGES } from "./images.js?v=87";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -423,12 +423,20 @@ export const HOME_PACKAGES = HOME_PACKAGE_SLUGS.map((slug) => {
   return pkg;
 }).filter(Boolean);
 
-/** "AED 180 per person" — the bare figure, used in the WhatsApp message. */
+/** "AED 180 per person" — the bare figure, used in the WhatsApp message.
+    Empty when there is no price: some visas are quoted per nationality, and a
+    record without one must render as silence rather than "AED undefined". */
 export const formatPrice = (pkg) =>
-  `${pkg.currency} ${pkg.price.toLocaleString("en-US")} ${pkg.priceUnit}`;
+  pkg?.price
+    ? `${pkg.currency ?? "AED"} ${Number(pkg.price).toLocaleString("en-US")}${
+        pkg.priceUnit ? ` ${pkg.priceUnit}` : ""}`
+    : "";
 
 /** "From AED 180 per person" — the display label on cards and in the dialog. */
-export const priceLabel = (pkg) => `From ${formatPrice(pkg)}`;
+export const priceLabel = (pkg) => {
+  const figure = formatPrice(pkg);
+  return figure ? `From ${figure}` : "";
+};
 
 export const findPackageBySlug = (slug) =>
   CATALOGUE.find((pkg) => pkg.slug === slug) || null;

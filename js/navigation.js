@@ -1,6 +1,6 @@
-import { buildPrimaryNav, buildDrawerMenus } from "./nav-model.js?v=86";
-import { subscribe } from "./store.js?v=86";
-import { icon } from "../data/icons.js?v=86";
+import { buildPrimaryNav, buildDrawerMenus } from "./nav-model.js?v=87";
+import { subscribe } from "./store.js?v=87";
+import { icon } from "../data/icons.js?v=87";
 
 /**
  * Header dropdowns and the mobile drawer.

@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=86";
-import { signIn } from "./cloud.js?v=86";
+} from "./store.js?v=87";
+import { signIn } from "./cloud.js?v=87";
 
 /**
  * The admin console.
@@ -109,7 +109,13 @@ const FIELDS = {
   ],
   visa: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["country", "Country", "text"],
+    ["category", "Visa category (E-Visa / Sticker Visa)", "text"],
+    ["visaType", "Entry type (Single / Multiple)", "text"],
     ["processing", "Processing time", "text"], ["validity", "Validity", "text"],
+    // Selling price only. The vendor cost from the rate sheet is never stored
+    // here and never reaches the browser.
+    ["price", "Selling price (AED)", "number"],
+    ["currency", "Currency", "text"], ["priceUnit", "Price unit", "text"],
     ["blurb", "Description", "textarea"],
     ["requirements", "What you'll need (comma separated)", "list"],
     ["fullDescription", "Full description", "textarea"],

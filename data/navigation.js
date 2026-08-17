@@ -63,6 +63,7 @@ export const SERVICES = [
     key: "visa",
     label: "Visa Services",
     icon: "visa",
+    image: "https://images.pexels.com/photos/4922356/pexels-photo-4922356.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
     blurb:
       "Tourist, transit and visit visas for the UAE and beyond, prepared and tracked for you.",
   },
@@ -70,6 +71,7 @@ export const SERVICES = [
     key: "flights",
     label: "Flights",
     icon: "flights",
+    image: "https://images.pexels.com/photos/14400667/pexels-photo-14400667.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
     blurb:
       "Fares held, routings compared and every connection checked before you book.",
   },
@@ -77,6 +79,7 @@ export const SERVICES = [
     key: "hotels",
     label: "Hotels & Stays",
     icon: "hotels",
+    image: "https://images.pexels.com/photos/2736384/pexels-photo-2736384.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
     blurb:
       "City hotels, desert camps, safari lodges and beach resorts, matched to your trip.",
   },
@@ -84,6 +87,7 @@ export const SERVICES = [
     key: "transport",
     label: "Transport & Fleet",
     icon: "transport",
+    image: "https://images.pexels.com/photos/28284095/pexels-photo-28284095.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
     blurb:
       "Airport transfers, private drivers and a fleet sized to your group anywhere in the UAE.",
   },
@@ -91,6 +95,7 @@ export const SERVICES = [
     key: "concierge",
     label: "Concierge",
     icon: "concierge",
+    image: "https://images.pexels.com/photos/14036251/pexels-photo-14036251.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
     blurb:
       "One team on call through the whole trip, from the first idea to the journey home.",
   },
@@ -98,6 +103,7 @@ export const SERVICES = [
     key: "activities",
     label: "Activities & Excursions",
     icon: "activities",
+    image: "https://images.pexels.com/photos/1453097/pexels-photo-1453097.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200",
     blurb:
       "Desert, water, cultural and family experiences, booked around the rest of your itinerary.",
   },

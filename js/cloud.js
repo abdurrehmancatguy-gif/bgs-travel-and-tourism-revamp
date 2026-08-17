@@ -1,6 +1,6 @@
 import {
   FIREBASE_CONFIG, CONTENT_COLLECTION, SDK_VERSION, isConfigured,
-} from "./firebase-config.js?v=87";
+} from "./firebase-config.js?v=88";
 
 /**
  * Everything that talks to Firebase. The rest of the site never imports the

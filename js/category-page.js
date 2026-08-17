@@ -1,11 +1,12 @@
-import { getCollection, subscribe } from "./store.js?v=87";
-import "./info-modal.js?v=87";
-import { createNavigation } from "./navigation.js?v=87";
-import { icon } from "../data/icons.js?v=87";
-import { priceLabel } from "../data/packages.js?v=87";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=87";
-import { MICE_SERVICES } from "../data/mice.js?v=87";
-import { openItem } from "./item-dialog.js?v=87";
+import { getCollection, subscribe } from "./store.js?v=88";
+import "./info-modal.js?v=88";
+import { createNavigation } from "./navigation.js?v=88";
+import { icon } from "../data/icons.js?v=88";
+import { priceLabel } from "../data/packages.js?v=88";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=88";
+import { MICE_SERVICES } from "../data/mice.js?v=88";
+import { openItem } from "./item-dialog.js?v=88";
+import { contactStripMarkup } from "./info-modal.js?v=88";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -67,6 +68,7 @@ const SHAPES = {
     chips: () => [],
     search: (i) => [i.label, i.blurb],
     card: (i) => cardMarkup({
+      image: i.image, alt: i.label,
       iconName: i.icon, kicker: "Service", title: i.label, body: i.blurb, meta: [],
     }),
   },
@@ -269,6 +271,9 @@ const miceServices = document.querySelector("#mice-services-list");
 if (miceServices) {
   miceServices.innerHTML = MICE_SERVICES.map((s) => `<li>${esc(s)}</li>`).join("");
 }
+
+const footerContact = document.querySelector("#footer-contact");
+if (footerContact) footerContact.innerHTML = contactStripMarkup();
 
 setupReveal();
 renderCopy();

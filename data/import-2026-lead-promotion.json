@@ -624,37 +624,43 @@
       "key": "visa",
       "label": "Visa Services",
       "icon": "visa",
-      "blurb": "Tourist, transit and visit visas for the UAE and beyond, prepared and tracked for you."
+      "blurb": "Tourist, transit and visit visas for the UAE and beyond, prepared and tracked for you.",
+      "image": "https://images.pexels.com/photos/4922356/pexels-photo-4922356.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
     },
     {
       "key": "flights",
       "label": "Flights",
       "icon": "flights",
-      "blurb": "Fares held, routings compared and every connection checked before you book."
+      "blurb": "Fares held, routings compared and every connection checked before you book.",
+      "image": "https://images.pexels.com/photos/14400667/pexels-photo-14400667.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
     },
     {
       "key": "hotels",
       "label": "Hotels & Stays",
       "icon": "hotels",
-      "blurb": "City hotels, desert camps, safari lodges and beach resorts, matched to your trip."
+      "blurb": "City hotels, desert camps, safari lodges and beach resorts, matched to your trip.",
+      "image": "https://images.pexels.com/photos/2736384/pexels-photo-2736384.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
     },
     {
       "key": "transport",
       "label": "Transport & Fleet",
       "icon": "transport",
-      "blurb": "Airport transfers, private drivers and a fleet sized to your group anywhere in the UAE."
+      "blurb": "Airport transfers, private drivers and a fleet sized to your group anywhere in the UAE.",
+      "image": "https://images.pexels.com/photos/28284095/pexels-photo-28284095.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
     },
     {
       "key": "concierge",
       "label": "Concierge",
       "icon": "concierge",
-      "blurb": "One team on call through the whole trip, from the first idea to the journey home."
+      "blurb": "One team on call through the whole trip, from the first idea to the journey home.",
+      "image": "https://images.pexels.com/photos/14036251/pexels-photo-14036251.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
     },
     {
       "key": "activities",
       "label": "Activities & Excursions",
       "icon": "activities",
-      "blurb": "Desert, water, cultural and family experiences, booked around the rest of your itinerary."
+      "blurb": "Desert, water, cultural and family experiences, booked around the rest of your itinerary.",
+      "image": "https://images.pexels.com/photos/1453097/pexels-photo-1453097.jpeg?auto=compress&cs=tinysrgb&fit=crop&h=627&w=1200"
     }
   ],
   "visa": [

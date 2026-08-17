@@ -1,6 +1,7 @@
-import { buildPrimaryNav, buildDrawerMenus } from "./nav-model.js?v=87";
-import { subscribe } from "./store.js?v=87";
-import { icon } from "../data/icons.js?v=87";
+import { buildPrimaryNav, buildDrawerMenus } from "./nav-model.js?v=88";
+import { subscribe } from "./store.js?v=88";
+import { contactStripMarkup } from "./info-modal.js?v=88";
+import { icon } from "../data/icons.js?v=88";
 
 /**
  * Header dropdowns and the mobile drawer.
@@ -299,6 +300,8 @@ export function createNavigation({ nav, drawer, drawerBody, toggle, onAction }) 
     buildDesktop();
     buildDrawer();
     wireDesktop();
+    drawerBody.insertAdjacentHTML("beforeend",
+      '<div class="drawer-contact">' + contactStripMarkup() + "</div>");
     wireDrawerGroups();
   }
 

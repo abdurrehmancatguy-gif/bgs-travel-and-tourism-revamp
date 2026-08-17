@@ -1,12 +1,12 @@
-import { getCollection, subscribe } from "./store.js?v=88";
-import "./info-modal.js?v=88";
-import { createNavigation } from "./navigation.js?v=88";
-import { icon } from "../data/icons.js?v=88";
-import { priceLabel } from "../data/packages.js?v=88";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=88";
-import { MICE_SERVICES } from "../data/mice.js?v=88";
-import { openItem } from "./item-dialog.js?v=88";
-import { contactStripMarkup } from "./info-modal.js?v=88";
+import { getCollection, subscribe } from "./store.js?v=89";
+import "./info-modal.js?v=89";
+import { createNavigation } from "./navigation.js?v=89";
+import { icon } from "../data/icons.js?v=89";
+import { priceLabel } from "../data/packages.js?v=89";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=89";
+import { MICE_SERVICES } from "../data/mice.js?v=89";
+import { openItem, itemTitle } from "./item-dialog.js?v=89";
+import { contactStripMarkup } from "./info-modal.js?v=89";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -246,10 +246,12 @@ function setupReveal() {
 export function routeAction(action) {
   if (!action) return;
   if (action.kind === "page") {
-    const url = action.q
-      ? `${action.page}.html?q=${encodeURIComponent(action.q)}`
-      : `${action.page}.html`;
-    location.href = url;
+    // `open` asks the destination page to show that record's panel on arrival.
+    const params = new URLSearchParams();
+    if (action.q) params.set("q", action.q);
+    if (action.open) params.set("open", "1");
+    const query = params.toString();
+    location.href = query ? `${action.page}.html?${query}` : `${action.page}.html`;
     return;
   }
   if (action.kind === "scene") { location.href = `index.html#scene-${action.scene}`; return; }
@@ -279,6 +281,20 @@ setupReveal();
 renderCopy();
 renderChips();
 setQuery(query, { push: false });
+
+/**
+ * A dropdown item that names one record asks for its panel on arrival. Matched
+ * on the record's own title rather than on the result count, so a search that
+ * happens to return one row does not pop a panel at somebody typing — and it
+ * runs once, here, rather than on every re-render.
+ */
+if (new URLSearchParams(location.search).get("open") === "1") {
+  const wanted = query.trim().toLowerCase();
+  const match = visibleItems.find(
+    (item) => itemTitle(item, page).trim().toLowerCase() === wanted
+  );
+  if (match) openItem(match, page);
+}
 
 input.addEventListener("input", () => setQuery(input.value));
 clearBtn.addEventListener("click", () => { setQuery(""); input.focus(); });

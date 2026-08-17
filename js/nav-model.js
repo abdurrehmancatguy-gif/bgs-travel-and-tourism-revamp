@@ -1,5 +1,5 @@
-import { getCollection } from "./store.js?v=88";
-import { UTILITY_NAV } from "../data/navigation.js?v=88";
+import { getCollection } from "./store.js?v=89";
+import { UTILITY_NAV } from "../data/navigation.js?v=89";
 
 /**
  * The menus, built from the content rather than written alongside it.
@@ -17,7 +17,12 @@ import { UTILITY_NAV } from "../data/navigation.js?v=88";
  * each other is a cycle.
  */
 
-const toPage = (page, q = "") => ({ kind: "page", page, q });
+/**
+ * `open` marks an item that names one record rather than a filter. Those land
+ * on the page with that record's panel already open; "All Packages" or "Luxury"
+ * match many records and cannot, so they only pre-fill the search.
+ */
+const toPage = (page, q = "", open = false) => ({ kind: "page", page, q, open });
 
 /** Unique, blank-free, first-seen order preserved. */
 const uniq = (values) => [...new Set(values.filter(Boolean))];
@@ -52,7 +57,7 @@ export function buildPrimaryNav() {
       page: "visa",
       items: [
         { label: "All Visa Services", action: toPage("visa") },
-        ...visa.map((v) => ({ label: v.name, action: toPage("visa", v.name) })),
+        ...visa.map((v) => ({ label: v.name, action: toPage("visa", v.name, true) })),
       ],
     },
     {
@@ -62,7 +67,7 @@ export function buildPrimaryNav() {
       page: "mice",
       items: [
         { label: "All MICE Services", action: toPage("mice") },
-        ...mice.map((m) => ({ label: m.name, action: toPage("mice", m.name) })),
+        ...mice.map((m) => ({ label: m.name, action: toPage("mice", m.name, true) })),
       ],
     },
     {
@@ -103,7 +108,7 @@ export function buildPrimaryNav() {
         .map((s) => ({
           label: s.label,
           icon: s.icon,
-          action: toPage("services", s.label),
+          action: toPage("services", s.label, true),
         })),
     },
     {
@@ -116,7 +121,7 @@ export function buildPrimaryNav() {
         // Destinations search by place name, so the label is the query.
         items: group.items.map((d) => ({
           label: d.name,
-          action: toPage("destinations", d.name),
+          action: toPage("destinations", d.name, true),
         })),
       })),
     },

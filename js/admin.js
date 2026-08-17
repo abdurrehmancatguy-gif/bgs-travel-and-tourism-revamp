@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=85";
-import { signIn } from "./cloud.js?v=85";
+} from "./store.js?v=86";
+import { signIn } from "./cloud.js?v=86";
 
 /**
  * The admin console.

@@ -17,12 +17,15 @@
  * rules, not the config. See FIREBASE.md for the rules this project expects.
  */
 export const FIREBASE_CONFIG = {
-  apiKey: "",
-  authDomain: "",
-  projectId: "",
-  storageBucket: "",
-  messagingSenderId: "",
-  appId: "",
+  apiKey: "AIzaSyCmEqpcL5l_2L5tnq1HGB43XtP7yoyCII4",
+  authDomain: "bgs-trvel-and-tourism.firebaseapp.com",
+  // The missing "a" is in the project id itself, as created in the console.
+  // It is an internal identifier, never shown to a visitor, and renaming a
+  // Firebase project does not change it — so it stays as it is.
+  projectId: "bgs-trvel-and-tourism",
+  storageBucket: "bgs-trvel-and-tourism.firebasestorage.app",
+  messagingSenderId: "694837137996",
+  appId: "1:694837137996:web:2e031db2d444ec6a329ae9",
 };
 
 /**

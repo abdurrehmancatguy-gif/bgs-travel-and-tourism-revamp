@@ -1,6 +1,6 @@
-import { icon } from "../data/icons.js?v=92";
-import { priceLabel } from "../data/packages.js?v=92";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=92";
+import { icon } from "../data/icons.js?v=94";
+import { priceLabel } from "../data/packages.js?v=94";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=94";
 
 /**
  * The detail panel a card opens. One dialog, reused for every card on every

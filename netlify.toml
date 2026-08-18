@@ -1,0 +1,28 @@
+# The site is plain ES modules with no bundler, so this build does one thing:
+# write the catalogue into the HTML before publishing. Everything else about the
+# source tree is copied across untouched.
+#
+# It reads content from Firestore at build time over the public REST endpoint,
+# so a content change needs a redeploy to reach the pre-rendered HTML. The
+# browser still live-updates from Firestore, so visitors see edits immediately
+# either way — it is only the crawler-visible copy that waits for a build.
+
+[build]
+  command = "node build/build.mjs"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+# Hashed-by-version assets can be cached hard; HTML must not be, or an edit
+# takes a day to show up.
+[[headers]]
+  for = "/*.html"
+  [headers.values]
+    Cache-Control = "public, max-age=0, must-revalidate"

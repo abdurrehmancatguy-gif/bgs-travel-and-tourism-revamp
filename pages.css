@@ -248,6 +248,15 @@ body.page .nav-toggle-bar { background: var(--navy); }
   box-shadow: 0 0 0 4px rgba(232, 148, 26, 0.18);
 }
 
+/* Safari and Chrome draw their own clear button inside a type="search" input,
+   which sat next to ours as a second, differently-styled X. */
+.page-search input[type="search"]::-webkit-search-cancel-button,
+.page-search input[type="search"]::-webkit-search-decoration {
+  -webkit-appearance: none;
+  appearance: none;
+  display: none;
+}
+
 .page-search-clear {
   position: absolute;
   top: 50%;

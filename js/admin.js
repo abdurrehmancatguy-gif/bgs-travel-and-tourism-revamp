@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=94";
-import { signIn } from "./cloud.js?v=94";
+} from "./store.js?v=98";
+import { signIn } from "./cloud.js?v=98";
 
 /**
  * The admin console.
@@ -381,3 +381,154 @@ el("#password-form").addEventListener("submit", async (event) => {
 });
 
 el("#admin-logout").addEventListener("click", () => location.reload());
+
+/* ===========================================================================
+   Update from a spreadsheet
+   ---------------------------------------------------------------------------
+   Parsing and applying are deliberately separate. A workbook arrives, we work
+   out what it would do, and nothing is written until someone has looked at the
+   summary and chosen Merge or Replace — because Replace on a short sheet is
+   how a catalogue gets deleted by accident.
+   =========================================================================== */
+
+let sheetPlans = null;
+
+const sheetStatus = (message) => { el("#sheet-status").textContent = message; };
+
+const countLine = (plan) =>
+  [`${plan.added.length} new`, `${plan.updated.length} updated`,
+   `${plan.unchanged.length} unchanged`,
+   `${plan.missing.length} on the site but not in the sheet`].join(" · ");
+
+function renderSheetPreview(plans, problems, ignoredCost) {
+  el("#sheet-dialog-body").innerHTML = `
+    ${ignoredCost.length ? `<p class="sheet-note sheet-note-good">
+      Ignored cost columns: ${ignoredCost.map(esc).join(", ")}. These are never stored.
+    </p>` : ""}
+    ${problems.length ? `<details class="sheet-problems">
+      <summary>${problems.length} thing${problems.length === 1 ? "" : "s"} to look at</summary>
+      <ul>${problems.map((p) => `<li>${esc(p)}</li>`).join("")}</ul>
+    </details>` : ""}
+    ${plans.map((plan) => `
+      <section class="sheet-plan">
+        <h3>${esc(plan.label)} <span>${esc(countLine(plan))}</span></h3>
+        ${plan.added.length ? `<p class="sheet-plan-list"><strong>New:</strong>
+          ${plan.added.map((r) => esc(r[plan.identity])).join(", ")}</p>` : ""}
+        ${plan.updated.length ? `<p class="sheet-plan-list"><strong>Updated:</strong>
+          ${plan.updated.map((u) => esc(u.after[plan.identity])).join(", ")}</p>` : ""}
+        ${plan.missing.length ? `<p class="sheet-plan-list sheet-plan-warn">
+          <strong>Replace would delete:</strong>
+          ${plan.missing.map((r) => esc(r[plan.identity])).join(", ")}</p>` : ""}
+      </section>`).join("")}
+    <p class="sheet-note">
+      <strong>Merge</strong> updates what matches and adds what is new, leaving
+      everything else alone. <strong>Replace</strong> makes each section exactly
+      what its tab says, deleting the rest.
+    </p>`;
+  el("#sheet-dialog").showModal();
+}
+
+/** New records have no photograph; ask the site's own function for one. */
+async function backfillImages(records, collection, identity) {
+  const needing = records.filter((r) => !r.image);
+  if (!needing.length) return 0;
+  let filled = 0;
+  for (const record of needing) {
+    try {
+      const query = `${record[identity]} ${collection === "visa" ? "landmark" : ""}`.trim();
+      const res = await fetch(`/api/stock-image?q=${encodeURIComponent(query)}`);
+      if (!res.ok) continue;
+      const { url } = await res.json();
+      if (url) { record.image = url; filled++; }
+    } catch { /* a missing photo must not fail the import */ }
+  }
+  return filled;
+}
+
+async function applySheet(mode) {
+  const { applyMode } = await import("./sheet-import.mjs?v=98");
+  el("#sheet-dialog").close();
+  sheetStatus("Applying…");
+
+  let changed = 0, photos = 0;
+  for (const plan of sheetPlans) {
+    const items = applyMode(plan, mode);
+    const fresh = items.filter((i) => !i.image);
+    photos += await backfillImages(fresh, plan.collection, plan.identity);
+    saveCollection(plan.collection, items);
+    changed++;
+  }
+  sheetPlans = null;
+  refresh();
+  sheetStatus(`${mode === "merge" ? "Merged" : "Replaced"} ${changed} section${
+    changed === 1 ? "" : "s"}.${photos ? ` ${photos} photo${photos === 1 ? "" : "s"} found.` : ""}`);
+  toast("Spreadsheet applied");
+}
+
+async function handleSheet(file) {
+  if (!file) return;
+  sheetStatus(`Reading ${file.name}…`);
+  try {
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=98");
+    const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
+    if (!tabs.length) {
+      sheetStatus(`Nothing to import. ${problems.join(" ")}`);
+      return;
+    }
+    sheetPlans = reconcile(tabs, (name) => getCollection(name));
+    renderSheetPreview(sheetPlans, problems, ignoredCostColumns);
+    sheetStatus(`${file.name} read — review the changes.`);
+  } catch (error) {
+    sheetStatus(`Could not read that file: ${error.message}`);
+  }
+}
+
+/* --- wiring --- */
+
+const drop = el("#sheet-drop");
+el("#sheet-file").addEventListener("change", (event) => {
+  handleSheet(event.target.files[0]);
+  event.target.value = "";
+});
+["dragenter", "dragover"].forEach((type) =>
+  drop.addEventListener(type, (event) => {
+    event.preventDefault();
+    drop.dataset.over = "true";
+  })
+);
+["dragleave", "drop"].forEach((type) =>
+  drop.addEventListener(type, () => { drop.dataset.over = "false"; })
+);
+drop.addEventListener("drop", (event) => {
+  event.preventDefault();
+  handleSheet(event.dataTransfer?.files?.[0]);
+});
+
+el("#sheet-dialog").addEventListener("click", (event) => {
+  if (event.target.closest("[data-sheet-cancel]") || event.target === el("#sheet-dialog")) {
+    el("#sheet-dialog").close();
+    sheetPlans = null;
+    sheetStatus("Cancelled — nothing was changed.");
+  }
+});
+el("#sheet-apply-merge").addEventListener("click", () => applySheet("merge"));
+el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace"));
+
+/* --- export, which doubles as the template --- */
+
+el("#sheet-export").addEventListener("click", async () => {
+  sheetStatus("Building workbook…");
+  try {
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=98");
+    const blob = await exportWorkbook((name) => getCollection(name));
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bgs-catalogue-${new Date().toISOString().slice(0, 10)}.xlsx`;
+    a.click();
+    URL.revokeObjectURL(url);
+    sheetStatus("Exported. Edit it and drop it back to update the site.");
+  } catch (error) {
+    sheetStatus(`Export failed: ${error.message}`);
+  }
+});

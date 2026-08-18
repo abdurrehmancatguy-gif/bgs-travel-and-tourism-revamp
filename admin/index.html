@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — BGS Travel &amp; Tourism</title>
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=94" />
-  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icon-512.png?v=94" />
-  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=94" />
-  <link rel="stylesheet" href="../styles.css?v=94" />
-  <link rel="stylesheet" href="../pages.css?v=94" />
-  <link rel="stylesheet" href="../admin.css?v=94" />
-  <script type="module" src="../js/admin.js?v=94"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=98" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icon-512.png?v=98" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=98" />
+  <link rel="stylesheet" href="../styles.css?v=98" />
+  <link rel="stylesheet" href="../pages.css?v=98" />
+  <link rel="stylesheet" href="../admin.css?v=98" />
+  <script type="module" src="../js/admin.js?v=98"></script>
 </head>
 <body class="page admin">
 
@@ -35,7 +35,7 @@
     <header class="admin-header">
       <div>
         <p class="page-eyebrow">
-          <img class="admin-mark" src="../assets/monogram-96.png?v=94" alt="" width="20" height="20" />
+          <img class="admin-mark" src="../assets/monogram-96.png?v=98" alt="" width="20" height="20" />
           Content manager
         </p>
         <h1 class="admin-heading">BGS Admin</h1>
@@ -61,6 +61,26 @@
         </div>
       </div>
       <ul class="admin-list" id="admin-list"></ul>
+    </section>
+
+    <section class="admin-panel">
+      <h2 class="admin-subheading">Update from a spreadsheet</h2>
+      <p class="admin-note">
+        Drop a workbook with a tab per section — Visa, Packages, Activities,
+        Destinations, Services, MICE. Only the tabs in the file are touched, and
+        nothing is saved until you have seen what will change. Photographs on
+        existing records are kept; a vendor cost column is ignored.
+      </p>
+      <label class="sheet-drop" id="sheet-drop">
+        <input id="sheet-file" type="file"
+               accept=".xlsx,.xlsm,.csv,application/vnd.openxmlformats-officedocument.spreadsheetml.sheet" hidden />
+        <span class="sheet-drop-title">Drop a spreadsheet here</span>
+        <span class="sheet-drop-hint">or click to choose — .xlsx or .csv</span>
+      </label>
+      <div class="admin-panel-actions">
+        <button class="admin-btn" id="sheet-export" type="button">Export XLSX</button>
+      </div>
+      <p class="admin-note" id="sheet-status" role="status" aria-live="polite"></p>
     </section>
 
     <section class="admin-panel">
@@ -108,5 +128,24 @@
   </dialog>
 
   <p class="admin-toast" id="admin-toast" data-shown="false"></p>
+  <!-- What a dropped spreadsheet would change. Rendered by js/admin.js -->
+  <dialog class="sheet-dialog" id="sheet-dialog" aria-labelledby="sheet-dialog-title">
+    <article class="sheet-dialog-panel">
+      <header class="sheet-dialog-head">
+        <h2 id="sheet-dialog-title">Review changes</h2>
+        <button class="sheet-dialog-close" type="button" data-sheet-cancel aria-label="Cancel">
+          <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor"
+               stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M6.5 6.5l11 11M17.5 6.5l-11 11" /></svg>
+        </button>
+      </header>
+      <div class="sheet-dialog-body" id="sheet-dialog-body"></div>
+      <footer class="sheet-dialog-foot">
+        <button class="admin-btn" type="button" data-sheet-cancel>Cancel</button>
+        <button class="admin-btn" id="sheet-apply-merge" type="button">Merge</button>
+        <button class="admin-btn admin-btn-danger" id="sheet-apply-replace" type="button">Replace</button>
+      </footer>
+    </article>
+  </dialog>
 </body>
 </html>

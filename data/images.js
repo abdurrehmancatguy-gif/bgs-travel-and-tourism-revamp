@@ -1,4 +1,4 @@
-import { PHOTOS } from "./photos.js?v=94";
+import { PHOTOS } from "./photos.js?v=98";
 /**
  * Every image URL used by the site lives here — swap a value and the whole
  * page follows. Nothing else in the codebase hardcodes an image address.

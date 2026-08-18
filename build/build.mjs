@@ -43,7 +43,7 @@ const orgJsonLd = () => ({
   "@id": `${SITE}/#org`,
   name: "BGS Travel & Tourism",
   url: `${SITE}/`,
-  telephone: "+971564891974",
+  telephone: "+971528992964",
   email: "info@bgstravelandtourism.com",
   address: { "@type": "PostalAddress", addressLocality: "Dubai", addressCountry: "AE" },
   areaServed: "Worldwide",
@@ -141,14 +141,14 @@ function itemPage(item, collection) {
     ${body ? `<p class="item-page-body">${esc(body)}</p>` : ""}
     ${lists}
     <p class="item-page-cta">
-      <a class="item-page-button" href="https://wa.me/971564891974?text=${
+      <a class="item-page-button" href="https://wa.me/971528992964?text=${
         encodeURIComponent(`I'd like to know more about ${title}.`)}"
          target="_blank" rel="noopener">Enquire on WhatsApp</a>
     </p>
     <p class="item-page-back"><a href="/${PAGES[collection]}">All ${esc(s.label)}</a></p>
   </main>
   <footer class="page-footer">
-    <p><a href="tel:+971564891974">+971 56 489 1974</a> ·
+    <p><a href="tel:+971528992964">052 899 2964</a> ·
        <a href="mailto:info@bgstravelandtourism.com">info@bgstravelandtourism.com</a></p>
     <p>BGS Travel &amp; Tourism — Dubai, UAE</p>
   </footer>
@@ -260,7 +260,7 @@ fs.writeFileSync(path.join(DIST, "llms.txt"),
 > A Dubai travel agency arranging visas, flights, hotels, transfers, tours and
 > corporate travel. Enquiries are handled over WhatsApp by one team.
 
-Contact: +971 56 489 1974 · info@bgstravelandtourism.com · Dubai, UAE
+Contact: 052 899 2964 · info@bgstravelandtourism.com · Dubai, UAE
 
 ## What is on this site
 ${Object.entries(PAGES).map(([c, f]) =>

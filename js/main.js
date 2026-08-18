@@ -1,8 +1,8 @@
-import { SCENE } from "../data/images.js?v=94";
-import "./info-modal.js?v=94";
-import { SCENES } from "../data/navigation.js?v=94";
-import { findPackageBySlug } from "../data/packages.js?v=94";
-import { icon } from "../data/icons.js?v=94";
+import { SCENE } from "../data/images.js?v=98";
+import "./info-modal.js?v=98";
+import { SCENES } from "../data/navigation.js?v=98";
+import { findPackageBySlug } from "../data/packages.js?v=98";
+import { icon } from "../data/icons.js?v=98";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -11,11 +11,11 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=94";
-import { createNavigation } from "./navigation.js?v=94";
-import { getCollection, subscribe } from "./store.js?v=94";
-import { createCarousel } from "./carousel.js?v=94";
-import { createPackageDialog } from "./package-dialog.js?v=94";
+} from "../utils/whatsapp.js?v=98";
+import { createNavigation } from "./navigation.js?v=98";
+import { getCollection, subscribe } from "./store.js?v=98";
+import { createCarousel } from "./carousel.js?v=98";
+import { createPackageDialog } from "./package-dialog.js?v=98";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;

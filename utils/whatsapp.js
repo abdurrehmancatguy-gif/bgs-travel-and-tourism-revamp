@@ -6,8 +6,8 @@
  * no checkout and no backend. A link hands the traveller to a real person.
  */
 
-export const WHATSAPP_NUMBER = "971564891974";
-export const WHATSAPP_DISPLAY = "+971 56 489 1974";
+export const WHATSAPP_NUMBER = "971528992964";
+export const WHATSAPP_DISPLAY = "052 899 2964";
 export const CONTACT_EMAIL = "info@bgstravelandtourism.com";
 export const LOCATION = "Dubai, UAE";
 

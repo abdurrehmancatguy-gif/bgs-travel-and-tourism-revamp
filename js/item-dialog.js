@@ -1,6 +1,6 @@
-import { icon } from "../data/icons.js?v=90";
-import { priceLabel } from "../data/packages.js?v=90";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=90";
+import { icon } from "../data/icons.js?v=92";
+import { priceLabel } from "../data/packages.js?v=92";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=92";
 
 /**
  * The detail panel a card opens. One dialog, reused for every card on every
@@ -121,7 +121,7 @@ export function openItem(item, collection) {
   el.innerHTML = `
     <article class="item-dialog-panel">
       <button class="item-dialog-close" type="button" data-item-close aria-label="Close">
-        <span aria-hidden="true">&times;</span>
+        ${icon("close")}
       </button>
 
       ${image ? `<div class="item-dialog-media">

@@ -76,6 +76,9 @@ export const ICONS = {
     `<path d="M3 17h18"/><path d="M4.8 17a7.2 7.2 0 0 1 14.4 0"/>` +
       `<path d="M12 6.4V5"/><circle cx="12" cy="7.6" r="1.2"/><path d="M2.5 20.5h19"/>`
   ),
+  /* ---- ui ---- */
+  close: svg(`<path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/>`),
+
   /* ---- contact channels ---- */
   // The WhatsApp mark is a filled glyph rather than a stroke drawing — the
   // handset-in-a-bubble is only recognisable as itself at this size when solid.

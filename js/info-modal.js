@@ -1,5 +1,5 @@
-import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=90";
-import { icon } from "../data/icons.js?v=90";
+import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=92";
+import { icon } from "../data/icons.js?v=92";
 
 /**
  * The Contacts and legal panels. One <dialog> is built lazily and reused for
@@ -120,7 +120,7 @@ export function openInfo(key) {
       <header class="info-dialog-head">
         <h2 id="info-dialog-title">${esc(doc.title)}</h2>
         <button class="info-dialog-close" type="button" data-info-close aria-label="Close">
-          <span aria-hidden="true">&times;</span>
+          ${icon("close")}
         </button>
       </header>
       <div class="info-dialog-body">

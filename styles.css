@@ -686,6 +686,22 @@ a.info-contact-value:hover { color: var(--gold); }
   .item-dialog-cta { transition: none; }
 }
 
+/* The drawn X: sized as a share of each button so one icon serves buttons of
+   several sizes, and centred by geometry rather than by font metrics. */
+.item-dialog-close svg,
+.info-dialog-close svg,
+.nav-drawer-close svg,
+.package-dialog-close svg,
+.page-search-clear svg { width: 55%; height: 55%; display: block; }
+
+.item-dialog-close,
+.info-dialog-close {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+}
+
 /* =========================================================================
    Scroll rig
    ========================================================================= */

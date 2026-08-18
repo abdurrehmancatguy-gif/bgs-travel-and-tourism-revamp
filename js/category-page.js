@@ -1,12 +1,12 @@
-import { getCollection, subscribe } from "./store.js?v=90";
-import "./info-modal.js?v=90";
-import { createNavigation } from "./navigation.js?v=90";
-import { icon } from "../data/icons.js?v=90";
-import { priceLabel } from "../data/packages.js?v=90";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=90";
-import { MICE_SERVICES } from "../data/mice.js?v=90";
-import { openItem, itemTitle } from "./item-dialog.js?v=90";
-import { contactStripMarkup } from "./info-modal.js?v=90";
+import { getCollection, subscribe } from "./store.js?v=92";
+import "./info-modal.js?v=92";
+import { createNavigation } from "./navigation.js?v=92";
+import { icon } from "../data/icons.js?v=92";
+import { priceLabel } from "../data/packages.js?v=92";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=92";
+import { MICE_SERVICES } from "../data/mice.js?v=92";
+import { openItem, itemTitle } from "./item-dialog.js?v=92";
+import { contactStripMarkup } from "./info-modal.js?v=92";
 
 /**
  * Every category page runs this one module. The page declares which collection

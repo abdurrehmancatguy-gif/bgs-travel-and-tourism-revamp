@@ -1,6 +1,6 @@
-import { icon } from "../data/icons.js?v=88";
-import { priceLabel } from "../data/packages.js?v=88";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=88";
+import { icon } from "../data/icons.js?v=89";
+import { priceLabel } from "../data/packages.js?v=89";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=89";
 
 /**
  * The detail panel a card opens. One dialog, reused for every card on every
@@ -77,6 +77,10 @@ const LISTS = [
   ["included", "What's included"],
   ["requirements", "What you'll need"],
 ];
+
+/** What a record is called, per collection. Used to match a deep link. */
+export const itemTitle = (item, collection) =>
+  (item && SHAPE[collection] ? SHAPE[collection].title(item) : "") ?? "";
 
 let dialog = null;
 

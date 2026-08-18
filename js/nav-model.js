@@ -1,5 +1,5 @@
-import { getCollection } from "./store.js?v=89";
-import { UTILITY_NAV } from "../data/navigation.js?v=89";
+import { getCollection } from "./store.js?v=90";
+import { UTILITY_NAV } from "../data/navigation.js?v=90";
 
 /**
  * The menus, built from the content rather than written alongside it.
@@ -23,11 +23,6 @@ import { UTILITY_NAV } from "../data/navigation.js?v=89";
  * match many records and cannot, so they only pre-fill the search.
  */
 const toPage = (page, q = "", open = false) => ({ kind: "page", page, q, open });
-
-/** Unique, blank-free, first-seen order preserved. */
-const uniq = (values) => [...new Set(values.filter(Boolean))];
-
-const titled = (s) => String(s).charAt(0).toUpperCase() + String(s).slice(1);
 
 /** Groups records under a field, keeping the order the records arrived in. */
 function groupBy(items, field) {
@@ -73,26 +68,33 @@ export function buildPrimaryNav() {
     {
       id: "packages",
       label: "Packages",
-      kind: "list",
+      kind: "groups",
       page: "packages",
-      // Regions first, then themes — the two things a package is filtered by.
-      items: [
-        { label: "All Packages", action: toPage("packages") },
-        ...uniq([
-          ...packages.map((p) => p.region),
-          ...packages.flatMap((p) => p.tags ?? []).map(titled),
-        ]).map((label) => ({ label, action: toPage("packages", label) })),
-      ],
+      // Grouped by region rather than listed flat: it keeps the regional entry
+      // points the old filter list gave, while every leaf is now a real package
+      // that opens its own panel. The themes it used to offer are chips on the
+      // page, so nothing is lost by dropping them from here.
+      groups: groupBy(packages, "region").map((group) => ({
+        label: group.label,
+        items: group.items.map((p) => ({
+          label: p.title,
+          action: toPage("packages", p.title, true),
+        })),
+      })),
     },
     {
       id: "activities",
       label: "Activities",
       kind: "list",
       page: "activities",
+      // Flat, not grouped: there are about as many categories as activities, so
+      // grouping would produce a column of one-item headings.
       items: [
         { label: "All Activities", action: toPage("activities") },
-        ...uniq(activities.flatMap((a) => a.tags ?? []).map(titled))
-          .map((label) => ({ label, action: toPage("activities", label) })),
+        ...activities.map((a) => ({
+          label: a.title,
+          action: toPage("activities", a.title, true),
+        })),
       ],
     },
     {

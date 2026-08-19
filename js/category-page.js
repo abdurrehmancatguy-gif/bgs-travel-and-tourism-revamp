@@ -1,12 +1,13 @@
-import { getCollection, subscribe } from "./store.js?v=99";
-import "./info-modal.js?v=99";
-import { createNavigation } from "./navigation.js?v=99";
-import { icon } from "../data/icons.js?v=99";
-import { priceLabel } from "../data/packages.js?v=99";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=99";
-import { MICE_SERVICES } from "../data/mice.js?v=99";
-import { openItem, itemTitle } from "./item-dialog.js?v=99";
-import { contactStripMarkup } from "./info-modal.js?v=99";
+import { getCollection, subscribe } from "./store.js?v=100";
+import "./info-modal.js?v=100";
+import { createNavigation } from "./navigation.js?v=100";
+import { icon } from "../data/icons.js?v=100";
+import { priceLabel } from "../data/packages.js?v=100";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=100";
+import { MICE_SERVICES } from "../data/mice.js?v=100";
+import { openItem, itemTitle } from "./item-dialog.js?v=100";
+import { track } from "./analytics.js?v=100";
+import { contactStripMarkup } from "./info-modal.js?v=100";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -307,7 +308,18 @@ if (new URLSearchParams(location.search).get("open") === "1") {
   if (match) openItem(match, page);
 }
 
-input.addEventListener("input", () => setQuery(input.value));
+let searchTimer = null;
+input.addEventListener("input", () => {
+  setQuery(input.value);
+  // Debounced, because one row per keystroke is noise, not data.
+  window.clearTimeout(searchTimer);
+  searchTimer = window.setTimeout(() => {
+    const term = input.value.trim();
+    if (term.length > 2) {
+      track("search", { collection: page, term, results: visibleItems.length });
+    }
+  }, 900);
+});
 clearBtn.addEventListener("click", () => { setQuery(""); input.focus(); });
 
 chipRow.addEventListener("click", (event) => {
@@ -323,7 +335,9 @@ grid.addEventListener("click", (event) => {
   const card = event.target.closest(".item-card");
   if (!card) return;
   if (event.target.closest(".item-card-link")) event.preventDefault();
-  openItem(visibleItems[Number(card.dataset.idx)], page);
+  const item = visibleItems[Number(card.dataset.idx)];
+  track("item_opened", { collection: page, item: itemTitle(item, page) });
+  openItem(item, page);
 });
 
 grid.addEventListener("keydown", (event) => {

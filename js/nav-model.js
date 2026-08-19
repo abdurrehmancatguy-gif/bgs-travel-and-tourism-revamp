@@ -1,5 +1,5 @@
-import { getCollection } from "./store.js?v=99";
-import { UTILITY_NAV } from "../data/navigation.js?v=99";
+import { getCollection } from "./store.js?v=100";
+import { UTILITY_NAV } from "../data/navigation.js?v=100";
 
 /**
  * The menus, built from the content rather than written alongside it.

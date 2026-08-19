@@ -1,4 +1,4 @@
-import { PHOTOS } from "./photos.js?v=99";
+import { PHOTOS } from "./photos.js?v=100";
 /**
  * Content for the category pages that is not a package or an activity.
  *

@@ -1,9 +1,9 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=122";
-import { photoQuery } from "./photo-query.mjs?v=122";
-import { signIn } from "./cloud.js?v=122";
+} from "./store.js?v=124";
+import { photoQuery } from "./photo-query.mjs?v=124";
+import { signIn } from "./cloud.js?v=124";
 
 /**
  * The admin console.
@@ -194,7 +194,7 @@ const TAB_LABEL = {
   destinations: "Destinations",
   services: "Services",
   mice: "MICE",
-  homePills: "Homepage buttons",
+  homePills: "Homepage",
 };
 
 function renderTabs() {
@@ -208,6 +208,7 @@ function renderTabs() {
 
 function renderList() {
   if (active === "copy") return renderCopyEditor();
+  if (active === "homePills") return renderHomepageEditor();
   const items = getCollection(active);
   const titleKey = TITLE_KEY[active];
   el("#admin-list").innerHTML = items
@@ -220,6 +221,63 @@ function renderList() {
       </li>`)
     .join("") || `<li class="admin-empty">Nothing here yet — add the first one.</li>`;
   el("#admin-count").textContent = `${items.length} item${items.length === 1 ? "" : "s"}`;
+}
+
+/**
+ * Everything the homepage shows, in the place people look for it.
+ *
+ * The buttons under the headline live in their own collection; the carousel
+ * cards do not, and cannot — they are packages, the same records the Packages
+ * page renders, and a card's title and price have to be edited in one place or
+ * the two pages disagree.
+ *
+ * So this panel edits the one thing that genuinely belongs to the homepage —
+ * which packages appear on it — and hands off to the Packages editor for the
+ * content of a card, rather than pretending there is a separate homepage copy
+ * of a package that there is not.
+ */
+function renderHomepageEditor() {
+  const pills = getCollection("homePills");
+  const packages = getCollection("packages");
+  const anyFlagged = packages.some((pkg) => pkg.featured);
+
+  const pillRows = pills.map((pill, i) => `
+    <li class="admin-row">
+      <span class="admin-row-name">${esc(pill.label)}</span>
+      <span class="admin-row-meta">${esc(pill.query || pill.page || "")}</span>
+      <button class="admin-btn" type="button" data-edit="${i}">Edit</button>
+      <button class="admin-btn admin-btn-danger" type="button" data-remove="${i}">Remove</button>
+    </li>`).join("") ||
+    `<li class="admin-empty">No buttons yet — “Add new” makes one.</li>`;
+
+  const packageRows = packages.map((pkg, i) => `
+    <li class="admin-row admin-row-pick">
+      <label class="admin-pick">
+        <input type="checkbox" data-feature="${i}"${pkg.featured ? " checked" : ""} />
+        <span class="admin-row-name">${esc(pkg.title)}</span>
+      </label>
+      <span class="admin-row-meta">${esc(pkg.region || "")}</span>
+      <button class="admin-btn" type="button" data-edit-package="${i}">Edit card</button>
+    </li>`).join("") ||
+    `<li class="admin-empty">No packages yet.</li>`;
+
+  el("#admin-list").innerHTML = `
+    <li class="admin-section-head"><h3>Buttons under the headline</h3>
+      <p>“Add new” above adds another. A button opens the record its query
+         names, so a button called Schengen Visa lands on that visa’s panel.</p></li>
+    ${pillRows}
+    <li class="admin-section-head"><h3>Cards in the homepage carousel</h3>
+      <p>${anyFlagged
+        ? "Tick the packages to show. Untick them all to go back to the default six."
+        : "Showing the default six. Tick any package to choose the row yourself."}
+         “Edit card” opens the package itself — its title, price and photograph
+         are shared with the Packages page.</p></li>
+    ${packageRows}`;
+
+  el("#admin-count").textContent =
+    `${pills.length} button${pills.length === 1 ? "" : "s"} · ` +
+    `${anyFlagged ? packages.filter((p) => p.featured).length : 6} card${
+      (anyFlagged ? packages.filter((p) => p.featured).length : 6) === 1 ? "" : "s"}`;
 }
 
 function renderCopyEditor() {
@@ -432,6 +490,14 @@ el("#admin-tabs").addEventListener("click", (event) => {
 });
 
 el("#admin-list").addEventListener("click", (event) => {
+  // "Edit card" on the Homepage panel edits a package, so switch to that
+  // collection first — openEditor reads whichever one is active.
+  const editPackage = event.target.closest("[data-edit-package]");
+  if (editPackage) {
+    active = "packages";
+    refresh();
+    return openEditor(Number(editPackage.dataset.editPackage));
+  }
   const edit = event.target.closest("[data-edit]");
   if (edit) return openEditor(Number(edit.dataset.edit));
   const remove = event.target.closest("[data-remove]");
@@ -446,6 +512,18 @@ el("#admin-list").addEventListener("click", (event) => {
 });
 
 el("#admin-list").addEventListener("change", (event) => {
+  // Ticking a package on the Homepage panel writes the flag onto the package
+  // itself, because that is where it belongs: the carousel is a view of the
+  // catalogue, not a second copy of it.
+  const feature = event.target.closest("[data-feature]");
+  if (feature) {
+    const packages = getCollection("packages").map((pkg) => ({ ...pkg }));
+    packages[Number(feature.dataset.feature)].featured = feature.checked;
+    saveCollection("packages", packages);
+    refresh();
+    toast(feature.checked ? "Added to the homepage" : "Removed from the homepage");
+    return;
+  }
   const field = event.target.closest("[data-copy]");
   if (!field) return;
   const [page, key] = field.dataset.copy.split(".");
@@ -619,7 +697,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=122");
+  const { applyMode } = await import("./sheet-import.mjs?v=124");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -642,7 +720,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=122");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=124");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -692,7 +770,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=122");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=124");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -716,7 +794,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=122");
+    const { exportCsv } = await import("./sheet-import.mjs?v=124");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -734,7 +812,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=122");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=124");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

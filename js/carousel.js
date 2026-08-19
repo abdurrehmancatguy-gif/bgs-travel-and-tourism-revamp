@@ -1,5 +1,5 @@
-import { filterPackages, featuredPackages, withSlugs } from "../data/packages.js?v=122";
-import { getCollection } from "./store.js?v=122";
+import { filterPackages, featuredPackages, withSlugs } from "../data/packages.js?v=124";
+import { getCollection } from "./store.js?v=124";
 
 /* Read through the store, not from the data file directly. The carousel used
    to import PACKAGES and HOME_PACKAGES as constants, which meant the homepage
@@ -7,7 +7,7 @@ import { getCollection } from "./store.js?v=122";
    admin ever reached it — the one grid on the site that ignored its own CMS. */
 const allPackages = () => withSlugs(getCollection("packages"));
 const homePackages = () => featuredPackages(allPackages());
-import { icon } from "../data/icons.js?v=122";
+import { icon } from "../data/icons.js?v=124";
 
 /**
  * Horizontal package rail.

@@ -627,3 +627,77 @@ body.admin {
   border-radius: 10px;
   display: block;
 }
+
+/* --------------------------------------------------- homepage panel sections */
+
+.admin-section-head {
+  padding: 1.1rem 0 0.3rem;
+  border-bottom: 0;
+  display: block;
+}
+
+.admin-section-head:first-child { padding-top: 0.2rem; }
+
+.admin-section-head h3 {
+  margin: 0 0 0.25rem;
+  font-size: 0.78rem;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--gold-ink, #a35c00);
+}
+
+.admin-section-head p {
+  margin: 0;
+  font-size: 0.82rem;
+  line-height: 1.45;
+  color: rgba(13, 27, 42, 0.6);
+  max-width: 62ch;
+}
+
+/* Package titles are long — "Classic Serengeti Safari + Zanzibar Extension" —
+   and .admin-row is a single flex line built for short names, so the title, the
+   region and the button collided the moment the panel got narrow. Two columns:
+   the choice fills the width and the button holds its own place beside it. */
+.admin-row-pick {
+  display: grid;
+  grid-template-columns: 1fr auto;
+  align-items: center;
+  column-gap: 12px;
+  row-gap: 4px;
+}
+
+.admin-row-pick .admin-row-meta {
+  grid-column: 1;
+  font-size: 12px;
+  padding-left: calc(0.6rem + 13px);   /* line up under the title, not the box */
+}
+
+.admin-row-pick .admin-btn {
+  grid-row: 1 / span 2;
+  grid-column: 2;
+  align-self: center;
+}
+
+/* The checkbox and the name are one hit target — the row is a choice, and a
+   3mm box on a phone is not. */
+.admin-pick {
+  display: flex;
+  align-items: start;
+  gap: 0.6rem;
+  min-width: 0;
+  cursor: pointer;
+}
+
+.admin-pick .admin-row-name {
+  /* Wrap instead of forcing the row wider than the panel. */
+  overflow-wrap: anywhere;
+  line-height: 1.35;
+}
+
+.admin-pick input {
+  width: auto;
+  flex: none;
+  accent-color: var(--gold, #e8941a);
+}
+
+.admin-row-pick .admin-row-name { font-weight: 600; }

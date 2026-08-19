@@ -1,4 +1,4 @@
-import { PHOTOS } from "./photos.js?v=106";
+import { PHOTOS } from "./photos.js?v=107";
 /**
  * Every image URL used by the site lives here — swap a value and the whole
  * page follows. Nothing else in the codebase hardcodes an image address.
@@ -29,35 +29,46 @@ const commons = (file, width = 2400) =>
  *
  * Only `sky` is fetched eagerly; the rest are lazy.
  */
-const SCENE_BASE = "https://raft-blast-61784561.figma.site/_assets/v11";
+/**
+ * Served from this site, not the Figma preview these were exported from. The
+ * originals were seven 4K PNGs totalling 32MB on first paint, which is why the
+ * homepage took so long to show anything. Re-encoded to WebP at 2048px (1600px
+ * for the framing layers, which never fill the viewport) they come to 0.95MB —
+ * a 97% cut — with the alpha the composition depends on intact.
+ *
+ * `sky` is the exception: it is genuinely opaque, measured by sampling its
+ * pixels rather than assumed, so it carries no alpha and is the smallest at
+ * 42KB.
+ */
+const SCENE_BASE = "assets/scene";
 
 export const SCENE = {
   sky: {
-    src: `${SCENE_BASE}/16b5007d9c93971e26ffe4e0e3e37946f6bd538c.png`,
+    src: `${SCENE_BASE}/sky.webp`,
     alt: "", // decorative backdrop — the headline carries the meaning
   },
   glow: {
-    src: `${SCENE_BASE}/8a7f8af50e0ce92ec2e228e7b0b4112178c51cf1.png`,
+    src: `${SCENE_BASE}/glow.webp`,
     alt: "",
   },
   city: {
-    src: `${SCENE_BASE}/864afe00e41e2fa20a5aa546e15cb807e0f81384.png`,
+    src: `${SCENE_BASE}/city.webp`,
     alt: "",
   },
   curtainLeft: {
-    src: `${SCENE_BASE}/7536d7b60a1fce482cf6edf3f0bffd3bad5d0f8a.png`,
+    src: `${SCENE_BASE}/curtainLeft.webp`,
     alt: "",
   },
   curtainRight: {
-    src: `${SCENE_BASE}/392db6a6a6b98e868bd7f8d3f55bb719d51e5028.png`,
+    src: `${SCENE_BASE}/curtainRight.webp`,
     alt: "",
   },
   portal: {
-    src: `${SCENE_BASE}/c6a6d8ef49bca43f708aa852692942c45ec950d4.png`,
+    src: `${SCENE_BASE}/portal.webp`,
     alt: "A stone arch bridge spanning a river gorge at golden hour",
   },
   reveal: {
-    src: `${SCENE_BASE}/ba75252bab2b1c510987b74837770f7bc8a6b2d4.png`,
+    src: `${SCENE_BASE}/reveal.webp`,
     alt: "",
   },
 };

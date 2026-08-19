@@ -1,6 +1,6 @@
-import { icon } from "../data/icons.js?v=107";
-import { priceLabel } from "../data/packages.js?v=107";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=107";
+import { icon } from "../data/icons.js?v=108";
+import { priceLabel } from "../data/packages.js?v=108";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=108";
 
 /**
  * The detail panel a card opens. One dialog, reused for every card on every
@@ -157,7 +157,7 @@ export function openItem(item, collection) {
       <footer class="item-dialog-foot">
         <button class="item-dialog-cta" type="button" data-item-enquire>
           <span class="item-dialog-cta-icon" aria-hidden="true">${icon("whatsapp")}</span>
-          <span>Enquire on WhatsApp</span>
+          <span>Buy Now on WhatsApp</span>
         </button>
       </footer>
     </article>`;

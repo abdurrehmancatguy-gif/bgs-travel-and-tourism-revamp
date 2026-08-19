@@ -1,5 +1,5 @@
-import { formatPrice, priceLabel } from "../data/packages.js?v=107";
-import { buildWhatsAppPackageUrl } from "../utils/whatsapp.js?v=107";
+import { formatPrice, priceLabel } from "../data/packages.js?v=108";
+import { buildWhatsAppPackageUrl } from "../utils/whatsapp.js?v=108";
 
 /**
  * Package detail dialog.
@@ -72,7 +72,7 @@ export function createPackageDialog({ dialog }) {
     els.buy.href = buildWhatsAppPackageUrl(pkg.title, formatPrice(pkg));
     els.buy.setAttribute(
       "aria-label",
-      `Click to Buy — opens WhatsApp to enquire about ${pkg.title}`
+      `Buy Now — opens WhatsApp to buy ${pkg.title}`
     );
 
     els.body.scrollTop = 0;

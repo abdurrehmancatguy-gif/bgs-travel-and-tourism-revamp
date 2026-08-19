@@ -1,8 +1,8 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=107";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=107";
-import { MICE_SECTIONS } from "../data/mice.js?v=107";
-import { SERVICES } from "../data/navigation.js?v=107";
-import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=107";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=108";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=108";
+import { MICE_SECTIONS } from "../data/mice.js?v=108";
+import { SERVICES } from "../data/navigation.js?v=108";
+import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=108";
 
 /**
  * The single door between the site's content and where that content lives.

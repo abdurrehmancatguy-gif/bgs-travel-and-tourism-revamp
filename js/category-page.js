@@ -1,13 +1,13 @@
-import { getCollection, subscribe } from "./store.js?v=107";
-import "./info-modal.js?v=107";
-import { createNavigation } from "./navigation.js?v=107";
-import { icon } from "../data/icons.js?v=107";
-import { priceLabel } from "../data/packages.js?v=107";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=107";
-import { MICE_SERVICES } from "../data/mice.js?v=107";
-import { openItem, itemTitle } from "./item-dialog.js?v=107";
-import { track } from "./analytics.js?v=107";
-import { contactStripMarkup } from "./info-modal.js?v=107";
+import { getCollection, subscribe } from "./store.js?v=108";
+import "./info-modal.js?v=108";
+import { createNavigation } from "./navigation.js?v=108";
+import { icon } from "../data/icons.js?v=108";
+import { priceLabel } from "../data/packages.js?v=108";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=108";
+import { MICE_SERVICES } from "../data/mice.js?v=108";
+import { openItem, itemTitle } from "./item-dialog.js?v=108";
+import { track } from "./analytics.js?v=108";
+import { contactStripMarkup } from "./info-modal.js?v=108";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -122,7 +122,7 @@ function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list
   alt = altText;
   return `
     <li class="item-card reveal" role="button" tabindex="0"
-        aria-label="${esc(title)} — enquire on WhatsApp" data-title="${esc(title)}">
+        aria-label="${esc(title)} — buy now on WhatsApp" data-title="${esc(title)}">
       ${image ? `<div class="item-card-media">
         <img src="${esc(image)}" alt="${esc(alt || title)}" loading="lazy" />
         ${iconName ? `<span class="item-card-icon" aria-hidden="true">${icon(iconName)}</span>` : ""}

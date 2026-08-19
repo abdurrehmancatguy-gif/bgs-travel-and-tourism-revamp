@@ -143,7 +143,7 @@ function itemPage(item, collection) {
     <p class="item-page-cta">
       <a class="item-page-button" href="https://wa.me/971528992964?text=${
         encodeURIComponent(`I'd like to know more about ${title}.`)}"
-         target="_blank" rel="noopener">Enquire on WhatsApp</a>
+         target="_blank" rel="noopener">Buy Now on WhatsApp</a>
     </p>
     <p class="item-page-back"><a href="/${PAGES[collection]}">All ${esc(s.label)}</a></p>
   </main>

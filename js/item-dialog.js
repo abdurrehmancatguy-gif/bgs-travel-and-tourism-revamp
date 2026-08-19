@@ -1,6 +1,6 @@
-import { icon } from "../data/icons.js?v=111";
-import { priceLabel } from "../data/packages.js?v=111";
-import { openWhatsApp, buildWhatsAppItemUrl } from "../utils/whatsapp.js?v=111";
+import { icon } from "../data/icons.js?v=112";
+import { priceLabel, priceFacts } from "../data/packages.js?v=112";
+import { openWhatsApp, buildWhatsAppItemUrl } from "../utils/whatsapp.js?v=112";
 
 /**
  * The detail panel a card opens. One dialog, reused for every card on every
@@ -63,8 +63,10 @@ const SHAPE = {
   visa: {
     title: (i) => i.name,
     kicker: (i) => i.country,
+    // priceFacts spreads to one row or two depending on what the rate sheet
+    // carried for this visa — see data/packages.js.
     facts: (i) => [
-      ["Price", priceLabel(i)], ["Processing", i.processing],
+      ...priceFacts(i), ["Processing", i.processing],
       ["Validity", i.validity], ["Entry", i.visaType],
     ],
   },

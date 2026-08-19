@@ -16,6 +16,26 @@ export const slug = (s) =>
 const money = (i) =>
   i?.price ? `${i.currency ?? "AED"} ${Number(i.price).toLocaleString("en-US")}` : "";
 
+const expressMoney = (i) =>
+  i?.expressPrice
+    ? `${i.currency ?? "AED"} ${Number(i.expressPrice).toLocaleString("en-US")}`
+    : "";
+
+/**
+ * One price row, or two when the rate sheet quoted both turnarounds. Mirrors
+ * priceFacts in data/packages.js so the pre-rendered page and the live panel
+ * say the same thing about the same visa.
+ */
+const priceRows = (i) => {
+  const unit = (v) => (v ? `${v} ${i.priceUnit ?? ""}`.trim() : "");
+  const normal = unit(money(i));
+  const express = unit(expressMoney(i));
+  if (normal && express) return [["Normal", normal], ["Express", express]];
+  if (express) return [["Express", express]];
+  if (normal) return [["Price", normal]];
+  return [];
+};
+
 /**
  * What each collection calls its parts. Deliberately the same fields the
  * runtime SHAPE maps use, so a pre-rendered card and a JS-rendered one describe
@@ -26,7 +46,7 @@ export const SHAPE = {
     label: "Visa Services", dir: "visa",
     title: (i) => i.name,
     kicker: (i) => i.country,
-    facts: (i) => [["Price", money(i) && `${money(i)} ${i.priceUnit ?? ""}`.trim()],
+    facts: (i) => [...priceRows(i),
                    ["Processing", i.processing], ["Validity", i.validity], ["Entry", i.visaType]],
   },
   packages: {

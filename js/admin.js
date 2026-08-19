@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=111";
-import { signIn } from "./cloud.js?v=111";
+} from "./store.js?v=112";
+import { signIn } from "./cloud.js?v=112";
 
 /**
  * The admin console.
@@ -114,7 +114,12 @@ const FIELDS = {
     ["processing", "Processing time", "text"], ["validity", "Validity", "text"],
     // Selling price only. The vendor cost from the rate sheet is never stored
     // here and never reaches the browser.
-    ["price", "Selling price (AED)", "number"],
+    //
+    // Express is optional: fill it in only for visas the rate sheet quotes at
+    // two turnarounds, and the panel shows "Normal" and "Express" side by side.
+    // Leave it empty and the visa keeps a single unlabelled "Price" row.
+    ["price", "Normal selling price (AED)", "number"],
+    ["expressPrice", "Express selling price (AED) — optional", "number"],
     ["currency", "Currency", "text"], ["priceUnit", "Price unit", "text"],
     ["blurb", "Description", "textarea"],
     ["requirements", "What you'll need (comma separated)", "list"],
@@ -446,7 +451,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=111");
+  const { applyMode } = await import("./sheet-import.mjs?v=112");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -469,7 +474,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=111");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=112");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -519,7 +524,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=111");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=112");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -543,7 +548,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=111");
+    const { exportCsv } = await import("./sheet-import.mjs?v=112");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -561,7 +566,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=111");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=112");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

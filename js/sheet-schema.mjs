@@ -24,7 +24,11 @@ const norm = (s) => String(s ?? "")
 
 /** Shared shapes, so packages and activities do not drift apart. */
 const PRICED = [
-  { field: "price", type: "number", aliases: ["price", "selling price", "selling price in aed", "selling price in aed bgs", "package price", "package price bgs", "from"] },
+  { field: "price", type: "number", aliases: ["price", "selling price", "selling price in aed", "selling price in aed bgs", "package price", "package price bgs", "from",
+      // A sheet that quotes two turnarounds labels the slower one; a sheet that
+      // quotes one leaves it bare. Both mean the same column.
+      "normal price", "normal selling price", "normal selling price in aed", "normal selling price in aed bgs",
+      "standard price", "standard selling price", "regular price"] },
   { field: "currency", type: "text", aliases: ["currency"] },
   { field: "priceUnit", type: "text", aliases: ["price unit", "per"] },
 ];
@@ -33,6 +37,13 @@ export const SHEETS = {
   visa: {
     tab: "Visa", identity: "name", label: "Visa Services",
     columns: [
+      // Visa only. Express is a processing tier, which is a visa idea — a
+      // package does not have a faster version of itself. Kept off the other
+      // sheets deliberately: a column the importer accepts and no page ever
+      // shows is a silent hole for somebody's data to fall into.
+      { field: "expressPrice", type: "number", aliases: ["express price", "express selling price",
+          "express selling price in aed", "express selling price in aed bgs",
+          "urgent price", "urgent selling price", "express fee", "express charge"] },
       { field: "name", type: "text", aliases: ["name", "visa", "visa name", "title", "countries", "country name"] },
       { field: "country", type: "text", aliases: ["country", "issuing country", "destination country"] },
       { field: "category", type: "text", aliases: ["category", "visa category", "type of visa"] },

@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=111";
+import { PACKAGE_IMAGES } from "./images.js?v=112";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -436,6 +436,37 @@ export const formatPrice = (pkg) =>
 export const priceLabel = (pkg) => {
   const figure = formatPrice(pkg);
   return figure ? `From ${figure}` : "";
+};
+
+/**
+ * The express tier, for records whose rate sheet quoted two turnarounds at two
+ * prices. Same shape as formatPrice and empty for the same reason: most rows
+ * have one price, and those must not sprout a blank "Express" row.
+ */
+export const formatExpressPrice = (item) =>
+  item?.expressPrice
+    ? `${item.currency ?? "AED"} ${Number(item.expressPrice).toLocaleString("en-US")}${
+        item.priceUnit ? ` ${item.priceUnit}` : ""}`
+    : "";
+
+/**
+ * Price rows for the detail panel, as [label, value] pairs ready to drop into
+ * a facts list.
+ *
+ * Deliberately driven by what the record holds rather than by a fixed layout:
+ * with both tiers you get "Normal" and "Express" and the distinction is worth
+ * naming; with one you get a plain "Price", because labelling a lone figure
+ * "Normal" implies an express option that this record does not offer. A record
+ * with no price at all returns nothing and the row disappears — some visas are
+ * quoted per nationality and have to be asked about.
+ */
+export const priceFacts = (item) => {
+  const normal = formatPrice(item);
+  const express = formatExpressPrice(item);
+  if (normal && express) return [["Normal", normal], ["Express", express]];
+  if (express) return [["Express", express]];
+  if (normal) return [["Price", normal]];
+  return [];
 };
 
 export const findPackageBySlug = (slug) =>

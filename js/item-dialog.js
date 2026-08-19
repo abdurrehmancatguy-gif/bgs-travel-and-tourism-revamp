@@ -1,6 +1,6 @@
-import { icon } from "../data/icons.js?v=110";
-import { priceLabel } from "../data/packages.js?v=110";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=110";
+import { icon } from "../data/icons.js?v=111";
+import { priceLabel } from "../data/packages.js?v=111";
+import { openWhatsApp, buildWhatsAppItemUrl } from "../utils/whatsapp.js?v=111";
 
 /**
  * The detail panel a card opens. One dialog, reused for every card on every
@@ -164,7 +164,7 @@ export function openItem(item, collection) {
 
   el.querySelector("[data-item-close]").addEventListener("click", () => el.close());
   el.querySelector("[data-item-enquire]").addEventListener("click", () => {
-    openWhatsApp(buildWhatsAppUrl(`I'd like to know more about ${title}.`));
+    openWhatsApp(buildWhatsAppItemUrl(title));
   });
 
   el.showModal();

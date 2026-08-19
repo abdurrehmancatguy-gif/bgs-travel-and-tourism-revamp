@@ -17,14 +17,32 @@ export function buildWhatsAppUrl(message) {
 }
 
 /**
- * The package enquiry used by every "Click to Buy" button.
+ * The message behind every "Buy Now" button on a card panel or item page.
+ *
+ * Buy wording, because the button says Buy Now and a message opening with
+ * "I'd like to know more about" put the traveller back a step from where they
+ * had already got to. It still asks rather than instructs: WhatsApp is a
+ * conversation with a person, so the useful thing to send is a clear intent
+ * plus the two questions that always follow it.
+ *
+ * @param {string} title e.g. "Dubai 30 Day Single Entry Visa"
+ */
+export function buildWhatsAppItemUrl(title) {
+  return buildWhatsAppUrl(
+    `Hi BGS Travel & Tourism, I'd like to buy ${title}. ` +
+      `Please confirm the price and the next steps.`
+  );
+}
+
+/**
+ * The package version, which can name a price because the panel showed one.
  * @param {string} packageTitle e.g. "Evening Desert Safari with BBQ Dinner"
  * @param {string} price        e.g. "AED 180 per person"
  */
 export function buildWhatsAppPackageUrl(packageTitle, price) {
   return buildWhatsAppUrl(
-    `Hi BGS Travel & Tourism, I'm interested in the ${packageTitle} package ` +
-      `starting from ${price}. Please share availability, dates and booking details.`
+    `Hi BGS Travel & Tourism, I'd like to buy the ${packageTitle} package ` +
+      `at ${price}. Please confirm availability, dates and the next steps.`
   );
 }
 
@@ -54,7 +72,7 @@ export function buildPlanTripUrl() {
 export function openWhatsApp(url) {
   // The site's only conversion — there is no cart and no checkout — and every
   // WhatsApp link goes through here, so this is the one place worth counting.
-  import("../js/analytics.js?v=110")
+  import("../js/analytics.js?v=111")
     .then(({ track }) => track("enquiry_started", {
       intent: decodeURIComponent((url.split("text=")[1] ?? "").slice(0, 120)),
       page: location.pathname,

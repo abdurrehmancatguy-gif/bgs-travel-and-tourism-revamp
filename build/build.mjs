@@ -14,6 +14,9 @@ import fs from "node:fs";
 import path from "node:path";
 import { loadContent } from "./content.mjs";
 import { cardHtml, itemPath, itemJsonLd, describe, esc, SHAPE, slug } from "./render.mjs";
+// The same builder the live card panel uses, so the pre-rendered page and the
+// panel cannot open WhatsApp with two different messages.
+import { buildWhatsAppItemUrl } from "../utils/whatsapp.js";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const DIST = path.join(ROOT, "dist");
@@ -141,8 +144,7 @@ function itemPage(item, collection) {
     ${body ? `<p class="item-page-body">${esc(body)}</p>` : ""}
     ${lists}
     <p class="item-page-cta">
-      <a class="item-page-button" href="https://wa.me/971528992964?text=${
-        encodeURIComponent(`I'd like to know more about ${title}.`)}"
+      <a class="item-page-button" href="${esc(buildWhatsAppItemUrl(title))}"
          target="_blank" rel="noopener">Buy Now on WhatsApp</a>
     </p>
     <p class="item-page-back"><a href="/${PAGES[collection]}">All ${esc(s.label)}</a></p>

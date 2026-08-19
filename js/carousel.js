@@ -1,5 +1,5 @@
-import { filterPackages, featuredPackages, withSlugs } from "../data/packages.js?v=124";
-import { getCollection } from "./store.js?v=124";
+import { filterPackages, featuredPackages, withSlugs } from "../data/packages.js?v=125";
+import { getCollection } from "./store.js?v=125";
 
 /* Read through the store, not from the data file directly. The carousel used
    to import PACKAGES and HOME_PACKAGES as constants, which meant the homepage
@@ -7,7 +7,7 @@ import { getCollection } from "./store.js?v=124";
    admin ever reached it — the one grid on the site that ignored its own CMS. */
 const allPackages = () => withSlugs(getCollection("packages"));
 const homePackages = () => featuredPackages(allPackages());
-import { icon } from "../data/icons.js?v=124";
+import { icon } from "../data/icons.js?v=125";
 
 /**
  * Horizontal package rail.
@@ -39,16 +39,18 @@ const DRAG_THRESHOLD = 8;
 const esc = (value) =>
   String(value ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
-const shortPrice = (pkg) =>
-  pkg?.price ? `From ${pkg.currency ?? "AED"} ${Number(pkg.price).toLocaleString("en-US")}` : "";
 
 const ratingLabel = (pkg) =>
   Number.isFinite(Number(pkg?.rating)) ? Number(pkg.rating).toFixed(1) : "";
 
+/* No price on the homepage row. The card is an invitation to look, and the
+   panel it opens carries the figure with the detail that justifies it —
+   duration, what is included, what is not. The accessible name drops it too,
+   so a screen reader hears what the card actually says rather than a price
+   nobody else is shown. The packages page still prices every card. */
 function cardMarkup(pkg, index, set) {
-  const price = shortPrice(pkg);
   const rating = ratingLabel(pkg);
-  const label = [pkg.title, pkg.destination, pkg.duration, price]
+  const label = [pkg.title, pkg.destination, pkg.duration]
     .filter(Boolean).join(". ");
   return `
     <article class="package-card" data-index="${index}" data-set="${set}" data-slug="${esc(pkg.slug)}"
@@ -60,7 +62,6 @@ function cardMarkup(pkg, index, set) {
       ${pkg.shortDescription ? `<p class="package-desc">${esc(pkg.shortDescription)}</p>` : ""}
       <p class="package-meta">
         ${pkg.duration ? `<span class="package-duration">${esc(pkg.duration)}</span>` : ""}
-        ${price ? `<span class="package-price">${esc(price)}</span>` : ""}
         ${rating ? `<span class="package-rating">${esc(rating)} &#9733;</span>` : ""}
       </p>
     </article>`;

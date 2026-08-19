@@ -1,9 +1,9 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=121";
-import { photoQuery } from "./photo-query.mjs?v=121";
-import { signIn } from "./cloud.js?v=121";
+} from "./store.js?v=122";
+import { photoQuery } from "./photo-query.mjs?v=122";
+import { signIn } from "./cloud.js?v=122";
 
 /**
  * The admin console.
@@ -184,10 +184,23 @@ const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(
 
 /* -------------------------------------------------------------- rendering */
 
+/* Tabs were labelled with the raw collection key, which is fine for "visa" and
+   unhelpful for the rest: "packages" is where the homepage carousel is edited
+   and "homePills" is not a phrase anybody would go looking for. */
+const TAB_LABEL = {
+  visa: "Visa",
+  packages: "Packages",
+  activities: "Activities",
+  destinations: "Destinations",
+  services: "Services",
+  mice: "MICE",
+  homePills: "Homepage buttons",
+};
+
 function renderTabs() {
   el("#admin-tabs").innerHTML = COLLECTIONS.filter((c) => c !== "copy")
     .map((c) => `<button class="admin-tab" type="button" data-tab="${c}"
-        data-active="${c === active}">${c}${isCustomised(c) ? " •" : ""}</button>`)
+        data-active="${c === active}">${TAB_LABEL[c] ?? c}${isCustomised(c) ? " •" : ""}</button>`)
     .join("") +
     `<button class="admin-tab" type="button" data-tab="copy"
         data-active="${active === "copy"}">page copy${isCustomised("copy") ? " •" : ""}</button>`;
@@ -354,15 +367,32 @@ function saveEditor() {
   const next = { ...draft };
   delete next.__index;
 
+  /*
+   * A blank box means the record has no such value, not that it has zero or an
+   * empty string.
+   *
+   * This mattered the moment content restored from a backup came back without
+   * every field: the editor renders a box for each field it knows about, so a
+   * package with no rating showed an empty Rating box, and simply opening that
+   * package and pressing Save wrote rating: 0 — putting "0.0 ★" on a card
+   * nobody had touched. Same for the blank slug, which is derived from the
+   * title precisely when it is absent, and would have been pinned to "".
+   *
+   * A toggle is the exception: false is a real answer, not a missing one.
+   */
   el("#editor-fields").querySelectorAll("[data-field]").forEach((input) => {
     const key = input.dataset.field;
     const type = FIELDS[active].find(([k]) => k === key)[2];
-    if (type === "toggle") next[key] = input.checked;
-    else if (type === "photo") next[key] = input.value.trim();
-    else if (type === "number") next[key] = Number(input.value) || 0;
+
+    if (type === "toggle") { next[key] = input.checked; return; }
+
+    const raw = input.value.trim();
+    if (!raw) { delete next[key]; return; }
+
+    if (type === "number") next[key] = Number(raw) || 0;
     else if (type === "list")
-      next[key] = input.value.split(",").map((s) => s.trim()).filter(Boolean);
-    else next[key] = input.value;
+      next[key] = raw.split(",").map((s) => s.trim()).filter(Boolean);
+    else next[key] = type === "photo" ? raw : input.value;
   });
 
   if (!next[TITLE_KEY[active]]) {
@@ -589,7 +619,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=121");
+  const { applyMode } = await import("./sheet-import.mjs?v=122");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -612,7 +642,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=121");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=122");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -662,7 +692,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=121");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=122");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -686,7 +716,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=121");
+    const { exportCsv } = await import("./sheet-import.mjs?v=122");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -704,7 +734,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=121");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=122");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=117";
+import { PACKAGE_IMAGES } from "./images.js?v=118";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -483,8 +483,12 @@ export const formatExpressPrice = (item) =>
 export const priceFacts = (item) => {
   const normal = formatPrice(item);
   const express = formatExpressPrice(item);
-  if (normal && express) return [["Normal", normal], ["Express", express]];
+  // Express wins outright where the sheet quotes both: the panel shows the
+  // express rate and the normal one is not displayed at all.
   if (express) return [["Express", express]];
+  // Still shown for the visas that have no express rate — which is most of
+  // them. Hiding the only price a record has would leave a card with no figure
+  // on it rather than a tidier one.
   if (normal) return [["Price", normal]];
   return [];
 };

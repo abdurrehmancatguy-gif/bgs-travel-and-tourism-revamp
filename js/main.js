@@ -1,8 +1,8 @@
-import { SCENE } from "../data/images.js?v=130";
-import "./info-modal.js?v=130";
-import { SCENES } from "../data/navigation.js?v=130";
-import { findPackageBySlug } from "../data/packages.js?v=130";
-import { icon } from "../data/icons.js?v=130";
+import { SCENE } from "../data/images.js?v=132";
+import "./info-modal.js?v=132";
+import { SCENES } from "../data/navigation.js?v=132";
+import { findPackageBySlug } from "../data/packages.js?v=132";
+import { icon } from "../data/icons.js?v=132";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -11,13 +11,14 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=130";
-import { createNavigation } from "./navigation.js?v=130";
-import { getCollection, subscribe } from "./store.js?v=130";
-import { buildPrimaryNav } from "./nav-model.js?v=130";
-import { createCarousel } from "./carousel.js?v=130";
-import { openItem } from "./item-dialog.js?v=130";
-import { createPackageDialog } from "./package-dialog.js?v=130";
+} from "../utils/whatsapp.js?v=132";
+import { createNavigation } from "./navigation.js?v=132";
+import { getCollection, subscribe } from "./store.js?v=132";
+import { resolvePill } from "../data/home.js?v=132";
+import { buildPrimaryNav } from "./nav-model.js?v=132";
+import { createCarousel } from "./carousel.js?v=132";
+import { openItem } from "./item-dialog.js?v=132";
+import { createPackageDialog } from "./package-dialog.js?v=132";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -488,10 +489,15 @@ function renderHeroPills() {
   // the HTML so a crawler and the preload scanner see real buttons; replacing
   // them with nothing on an empty collection would blank the hero.
   if (!pills.length) return;
-  wrap.innerHTML = pills.map((pill) => `
+  wrap.innerHTML = pills.map((pill) => {
+    const t = resolvePill(pill, (c) => getCollection(c));
+    if (!t || !t.label) return "";
+    return `
     <button class="hero-pill" type="button"
-            data-page="${esc(pill.page ?? "")}"
-            data-query="${esc(pill.query ?? "")}">${esc(pill.label ?? "")}</button>`).join("");
+            data-page="${esc(t.page)}"
+            data-query="${esc(t.query)}"
+            data-open="${t.open ? "1" : ""}">${esc(t.label)}</button>`;
+  }).join("");
 }
 
 renderHeroPills();
@@ -511,8 +517,9 @@ document.querySelector(".hero-pills")?.addEventListener("click", (event) => {
   // open=1 is the same signal the dropdown menus use: it asks the category page
   // to open the panel for the record whose title matches, so a pill named after
   // one visa lands on that visa rather than on a filtered list of one.
+  const open = pill.dataset.open === "1";
   window.location.href = query
-    ? `${page}.html?q=${encodeURIComponent(query)}&open=1`
+    ? `${page}.html?q=${encodeURIComponent(query)}${open ? "&open=1" : ""}`
     : `${page}.html`;
 });
 

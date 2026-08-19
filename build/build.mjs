@@ -18,6 +18,7 @@ import { cardHtml, itemPath, itemJsonLd, describe, esc, SHAPE, slug } from "./re
 // panel cannot open WhatsApp with two different messages.
 import { buildWhatsAppItemUrl } from "../utils/whatsapp.js";
 import { SCENE, SCENE_LAYER_IDS } from "../data/images.js";
+import { resolvePill } from "../data/home.js";
 
 const ROOT = path.resolve(import.meta.dirname, "..");
 const DIST = path.join(ROOT, "dist");
@@ -105,7 +106,7 @@ function itemPage(item, collection) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>${esc(title)} — BGS Travel &amp; Tourism</title>
   <meta name="description" content="${esc(description)}" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=130" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=132" />
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/pages.css" />${headExtras({
     url, title: `${title} — BGS Travel & Tourism`, description, image,
@@ -123,7 +124,7 @@ function itemPage(item, collection) {
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="item-page-bar">
     <a class="site-logo" href="/">
-      <img class="site-logo-mark" src="/assets/monogram-96.png?v=130" alt="" width="40" height="40" />
+      <img class="site-logo-mark" src="/assets/monogram-96.png?v=132" alt="" width="40" height="40" />
       <span class="site-logo-text">
         <span class="site-logo-name">BGS Travel &amp; Tourism</span>
         <span class="site-logo-place">Dubai, UAE</span>
@@ -289,11 +290,14 @@ function scenePreloads() {
 function paintPillsIntoHtml(html, pills) {
   if (!pills?.length) return { html, painted: 0 };
   const buttons = pills.map((pill) => {
-    const page = pill.page ?? "";
-    const query = pill.query ?? "";
-    return `<button class="hero-pill" type="button" data-page="${esc(page)}" ` +
-           `data-query="${esc(query)}">${esc(pill.label ?? "")}</button>`;
-  }).join("\n            ");
+    // Same resolver the browser uses, so the pre-rendered button and the one
+    // js/main.js draws a moment later cannot say different things.
+    const t = resolvePill(pill, (c) => content[c] ?? []);
+    if (!t || !t.label) return "";
+    return `<button class="hero-pill" type="button" data-page="${esc(t.page)}" ` +
+           `data-query="${esc(t.query)}" data-open="${t.open ? "1" : ""}">` +
+           `${esc(t.label)}</button>`;
+  }).filter(Boolean).join("\n            ");
 
   const wrap = /(<div class="hero-pills"[^>]*>)([\s\S]*?)(<\/div>)/;
   if (!wrap.test(html)) throw new Error("pills: no .hero-pills container in index.html");

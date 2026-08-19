@@ -30,3 +30,34 @@
   for = "/*.html"
   [headers.values]
     Cache-Control = "public, max-age=0, must-revalidate"
+
+# The comment above was aspirational: no rule ever granted it, so Netlify's
+# default applied and every asset came back "max-age=0, must-revalidate". A
+# returning visitor was therefore re-validating all seven scene layers on every
+# single load — seven round trips before the hero could paint, even when the
+# answer was always 304 Not Modified.
+#
+# Safe to cache for a year because these URLs carry a revision: the scene layers
+# are requested as ?rev=N (data/images.js) and everything else under /assets is
+# either versioned or genuinely immutable. Change the pixels, change the rev.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+# Same reasoning for the modules and stylesheets, which already carry ?v=N and
+# get that number bumped on every change.
+[[headers]]
+  for = "/js/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/data/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/utils/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"

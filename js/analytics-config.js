@@ -12,7 +12,7 @@
  * never reading them — which is why it can live here the way the Firebase
  * config does. Never put a personal API key (`phx_`) in this file.
  */
-export const POSTHOG_KEY = "";
+export const POSTHOG_KEY = "phc_yt44Defs2Nhyzy6BCqCWeM778WCcCg7YLoZZgfjL4MLY";
 
 /** "https://eu.i.posthog.com" for an EU project, "https://us.i.posthog.com" for US. */
 export const POSTHOG_HOST = "https://eu.i.posthog.com";

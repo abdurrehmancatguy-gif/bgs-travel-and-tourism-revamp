@@ -1,5 +1,5 @@
-import { PACKAGES, HOME_PACKAGES, filterPackages } from "../data/packages.js?v=108";
-import { icon } from "../data/icons.js?v=108";
+import { PACKAGES, HOME_PACKAGES, filterPackages } from "../data/packages.js?v=110";
+import { icon } from "../data/icons.js?v=110";
 
 /**
  * Horizontal package rail.

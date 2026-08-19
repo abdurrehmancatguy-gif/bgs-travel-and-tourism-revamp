@@ -1,4 +1,4 @@
-import { POSTHOG_KEY, POSTHOG_HOST, isConfigured } from "./analytics-config.js?v=108";
+import { POSTHOG_KEY, POSTHOG_HOST, isConfigured } from "./analytics-config.js?v=110";
 
 /**
  * Product analytics, and the only file that knows PostHog exists.
@@ -32,6 +32,11 @@ function connect() {
         capture_pageleave: true,
         // A visitor who has asked not to be tracked has asked not to be tracked.
         respect_dnt: true,
+        // PostHog's remote config pulls a surveys bundle by default, and a
+        // survey launched from the dashboard would render its own popup over
+        // the site. Nobody here wants a questionnaire appearing mid-booking,
+        // and not fetching the script is also a request the visitor is spared.
+        disable_surveys: true,
         // The admin edits real prices and documents; recording its inputs would
         // put catalogue content into a third party for no benefit.
         autocapture: { css_selector_allowlist: undefined },

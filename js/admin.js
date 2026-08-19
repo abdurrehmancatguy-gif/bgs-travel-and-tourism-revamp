@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=108";
-import { signIn } from "./cloud.js?v=108";
+} from "./store.js?v=110";
+import { signIn } from "./cloud.js?v=110";
 
 /**
  * The admin console.
@@ -446,7 +446,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=108");
+  const { applyMode } = await import("./sheet-import.mjs?v=110");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -469,7 +469,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=108");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=110");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -519,7 +519,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=108");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=110");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -543,7 +543,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=108");
+    const { exportCsv } = await import("./sheet-import.mjs?v=110");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -561,7 +561,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=108");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=110");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

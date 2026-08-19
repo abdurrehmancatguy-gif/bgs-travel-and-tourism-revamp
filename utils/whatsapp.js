@@ -52,5 +52,13 @@ export function buildPlanTripUrl() {
 
 /** Opens a WhatsApp conversation in a new tab without leaking the opener. */
 export function openWhatsApp(url) {
+  // The site's only conversion — there is no cart and no checkout — and every
+  // WhatsApp link goes through here, so this is the one place worth counting.
+  import("../js/analytics.js?v=106")
+    .then(({ track }) => track("enquiry_started", {
+      intent: decodeURIComponent((url.split("text=")[1] ?? "").slice(0, 120)),
+      page: location.pathname,
+    }))
+    .catch(() => {});
   window.open(url, "_blank", "noopener,noreferrer");
 }

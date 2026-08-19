@@ -162,6 +162,23 @@ export function fieldForHeader(header, collection) {
   return null;
 }
 
+/**
+ * Which collection a set of headers looks like, for a sheet whose name tells
+ * us nothing. Scored by how many headers each collection recognises, and the
+ * identity column is required — without a name there is nothing to match rows
+ * on, so a confident guess is impossible and a wrong one is worse than none.
+ */
+export function inferCollection(headers) {
+  let best = null;
+  for (const [key, spec] of Object.entries(SHEETS)) {
+    const matched = headers.filter((h) => fieldForHeader(h, key));
+    const hasIdentity = matched.some((h) => fieldForHeader(h, key).field === spec.identity);
+    if (!hasIdentity) continue;
+    if (!best || matched.length > best.score) best = { key, score: matched.length };
+  }
+  return best?.key ?? null;
+}
+
 /** Fields a spreadsheet never sets; carried over from the existing record. */
 export const PRESERVED = ["image", "icon", "id", "slug", "key", "kind",
                           "rating", "reviewCount", "destinationKey"];

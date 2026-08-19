@@ -2229,3 +2229,56 @@ a.info-contact-value:hover { color: var(--gold-ink); }
   /* The cue still reads without the travelling dot — it just sits still. */
   .scroll-cue-dot { animation: none; top: 6px; }
 }
+
+/* =========================================================================
+   Category strip — phones only
+   -------------------------------------------------------------------------
+   The header on a phone is one row and the categories live behind the menu
+   icon. The band under it is empty sky, so the categories sit there instead:
+   one tap rather than two, without crowding the bar itself. Hidden from 761px
+   up, where the header already shows all six.
+   ========================================================================= */
+
+.hero-categories { display: none; }
+
+@media (max-width: 760px) {
+  .hero-categories {
+    position: absolute;
+    z-index: 39;
+    top: var(--hero-cat-top, 92px);
+    left: 0;
+    right: 0;
+    display: flex;
+    gap: 8px;
+    padding: 0 0 4px;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+    scroll-snap-type: x proximity;
+    scroll-padding-left: 14px;
+    pointer-events: auto;
+  }
+  .hero-categories::-webkit-scrollbar { display: none; }
+
+  .hero-category {
+    flex: none;
+    scroll-snap-align: start;
+    padding: 6px 14px;
+    border: 1px solid rgba(255, 255, 255, 0.66);
+    border-radius: 999px;
+    color: var(--navy);
+    background: rgba(255, 255, 255, 0.86);
+    backdrop-filter: blur(14px) saturate(180%);
+    -webkit-backdrop-filter: blur(14px) saturate(180%);
+    font-size: 0.82rem;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .hero-category:active { background: #fff; }
+
+  /* Insets that survive the scroll container, so the first chip lines up with
+     the wordmark and the last one clears the edge. */
+  .hero-category:first-child { margin-left: 14px; }
+  .hero-category:last-child { margin-right: 14px; }
+}

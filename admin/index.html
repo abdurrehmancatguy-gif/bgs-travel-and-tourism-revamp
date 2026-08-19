@@ -5,13 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Admin — BGS Travel &amp; Tourism</title>
   <meta name="robots" content="noindex, nofollow" />
-  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=99" />
-  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icon-512.png?v=99" />
-  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=99" />
-  <link rel="stylesheet" href="../styles.css?v=99" />
-  <link rel="stylesheet" href="../pages.css?v=99" />
-  <link rel="stylesheet" href="../admin.css?v=99" />
-  <script type="module" src="../js/admin.js?v=99"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="../assets/favicon-32.png?v=106" />
+  <link rel="icon" type="image/png" sizes="512x512" href="../assets/icon-512.png?v=106" />
+  <link rel="apple-touch-icon" href="../assets/apple-touch-icon.png?v=106" />
+  <link rel="stylesheet" href="../styles.css?v=106" />
+  <link rel="stylesheet" href="../pages.css?v=106" />
+  <link rel="stylesheet" href="../admin.css?v=106" />
+  <script type="module" src="../js/admin.js?v=106"></script>
 </head>
 <body class="page admin">
 
@@ -35,7 +35,7 @@
     <header class="admin-header">
       <div>
         <p class="page-eyebrow">
-          <img class="admin-mark" src="../assets/monogram-96.png?v=99" alt="" width="20" height="20" />
+          <img class="admin-mark" src="../assets/monogram-96.png?v=106" alt="" width="20" height="20" />
           Content manager
         </p>
         <h1 class="admin-heading">BGS Admin</h1>
@@ -78,7 +78,9 @@
         <span class="sheet-drop-hint">or click to choose — .xlsx or .csv</span>
       </label>
       <div class="admin-panel-actions">
+        <button class="admin-btn" id="sheet-template" type="button">Download template</button>
         <button class="admin-btn" id="sheet-export" type="button">Export XLSX</button>
+        <button class="admin-btn" id="sheet-export-csv" type="button">Export CSV (this tab)</button>
       </div>
       <p class="admin-note" id="sheet-status" role="status" aria-live="polite"></p>
     </section>

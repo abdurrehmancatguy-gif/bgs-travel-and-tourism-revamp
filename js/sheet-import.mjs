@@ -1,4 +1,5 @@
-import { SHEETS, PRESERVED, COST_HEADER, collectionForTab, fieldForHeader } from "./sheet-schema.mjs?v=99";
+import { SHEETS, PRESERVED, COST_HEADER, collectionForTab, fieldForHeader, inferCollection }
+  from "./sheet-schema.mjs?v=106";
 
 /**
  * Reads a workbook and works out what it would change — without changing
@@ -58,17 +59,26 @@ export async function parseWorkbook(file) {
   const ignoredCostColumns = [];
 
   for (const sheetName of book.SheetNames) {
-    const collection = collectionForTab(sheetName);
-    if (!collection) {
-      problems.push(`Tab "${sheetName}" does not match a section and was skipped.`);
-      continue;
-    }
-    const spec = SHEETS[collection];
     const rows = utils.sheet_to_json(book.Sheets[sheetName], { defval: "", raw: false });
     if (!rows.length) {
       problems.push(`Tab "${sheetName}" has no rows.`);
       continue;
     }
+
+    // A CSV arrives as "Sheet1", so fall back to reading the columns.
+    let collection = collectionForTab(sheetName);
+    if (!collection) {
+      collection = inferCollection(Object.keys(rows[0]));
+      if (collection) {
+        problems.push(
+          `Tab "${sheetName}" is not a section name; read as ${SHEETS[collection].label} from its columns.`
+        );
+      } else {
+        problems.push(`Tab "${sheetName}" does not match a section and was skipped.`);
+        continue;
+      }
+    }
+    const spec = SHEETS[collection];
 
     // Report unrecognised headers once per tab rather than once per row.
     for (const header of Object.keys(rows[0])) {
@@ -95,6 +105,12 @@ export async function parseWorkbook(file) {
       }
       if (!rec[spec.identity]) {
         problems.push(`${spec.tab} row ${line}: no ${spec.identity}, row skipped.`);
+        return;
+      }
+      // The template ships worked examples; leaving one in should not create a
+      // record for a visa to nowhere.
+      if (/^example\b/i.test(String(rec[spec.identity]).trim())) {
+        problems.push(`${spec.tab} row ${line}: template example row, skipped.`);
         return;
       }
       records.push(spec.normalise ? spec.normalise(rec) : rec);
@@ -211,6 +227,117 @@ export async function exportWorkbook(currentFor) {
 
   const buffer = write(book, { bookType: "xlsx", type: "array" });
   return new Blob([buffer], {
+    type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
+  });
+}
+
+/**
+ * One collection as CSV. Same columns as the workbook, so a CSV edited in
+ * anything — Numbers, Sheets, a text editor — drops back in and is understood
+ * by the same importer. List cells keep their newlines, which is why the
+ * quoting matters, and why sheet_to_csv does it rather than a join by hand.
+ */
+export async function exportCsv(collection, currentFor) {
+  const { utils } = await loadXlsx();
+  const spec = SHEETS[collection];
+  if (!spec) throw new Error(`unknown section "${collection}"`);
+
+  const headers = spec.columns.map((c) => c.field);
+  const items = currentFor(collection) ?? [];
+  const rows = items.map((item) =>
+    Object.fromEntries(spec.columns.map((col) => {
+      const value = item[col.field];
+      return [col.field, Array.isArray(value) ? value.join("\n") : value ?? ""];
+    }))
+  );
+  const sheet = utils.json_to_sheet(rows.length ? rows : [
+    Object.fromEntries(headers.map((h) => [h, ""])),
+  ], { header: headers });
+
+  // A BOM, or Excel opens UTF-8 as Latin-1 and turns "Ejari" into mojibake.
+  const csv = "\uFEFF" + utils.sheet_to_csv(sheet);
+  return new Blob([csv], { type: "text/csv;charset=utf-8" });
+}
+
+/**
+ * A blank workbook with the right columns and one worked example per tab.
+ *
+ * Export XLSX gives you the live catalogue, which is the right starting point
+ * for an edit. This is the right starting point for a fresh list — a new rate
+ * sheet typed from scratch — without having to remember what the columns are
+ * called or that a list cell uses one line per item.
+ *
+ * Example rows name themselves EXAMPLE and the importer skips them, because
+ * the obvious way to lose an afternoon is to leave one in and wonder why the
+ * site now sells a visa to nowhere.
+ */
+const EXAMPLES = {
+  visa: { name: "EXAMPLE Japan Visa", country: "Japan", category: "E-Visa",
+    visaType: "Single Entry", processing: "2 to 3 weeks", validity: "1 month",
+    price: 1000, currency: "AED", priceUnit: "per applicant",
+    blurb: "One line shown on the card.",
+    fullDescription: "Longer text, plus any important notes.",
+    requirements: "Passport scan copy\n2 recent photographs\nUAE Emirates ID copy" },
+  packages: { title: "EXAMPLE Serengeti Safari", category: "Safari", region: "Africa",
+    destination: "Tanzania", duration: "7 Days", price: 2490, currency: "USD",
+    priceUnit: "per person", tags: "safari\nbeach",
+    shortDescription: "One line shown on the card.",
+    fullDescription: "Longer text for the detail panel.",
+    highlights: "Game drives\nGreat Migration", included: "Flights\nHotels",
+    requirements: "Passport valid 6 months" },
+  activities: { title: "EXAMPLE Desert Safari", category: "Adventure / Desert",
+    destination: "Dubai, UAE", region: "Dubai", duration: "Full Day", price: 180,
+    currency: "AED", priceUnit: "per person", tags: "adventure\ndesert",
+    shortDescription: "One line shown on the card.",
+    fullDescription: "Longer text for the detail panel.",
+    highlights: "Dune bashing\nBBQ dinner", included: "Hotel pickup",
+    requirements: "Comfortable clothing" },
+  destinations: { name: "EXAMPLE Tanzania", region: "Africa",
+    bestTime: "June to October", blurb: "One line shown on the card.",
+    fullDescription: "Longer text for the detail panel.",
+    highlights: "Serengeti\nZanzibar", requirements: "Visa on arrival" },
+  services: { label: "EXAMPLE Flights", blurb: "One line shown on the card.",
+    fullDescription: "Longer text for the detail panel.",
+    included: "Fare comparison\nSeat selection", requirements: "Passport details" },
+  mice: { name: "EXAMPLE Meetings", blurb: "One line shown on the card.",
+    fullDescription: "Longer text for the detail panel.",
+    items: "Corporate Meetings\nBoard Meetings", requirements: "Delegate numbers" },
+};
+
+export async function exportTemplate() {
+  const { utils, write } = await loadXlsx();
+  const book = utils.book_new();
+
+  const readme = [
+    ["BGS Travel & Tourism — content template"],
+    [""],
+    ["One tab per section. Fill in only the tabs you want to change; tabs you"],
+    ["leave out are not touched, and neither are sections you do not include."],
+    [""],
+    ["Rows are matched by name, so editing a row updates that record and a new"],
+    ["name adds one. You choose Merge or Replace after the preview."],
+    [""],
+    ["Cells that hold a list — requirements, highlights, included, items, tags —"],
+    ["take one item per line. Press Alt+Enter inside the cell for a new line."],
+    [""],
+    ["Delete the EXAMPLE rows before uploading. They are ignored if you forget."],
+    [""],
+    ["Do not add a cost or vendor column. It is refused on import and never"],
+    ["reaches the website."],
+  ].map((row) => ({ "Read me": row[0] ?? "" }));
+  const info = utils.json_to_sheet(readme, { header: ["Read me"] });
+  info["!cols"] = [{ wch: 78 }];
+  utils.book_append_sheet(book, info, "Read me");
+
+  for (const [collection, spec] of Object.entries(SHEETS)) {
+    const headers = spec.columns.map((c) => c.field);
+    const sheet = utils.json_to_sheet([EXAMPLES[collection] ?? {}], { header: headers });
+    sheet["!cols"] = headers.map((h) =>
+      ({ wch: /description|requirements|items|highlights|included|blurb/.test(h) ? 46 : 18 }));
+    utils.book_append_sheet(book, sheet, spec.tab);
+  }
+
+  return new Blob([write(book, { bookType: "xlsx", type: "array" })], {
     type: "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet",
   });
 }

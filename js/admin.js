@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=99";
-import { signIn } from "./cloud.js?v=99";
+} from "./store.js?v=106";
+import { signIn } from "./cloud.js?v=106";
 
 /**
  * The admin console.
@@ -446,7 +446,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=99");
+  const { applyMode } = await import("./sheet-import.mjs?v=106");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -469,7 +469,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=99");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=106");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -519,7 +519,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=99");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=106");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -530,5 +530,47 @@ el("#sheet-export").addEventListener("click", async () => {
     sheetStatus("Exported. Edit it and drop it back to update the site.");
   } catch (error) {
     sheetStatus(`Export failed: ${error.message}`);
+  }
+});
+
+/* CSV covers the case the workbook does not: one section, opened in anything.
+   It exports the tab you are looking at, because "which section" is a question
+   the UI can already answer without asking. */
+el("#sheet-export-csv").addEventListener("click", async () => {
+  if (active === "copy") {
+    sheetStatus("Page copy has no spreadsheet form — pick a content tab.");
+    return;
+  }
+  sheetStatus("Building CSV…");
+  try {
+    const { exportCsv } = await import("./sheet-import.mjs?v=106");
+    const blob = await exportCsv(active, (name) => getCollection(name));
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = `bgs-${active}-${new Date().toISOString().slice(0, 10)}.csv`;
+    a.click();
+    URL.revokeObjectURL(url);
+    sheetStatus(`Exported ${active} as CSV.`);
+  } catch (error) {
+    sheetStatus(`CSV export failed: ${error.message}`);
+  }
+});
+
+/* A blank template, for a list typed from scratch rather than edited. */
+el("#sheet-template").addEventListener("click", async () => {
+  sheetStatus("Building template…");
+  try {
+    const { exportTemplate } = await import("./sheet-import.mjs?v=106");
+    const blob = await exportTemplate();
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "bgs-content-template.xlsx";
+    a.click();
+    URL.revokeObjectURL(url);
+    sheetStatus("Template downloaded. Read me tab explains the columns.");
+  } catch (error) {
+    sheetStatus(`Template failed: ${error.message}`);
   }
 });

@@ -1,6 +1,6 @@
 import {
   WHATSAPP_DISPLAY, CONTACT_EMAIL, LOCATION, buildWhatsAppUrl,
-} from "../utils/whatsapp.js?v=116";
+} from "../utils/whatsapp.js?v=117";
 
 /**
  * Contact details and the legal notices, as data rather than markup, so the

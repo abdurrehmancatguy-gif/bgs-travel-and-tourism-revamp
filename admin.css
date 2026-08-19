@@ -689,8 +689,10 @@ body.admin {
 }
 
 .admin-pick .admin-row-name {
-  /* Wrap instead of forcing the row wider than the panel. */
-  overflow-wrap: anywhere;
+  /* break-word, not anywhere: "anywhere" will split Saudi into "Sa udi" the
+     moment the column is tight, which it always is once three buttons sit
+     beside it. This only breaks a word that genuinely cannot fit. */
+  overflow-wrap: break-word;
   line-height: 1.35;
 }
 
@@ -759,4 +761,94 @@ body.admin {
   border: 1px solid rgba(13, 27, 42, 0.18);
   background: var(--white, #fff);
   color: var(--navy, #0d1b2a);
+}
+
+/* ------------------------------------------------------ homepage sub-tabs */
+
+.admin-subtabs {
+  display: flex;
+  gap: 6px;
+  margin-bottom: 0.6rem;
+}
+
+.admin-subtab {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  padding: 8px 14px;
+  border-radius: 999px;
+  border: 1px solid rgba(13, 27, 42, 0.16);
+  background: transparent;
+  color: rgba(13, 27, 42, 0.7);
+  font: inherit;
+  font-size: 0.85rem;
+  cursor: pointer;
+}
+
+.admin-subtab span {
+  font-size: 0.72rem;
+  padding: 1px 7px;
+  border-radius: 999px;
+  background: rgba(13, 27, 42, 0.08);
+  font-variant-numeric: tabular-nums;
+}
+
+.admin-subtab[aria-selected="true"] {
+  background: var(--navy, #0d1b2a);
+  border-color: var(--navy, #0d1b2a);
+  color: var(--cream, #fff6e8);
+  font-weight: 600;
+}
+
+.admin-subtab[aria-selected="true"] span {
+  background: rgba(255, 246, 232, 0.18);
+}
+
+.admin-section-note { padding-top: 1.4rem; }
+
+/* The label override sits beside the record it renames. */
+.admin-row-label {
+  display: grid;
+  grid-template-columns: 1fr minmax(0, 15rem);
+  gap: 10px;
+  align-items: center;
+}
+
+.admin-row-label input { width: 100%; }
+
+
+/* The reference rows carry an ordinal, a name and three buttons. Below the
+   breakpoint that does not fit on one line, and forcing it squeezed the name
+   into a single-letter column — so the buttons drop to their own row and the
+   name gets the full width. */
+.admin-row-pick {
+  grid-template-columns: auto 1fr;
+  row-gap: 8px;
+}
+
+.admin-row-pick .admin-card-actions {
+  grid-column: 1 / -1;
+  justify-content: flex-end;
+}
+
+@media (min-width: 700px) {
+  .admin-row-pick {
+    grid-template-columns: auto 1fr auto;
+    row-gap: 4px;
+  }
+  .admin-row-pick .admin-card-actions {
+    grid-column: 3;
+    grid-row: 1;
+  }
+}
+
+@media (max-width: 560px) {
+  .admin-row-label { grid-template-columns: 1fr; }
+  .admin-subtabs { flex-wrap: wrap; }
+}
+
+/* A refused save is not a confirmation. */
+#admin-toast[data-tone="error"] {
+  background: #8c2f1d;
+  color: #fff6e8;
 }

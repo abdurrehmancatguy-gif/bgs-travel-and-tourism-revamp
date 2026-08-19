@@ -22,10 +22,69 @@
  * the page looks up.
  */
 export const HOME_PILLS = [
-  { label: "Saudi Multiple Visa", page: "visa", query: "Saudi Multiple Entry Visa" },
-  { label: "Schengen Visa", page: "visa", query: "Schengen Visa" },
-  { label: "MICE", page: "mice", query: "" },
+  { collection: "visa", name: "Saudi Multiple Entry Visa", label: "Saudi Multiple Visa" },
+  { collection: "visa", name: "Schengen Visa" },
+  { page: "mice", label: "MICE" },
 ];
+
+/**
+ * What a pill actually points at.
+ *
+ * Two shapes, because a pill does two jobs. Most name one record — a visa, a
+ * package — and land on its panel; `collection` and `name` reference it the same
+ * way HOME_CARDS does, so the pill follows the record rather than repeating it.
+ * A few name a whole section instead, like MICE, and carry `page` on its own.
+ *
+ * `label` is optional and only for when the record's own name is too long for a
+ * button: the pill reads "Saudi Multiple Visa" while pointing at "Saudi Multiple
+ * Entry Visa", which is what the catalogue calls it.
+ *
+ * The older { label, page, query } shape still resolves, so pills written before
+ * this keep working without a migration.
+ *
+ * @param {object}   pill
+ * @param {Function} lookup (collection) => that collection's records
+ */
+export function resolvePill(pill, lookup = () => []) {
+  if (!pill) return null;
+
+  // A whole section, or the pre-reference shape.
+  if (!pill.collection) {
+    const query = pill.query ?? "";
+    return {
+      label: pill.label ?? query,
+      page: pill.page ?? "",
+      query,
+      open: Boolean(query),
+      missing: false,
+    };
+  }
+
+  const norm = (v) => String(v ?? "").trim().toLowerCase();
+  const key = PILL_TITLE_KEY[pill.collection] ?? "title";
+  const record = (lookup(pill.collection) ?? [])
+    .find((item) => norm(item[key]) === norm(pill.name));
+
+  return {
+    label: pill.label || pill.name || "",
+    // Collection names and page names are the same word throughout the site,
+    // so visa -> visa.html and packages -> packages.html without a table.
+    page: pill.collection,
+    query: record ? record[key] : pill.name,
+    open: true,
+    // Renaming the record leaves the pill pointing at nothing. Say so in the
+    // admin rather than shipping a button that lands on an empty search.
+    missing: !record,
+  };
+}
+
+/** Duplicated from data/packages.js rather than imported: store.js loads this
+ *  file for its defaults, and reaching back into packages.js from here would
+ *  make that a cycle. Six words, and the site has no seventh collection. */
+const PILL_TITLE_KEY = {
+  packages: "title", activities: "title", visa: "name",
+  destinations: "name", services: "label", mice: "name",
+};
 
 /**
  * The cards in the homepage carousel, in order.

@@ -1,5 +1,5 @@
-import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=118";
-import { icon } from "../data/icons.js?v=118";
+import { LEGAL_DOCS, LEGAL_LINKS, CONTACT_CHANNELS } from "../data/legal.js?v=120";
+import { icon } from "../data/icons.js?v=120";
 
 /**
  * The Contacts and legal panels. One <dialog> is built lazily and reused for

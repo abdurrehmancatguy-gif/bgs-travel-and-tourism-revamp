@@ -1,13 +1,13 @@
-import { filterPackages, featuredPackages } from "../data/packages.js?v=118";
-import { getCollection } from "./store.js?v=118";
+import { filterPackages, featuredPackages, withSlugs } from "../data/packages.js?v=120";
+import { getCollection } from "./store.js?v=120";
 
 /* Read through the store, not from the data file directly. The carousel used
    to import PACKAGES and HOME_PACKAGES as constants, which meant the homepage
    showed the six packages written into the source and no edit made in the
    admin ever reached it — the one grid on the site that ignored its own CMS. */
-const allPackages = () => getCollection("packages");
+const allPackages = () => withSlugs(getCollection("packages"));
 const homePackages = () => featuredPackages(allPackages());
-import { icon } from "../data/icons.js?v=118";
+import { icon } from "../data/icons.js?v=120";
 
 /**
  * Horizontal package rail.
@@ -24,22 +24,44 @@ import { icon } from "../data/icons.js?v=118";
 const SET_COUNT = 3;
 const DRAG_THRESHOLD = 8;
 
+/*
+ * Every field below is optional.
+ *
+ * This markup used to read pkg.rating.toFixed(1) and pkg.price.toLocaleString()
+ * straight, which was safe only while the row was built from the constants in
+ * data/packages.js. Reading real content instead means meeting records that a
+ * spreadsheet or a JSON restore left without a rating or a price — and an
+ * exception thrown here does not blank one card, it aborts render() and leaves
+ * the entire carousel empty. Which is exactly what happened.
+ *
+ * A missing field now drops its own element and nothing else.
+ */
+const esc = (value) =>
+  String(value ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
 const shortPrice = (pkg) =>
-  `From ${pkg.currency} ${pkg.price.toLocaleString("en-US")}`;
+  pkg?.price ? `From ${pkg.currency ?? "AED"} ${Number(pkg.price).toLocaleString("en-US")}` : "";
+
+const ratingLabel = (pkg) =>
+  Number.isFinite(Number(pkg?.rating)) ? Number(pkg.rating).toFixed(1) : "";
 
 function cardMarkup(pkg, index, set) {
+  const price = shortPrice(pkg);
+  const rating = ratingLabel(pkg);
+  const label = [pkg.title, pkg.destination, pkg.duration, price]
+    .filter(Boolean).join(". ");
   return `
-    <article class="package-card" data-index="${index}" data-set="${set}" data-slug="${pkg.slug}"
+    <article class="package-card" data-index="${index}" data-set="${set}" data-slug="${esc(pkg.slug)}"
              role="button" tabindex="${set === 1 ? 0 : -1}"
-             aria-label="${pkg.title}. ${pkg.destination}. ${pkg.duration}. ${shortPrice(pkg)}. Open package details.">
-      <span class="package-kicker">${pkg.category}</span>
-      <span class="package-icon" aria-hidden="true">${icon(pkg.icon)}</span>
-      <h3>${pkg.title}</h3>
-      <p class="package-desc">${pkg.shortDescription}</p>
+             aria-label="${esc(label)}. Open package details.">
+      ${pkg.category ? `<span class="package-kicker">${esc(pkg.category)}</span>` : ""}
+      ${pkg.icon ? `<span class="package-icon" aria-hidden="true">${icon(pkg.icon)}</span>` : ""}
+      <h3>${esc(pkg.title)}</h3>
+      ${pkg.shortDescription ? `<p class="package-desc">${esc(pkg.shortDescription)}</p>` : ""}
       <p class="package-meta">
-        <span class="package-duration">${pkg.duration}</span>
-        <span class="package-price">${shortPrice(pkg)}</span>
-        <span class="package-rating">${pkg.rating.toFixed(1)} &#9733;</span>
+        ${pkg.duration ? `<span class="package-duration">${esc(pkg.duration)}</span>` : ""}
+        ${price ? `<span class="package-price">${esc(price)}</span>` : ""}
+        ${rating ? `<span class="package-rating">${esc(rating)} &#9733;</span>` : ""}
       </p>
     </article>`;
 }

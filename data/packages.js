@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=118";
+import { PACKAGE_IMAGES } from "./images.js?v=120";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -436,12 +436,47 @@ export const HOME_PACKAGES = HOME_PACKAGE_SLUGS.map((slug) => {
  * be a cycle.
  */
 export function featuredPackages(list = PACKAGES) {
-  const flagged = list.filter((pkg) => pkg.featured);
+  const packages = withSlugs(list);
+  const flagged = packages.filter((pkg) => pkg.featured);
   if (flagged.length) return flagged;
-  return HOME_PACKAGE_SLUGS
-    .map((slug) => list.find((pkg) => pkg.slug === slug))
+
+  // The curated slugs first, then whatever else is in the catalogue, trimmed to
+  // a full row.
+  //
+  // A plain lookup was not enough. The curated list is written against the slugs
+  // in this file, and content restored from Firestore does not necessarily carry
+  // them — matching none of them produced an empty array, which is how the
+  // homepage carousel came back from a restore with no cards on it at all, and
+  // matching one produced a one-card row, which is worse than either extreme.
+  // Topping up means a complete match still returns exactly the curated six, and
+  // anything less still fills the row.
+  const curated = HOME_PACKAGE_SLUGS
+    .map((slug) => packages.find((pkg) => pkg.slug === slug))
     .filter(Boolean);
+  const chosen = new Set(curated);
+  return [...curated, ...packages.filter((pkg) => !chosen.has(pkg))]
+    .slice(0, HOME_PACKAGE_SLUGS.length);
 }
+
+/** A slug from the title, for records that arrived without one. */
+export const packageSlug = (pkg) =>
+  pkg.slug ||
+  String(pkg.title ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9]+/g, "-")
+    .replace(/^-|-$/g, "");
+
+/**
+ * Guarantees every package has a slug.
+ *
+ * Slugs identify a card, drive #package= deep links and are what openBySlug
+ * looks up, but they are not a field anybody types — so content that has been
+ * through an import can arrive without them, and everything keyed on identity
+ * silently stops working. Deriving one from the title costs nothing and keeps
+ * those paths alive.
+ */
+export const withSlugs = (list) =>
+  list.map((pkg) => (pkg.slug ? pkg : { ...pkg, slug: packageSlug(pkg) }));
 
 /** "AED 180 per person" — the bare figure, used in the WhatsApp message.
     Empty when there is no price: some visas are quoted per nationality, and a

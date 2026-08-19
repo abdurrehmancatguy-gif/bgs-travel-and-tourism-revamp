@@ -1,5 +1,5 @@
-import { formatPrice, priceLabel } from "../data/packages.js?v=118";
-import { buildWhatsAppPackageUrl } from "../utils/whatsapp.js?v=118";
+import { formatPrice, priceLabel } from "../data/packages.js?v=120";
+import { buildWhatsAppPackageUrl } from "../utils/whatsapp.js?v=120";
 
 /**
  * Package detail dialog.
@@ -41,10 +41,16 @@ export function createPackageDialog({ dialog }) {
   function open(pkg, triggerEl) {
     returnFocusTo = triggerEl || null;
 
-    els.image.src = pkg.image.src;
-    els.image.alt = pkg.image.alt;
-    els.kicker.textContent = `${pkg.destination} — ${pkg.category}`;
-    els.title.textContent = pkg.title;
+    // Photography is stored as { src, alt } in the shipped data and as a plain
+    // URL string once it has been through an import, so accept either rather
+    // than reading .src off a string and showing a broken image — which is what
+    // every restored package did.
+    const image = typeof pkg.image === "string" ? { src: pkg.image, alt: "" } : pkg.image;
+    els.image.src = image?.src ?? "";
+    els.image.alt = image?.alt || pkg.title || "";
+    els.image.hidden = !image?.src;
+    els.kicker.textContent = [pkg.destination, pkg.category].filter(Boolean).join(" — ");
+    els.title.textContent = pkg.title ?? "";
 
     const meta = [pkg.duration, pkg.region];
     if (pkg.rating) {
@@ -52,7 +58,7 @@ export function createPackageDialog({ dialog }) {
     }
     els.meta.innerHTML = meta.map((item) => `<li>${item}</li>`).join("");
 
-    els.desc.textContent = pkg.fullDescription;
+    els.desc.textContent = pkg.fullDescription || pkg.shortDescription || "";
 
     if (pkg.highlights?.length) {
       els.highlights.innerHTML = listItems(pkg.highlights);

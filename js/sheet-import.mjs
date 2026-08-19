@@ -1,4 +1,4 @@
-import { SHEETS, PRESERVED, COST_HEADER, collectionForTab, fieldForHeader } from "./sheet-schema.mjs?v=98";
+import { SHEETS, PRESERVED, COST_HEADER, collectionForTab, fieldForHeader } from "./sheet-schema.mjs?v=99";
 
 /**
  * Reads a workbook and works out what it would change — without changing

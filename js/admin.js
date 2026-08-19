@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=98";
-import { signIn } from "./cloud.js?v=98";
+} from "./store.js?v=99";
+import { signIn } from "./cloud.js?v=99";
 
 /**
  * The admin console.
@@ -446,7 +446,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=98");
+  const { applyMode } = await import("./sheet-import.mjs?v=99");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -469,7 +469,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=98");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=99");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -519,7 +519,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=98");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=99");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

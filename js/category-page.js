@@ -1,12 +1,12 @@
-import { getCollection, subscribe } from "./store.js?v=92";
-import "./info-modal.js?v=92";
-import { createNavigation } from "./navigation.js?v=92";
-import { icon } from "../data/icons.js?v=92";
-import { priceLabel } from "../data/packages.js?v=92";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=92";
-import { MICE_SERVICES } from "../data/mice.js?v=92";
-import { openItem, itemTitle } from "./item-dialog.js?v=92";
-import { contactStripMarkup } from "./info-modal.js?v=92";
+import { getCollection, subscribe } from "./store.js?v=94";
+import "./info-modal.js?v=94";
+import { createNavigation } from "./navigation.js?v=94";
+import { icon } from "../data/icons.js?v=94";
+import { priceLabel } from "../data/packages.js?v=94";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=94";
+import { MICE_SERVICES } from "../data/mice.js?v=94";
+import { openItem, itemTitle } from "./item-dialog.js?v=94";
+import { contactStripMarkup } from "./info-modal.js?v=94";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -28,6 +28,17 @@ const countEl = document.querySelector("#page-count");
 
 /* ------------------------------------------------------ per-collection shape */
 
+/**
+ * Where a record's generated page lives. Must agree with build/render.mjs — the
+ * pre-rendered card and this one point at the same URL, or the crawler and the
+ * visitor disagree about where a thing is.
+ */
+const slugify = (value) =>
+  String(value).toLowerCase().normalize("NFD").replace(/[\u0300-\u036f]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+
+const hrefFor = (title) => `/${page}/${slugify(title)}/`;
+
 const esc = (s) =>
   String(s).replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
@@ -42,7 +53,7 @@ const SHAPES = {
     search: (i) => [i.title, i.category, i.destination, ...(i.tags ?? [])],
     card: (i) => cardMarkup({
       image: i.image, alt: i.title, iconName: i.icon, kicker: i.category,
-      title: i.title, body: i.shortDescription,
+      title: i.title, itemHref: hrefFor(i.title), body: i.shortDescription,
       meta: [i.duration, priceLabel(i), i.rating ? `${Number(i.rating).toFixed(1)} ★` : ""],
     }),
   },
@@ -52,7 +63,7 @@ const SHAPES = {
     search: (i) => [i.title, i.category, i.region, i.destination, ...(i.tags ?? [])],
     card: (i) => cardMarkup({
       image: i.image, alt: i.title, iconName: i.icon, kicker: i.category,
-      title: i.title, body: i.shortDescription,
+      title: i.title, itemHref: hrefFor(i.title), body: i.shortDescription,
       meta: [i.duration, priceLabel(i), i.rating ? `${Number(i.rating).toFixed(1)} ★` : ""],
     }),
   },
@@ -61,15 +72,15 @@ const SHAPES = {
     search: (i) => [i.name, i.region],
     card: (i) => cardMarkup({
       image: i.image, alt: i.name, kicker: i.region, title: i.name,
-      body: i.blurb, meta: [`Best time: ${i.bestTime}`],
+      itemHref: hrefFor(i.name), body: i.blurb, meta: [`Best time: ${i.bestTime}`],
     }),
   },
   services: {
     chips: () => [],
     search: (i) => [i.label, i.blurb],
     card: (i) => cardMarkup({
-      image: i.image, alt: i.label,
-      iconName: i.icon, kicker: "Service", title: i.label, body: i.blurb, meta: [],
+      image: i.image, alt: i.label, iconName: i.icon, kicker: "Service",
+      title: i.label, itemHref: hrefFor(i.label), body: i.blurb, meta: [],
     }),
   },
   mice: {
@@ -79,7 +90,7 @@ const SHAPES = {
     search: (i) => [i.name, ...(i.items ?? [])],
     card: (i) => cardMarkup({
       image: i.image, alt: i.name, iconName: i.icon, kicker: "MICE",
-      title: i.name, body: i.blurb, list: i.items,
+      title: i.name, itemHref: hrefFor(i.name), body: i.blurb, list: i.items,
     }),
   },
   visa: {
@@ -87,7 +98,7 @@ const SHAPES = {
     search: (i) => [i.name, i.country],
     card: (i) => cardMarkup({
       image: i.image, alt: i.name, iconName: "visa", kicker: i.country,
-      title: i.name, body: i.blurb,
+      title: i.name, itemHref: hrefFor(i.name), body: i.blurb,
       meta: [i.processing, i.validity, priceLabel(i)],
     }),
   },
@@ -101,7 +112,7 @@ const SHAPES = {
  * smaller size at resolve time (iiurlwidth) and store both, which is a change to
  * data/photos.js rather than something this renderer can do.
  */
-function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list = [] }) {
+function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list = [], itemHref = "" }) {
   // Package photography is stored as { src, alt } while destination and visa
   // images are plain strings, so accept either rather than forcing one shape.
   const src = typeof image === "string" ? image : image?.src;
@@ -117,7 +128,7 @@ function cardMarkup({ image, alt, iconName, kicker, title, body, meta = [], list
       </div>` : ""}
       <div class="item-card-inner">
         ${kicker ? `<p class="item-card-kicker">${esc(kicker)}</p>` : ""}
-        <h3>${esc(title)}</h3>
+        <h3><a class="item-card-link" href="${esc(itemHref)}">${esc(title)}</a></h3>
         <p>${esc(body ?? "")}</p>
         ${list.length ? `<ul class="item-card-list">
           ${list.map((entry) => `<li>${esc(entry)}</li>`).join("")}
@@ -310,7 +321,9 @@ chipRow.addEventListener("click", (event) => {
    so it happens after someone has read the detail rather than instead of it. */
 grid.addEventListener("click", (event) => {
   const card = event.target.closest(".item-card");
-  if (card) openItem(visibleItems[Number(card.dataset.idx)], page);
+  if (!card) return;
+  if (event.target.closest(".item-card-link")) event.preventDefault();
+  openItem(visibleItems[Number(card.dataset.idx)], page);
 });
 
 grid.addEventListener("keydown", (event) => {

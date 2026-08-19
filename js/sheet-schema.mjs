@@ -33,24 +33,38 @@ const PRICED = [
   { field: "priceUnit", type: "text", aliases: ["price unit", "per"] },
 ];
 
+/**
+ * The faster turnaround's rate, spliced in beside the price it varies.
+ *
+ * Visa only — express is a processing tier, which is a visa idea; a package has
+ * no faster version of itself. A column the importer accepts and no page ever
+ * renders would be a silent hole for somebody's data to fall into.
+ *
+ * Matching is exact on the normalised header, so this cannot collide with the
+ * plain "selling price" column, and COST_HEADER refuses anything like
+ * "EXPRESS BUYING PRICE IN AED - VENDOR" before aliases are consulted at all.
+ */
+const EXPRESS_PRICE = { field: "expressPrice", type: "number",
+  aliases: ["express price", "express selling price", "express selling price in aed",
+            "express selling price in aed bgs", "urgent price", "urgent selling price",
+            "express fee", "express charge"] };
+
+/** PRICED with the express rate immediately after price. This list is also the
+ *  column order of the template and both exports. */
+const PRICED_WITH_EXPRESS =
+  PRICED.flatMap((col) => (col.field === "price" ? [col, EXPRESS_PRICE] : [col]));
+
 export const SHEETS = {
   visa: {
     tab: "Visa", identity: "name", label: "Visa Services",
     columns: [
-      // Visa only. Express is a processing tier, which is a visa idea — a
-      // package does not have a faster version of itself. Kept off the other
-      // sheets deliberately: a column the importer accepts and no page ever
-      // shows is a silent hole for somebody's data to fall into.
-      { field: "expressPrice", type: "number", aliases: ["express price", "express selling price",
-          "express selling price in aed", "express selling price in aed bgs",
-          "urgent price", "urgent selling price", "express fee", "express charge"] },
       { field: "name", type: "text", aliases: ["name", "visa", "visa name", "title", "countries", "country name"] },
       { field: "country", type: "text", aliases: ["country", "issuing country", "destination country"] },
       { field: "category", type: "text", aliases: ["category", "visa category", "type of visa"] },
       { field: "visaType", type: "text", aliases: ["visa type", "entry", "entry type"] },
       { field: "processing", type: "text", aliases: ["processing", "processing time", "lead time"] },
       { field: "validity", type: "text", aliases: ["validity", "valid for"] },
-      ...PRICED,
+      ...PRICED_WITH_EXPRESS,
       { field: "blurb", type: "textarea", aliases: ["description", "blurb", "summary", "details"] },
       { field: "fullDescription", type: "textarea", aliases: ["full description", "notes", "important notes", "process"] },
       { field: "requirements", type: "list", aliases: ["requirements", "required documents", "documents", "what you'll need", "what you will need"] },

@@ -61,6 +61,9 @@
   --navy: #0d1b2a;
   --navy-deep: #080f18;
   --gold: #e8941a;
+  /* Gold on a light surface. The brand gold reads at 2.42:1 on white, which is
+     invisible at heading size; this measures 5.14:1 and still reads as gold. */
+  --gold-ink: #a35c00;
   --gold-light: #f5a832;
   --cream: #fff6e8;
   --white: #ffffff;
@@ -327,7 +330,7 @@ button { border: 0; font: inherit; }
 .info-dialog-section { margin-bottom: 22px; }
 .info-dialog-section h3 {
   margin: 0 0 8px;
-  color: var(--gold);
+  color: var(--gold-ink);
   font-size: 0.78rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -371,7 +374,7 @@ button { border: 0; font: inherit; }
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--gold-ink);
 }
 
 .info-dialog-foot {
@@ -390,7 +393,7 @@ button { border: 0; font: inherit; }
   font-size: 0.84rem;
   cursor: pointer;
 }
-.info-dialog-swap:hover { border-color: var(--gold); color: var(--gold); }
+.info-dialog-swap:hover { border-color: var(--gold-ink); color: var(--gold-ink); }
 
 /* ----------------------------------------------------------- contact list */
 
@@ -407,7 +410,7 @@ button { border: 0; font: inherit; }
   background: rgba(255, 255, 255, 0.45);
 }
 .info-contact-label {
-  color: var(--gold);
+  color: var(--gold-ink);
   font-size: 0.72rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -420,7 +423,7 @@ button { border: 0; font: inherit; }
   text-decoration: none;
   word-break: break-word;
 }
-a.info-contact-value:hover { color: var(--gold); }
+a.info-contact-value:hover { color: var(--gold-ink); }
 .info-contact-note { color: rgba(13, 27, 42, 0.58); font-size: 0.82rem; }
 
 .info-contact-text { display: grid; gap: 3px; min-width: 0; }
@@ -429,7 +432,7 @@ a.info-contact-value:hover { color: var(--gold); }
   display: inline-flex;
   width: 26px;
   height: 26px;
-  color: var(--gold);
+  color: var(--gold-ink);
 }
 .info-contact-icon svg { width: 100%; height: 100%; }
 /* WhatsApp keeps its own green — it is the colour people scan for, and the
@@ -534,7 +537,7 @@ a.info-contact-value:hover { color: var(--gold); }
   align-items: center;
   gap: 8px;
   margin: 0 0 6px;
-  color: var(--gold);
+  color: var(--gold-ink);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -586,7 +589,7 @@ a.info-contact-value:hover { color: var(--gold); }
 .item-dialog-section { margin-top: 22px; }
 .item-dialog-section h3 {
   margin: 0 0 10px;
-  color: var(--gold);
+  color: var(--gold-ink);
   font-size: 0.76rem;
   font-weight: 700;
   letter-spacing: 0.12em;
@@ -615,7 +618,7 @@ a.info-contact-value:hover { color: var(--gold); }
   width: 5px;
   height: 5px;
   border-radius: 50%;
-  background: var(--gold);
+  background: var(--gold-ink);
 }
 
 .item-dialog-tags {

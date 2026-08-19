@@ -529,3 +529,17 @@ body.admin {
 .sheet-problems { margin: 0 0 14px; font-size: 0.85rem; }
 .sheet-problems summary { cursor: pointer; color: var(--gold-light); }
 .sheet-problems ul { margin: 8px 0 0; padding-left: 18px; line-height: 1.55; opacity: 0.84; }
+
+/* A toggle puts its label beside the box rather than above it, the way every
+   checkbox a person has ever met behaves. */
+.admin-field-toggle {
+  flex-direction: row;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.admin-field-toggle input {
+  width: auto;
+  flex: none;
+  accent-color: var(--gold, #e8941a);
+}

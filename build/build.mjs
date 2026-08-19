@@ -105,7 +105,7 @@ function itemPage(item, collection) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>${esc(title)} — BGS Travel &amp; Tourism</title>
   <meta name="description" content="${esc(description)}" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=114" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=116" />
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/pages.css" />${headExtras({
     url, title: `${title} — BGS Travel & Tourism`, description, image,
@@ -123,7 +123,7 @@ function itemPage(item, collection) {
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="item-page-bar">
     <a class="site-logo" href="/">
-      <img class="site-logo-mark" src="/assets/monogram-96.png?v=114" alt="" width="40" height="40" />
+      <img class="site-logo-mark" src="/assets/monogram-96.png?v=116" alt="" width="40" height="40" />
       <span class="site-logo-text">
         <span class="site-logo-name">BGS Travel &amp; Tourism</span>
         <span class="site-logo-place">Dubai, UAE</span>
@@ -274,9 +274,40 @@ function scenePreloads() {
     .join("\n  ");
 }
 
+/**
+ * Writes the hero pills into the homepage HTML.
+ *
+ * js/main.js renders these from the store so they are admin-editable, but a
+ * crawler that does not run scripts would otherwise find an empty div where the
+ * three most prominent links on the site should be. Pre-rendering them keeps
+ * the markup honest; main.js replaces them with the same content a moment later
+ * and the visitor sees no change.
+ *
+ * open=1 matches the signal the dropdown menus use, so a pill naming one visa
+ * lands on that visa's panel rather than on a filtered list of one.
+ */
+function paintPillsIntoHtml(html, pills) {
+  if (!pills?.length) return { html, painted: 0 };
+  const buttons = pills.map((pill) => {
+    const page = pill.page ?? "";
+    const query = pill.query ?? "";
+    return `<button class="hero-pill" type="button" data-page="${esc(page)}" ` +
+           `data-query="${esc(query)}">${esc(pill.label ?? "")}</button>`;
+  }).join("\n            ");
+
+  const wrap = /(<div class="hero-pills"[^>]*>)([\s\S]*?)(<\/div>)/;
+  if (!wrap.test(html)) throw new Error("pills: no .hero-pills container in index.html");
+  return {
+    html: html.replace(wrap, `$1\n            ${buttons}\n          $3`),
+    painted: pills.length,
+  };
+}
+
 /* homepage head */
 const home = path.join(DIST, "index.html");
 let homeHtml = fs.readFileSync(home, "utf8");
+const pills = paintPillsIntoHtml(homeHtml, content.homePills);
+homeHtml = pills.html;
 const scene = paintSceneIntoHtml(homeHtml);
 homeHtml = scene.html.replace("</head>", `  ${scenePreloads()}\n</head>`);
 homeHtml = homeHtml.replace("</head>", `${headExtras({
@@ -343,4 +374,5 @@ ${Object.entries(PAGES).flatMap(([c]) => (content[c] ?? []).map((i) =>
 console.log(`  cards pre-rendered: ${cardCount}   item pages: ${pageCount}`);
 console.log(`  sitemap entries:    ${urls.length}`);
 console.log(`  scene layers in HTML: ${scene.painted}`);
+console.log(`  hero pills in HTML:   ${pills.painted}`);
 console.log(`  collections:        ${counts}`);

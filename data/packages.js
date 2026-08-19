@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=114";
+import { PACKAGE_IMAGES } from "./images.js?v=116";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -422,6 +422,26 @@ export const HOME_PACKAGES = HOME_PACKAGE_SLUGS.map((slug) => {
   if (!pkg) console.warn(`HOME_PACKAGE_SLUGS: no package with slug "${slug}"`);
   return pkg;
 }).filter(Boolean);
+
+/**
+ * Which packages the homepage carousel shows, from a live list.
+ *
+ * `featured` is the admin's answer and wins whenever any package carries it.
+ * When none does — nobody has touched the flag yet — this falls back to
+ * HOME_PACKAGE_SLUGS above, so an untouched site keeps exactly the six it has
+ * always shown rather than emptying its own carousel on upgrade.
+ *
+ * Takes the list as an argument rather than reading the store, because
+ * data/*.js files are the store's shipped defaults and importing it here would
+ * be a cycle.
+ */
+export function featuredPackages(list = PACKAGES) {
+  const flagged = list.filter((pkg) => pkg.featured);
+  if (flagged.length) return flagged;
+  return HOME_PACKAGE_SLUGS
+    .map((slug) => list.find((pkg) => pkg.slug === slug))
+    .filter(Boolean);
+}
 
 /** "AED 180 per person" — the bare figure, used in the WhatsApp message.
     Empty when there is no price: some visas are quoted per nationality, and a

@@ -1,8 +1,8 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=114";
-import { signIn } from "./cloud.js?v=114";
+} from "./store.js?v=116";
+import { signIn } from "./cloud.js?v=116";
 
 /**
  * The admin console.
@@ -68,6 +68,35 @@ export const isDefaultPassword = async () =>
  * drop it here.
  */
 const FIELDS = {
+  // packages had a tab all along — renderTabs builds those from COLLECTIONS —
+  // but no entry here, so the one collection the homepage carousel draws from
+  // was the one nobody could edit.
+  packages: [
+    ["title", "Title", "text"], ["slug", "Slug", "text"],
+    ["category", "Category", "text"], ["region", "Region", "text"],
+    ["destination", "Destination", "text"],
+    ["destinationKey", "Destination key", "text"],
+    ["duration", "Duration", "text"], ["price", "Price", "number"],
+    ["currency", "Currency", "text"], ["priceUnit", "Price unit", "text"],
+    ["rating", "Rating", "number"], ["tags", "Tags (comma separated)", "list"],
+    // Which packages ride the homepage carousel. This was a hardcoded slug
+    // list in data/packages.js, so choosing what the homepage shows meant
+    // editing code.
+    ["featured", "Show on the homepage carousel", "toggle"],
+    ["shortDescription", "Short description", "textarea"],
+    ["fullDescription", "Full description", "textarea"],
+    ["highlights", "Highlights (comma separated)", "list"],
+    ["included", "Included (comma separated)", "list"],
+    ["requirements", "What you'll need (comma separated)", "list"],
+    ["image", "Image URL", "text"], ["icon", "Icon", "text"],
+  ],
+  // The three pills under the hero headline. `query` names one record and its
+  // panel opens on arrival; empty lands on the whole section.
+  homePills: [
+    ["label", "Button text", "text"],
+    ["page", "Goes to (visa / mice / packages / activities / destinations / services)", "text"],
+    ["query", "Opens this record (exact name, or empty for the whole section)", "text"],
+  ],
   activities: [
     ["title", "Title", "text"], ["slug", "Slug", "text"],
     ["category", "Category", "text"], ["destination", "Destination", "text"],
@@ -129,13 +158,15 @@ const FIELDS = {
 };
 FIELDS.packages = FIELDS.activities;
 
-const TITLE_KEY = { activities: "title", packages: "title", destinations: "name", services: "label", visa: "name", mice: "name" };
+const TITLE_KEY = { activities: "title", packages: "title", destinations: "name",
+  services: "label", visa: "name", mice: "name", homePills: "label" };
 
 /** A blank record with every field the collection expects. */
 function blankItem(collection) {
   const item = {};
   FIELDS[collection].forEach(([key, , type]) => {
-    item[key] = type === "number" ? 0 : type === "list" ? [] : "";
+    item[key] = type === "number" ? 0 : type === "list" ? []
+      : type === "toggle" ? false : "";
   });
   if (collection === "activities") item.kind = "activity";
   if (collection === "packages") item.kind = "package";
@@ -201,6 +232,12 @@ function openEditor(index) {
   el("#editor-fields").innerHTML = FIELDS[active]
     .map(([key, label, type]) => {
       const value = type === "list" ? (draft[key] || []).join(", ") : draft[key] ?? "";
+      if (type === "toggle")
+        // Checkbox rather than a yes/no text box: a free-text boolean invites
+        // "y", "TRUE" and "1" and then something has to guess what they meant.
+        return `<label class="admin-field admin-field-toggle">
+          <input data-field="${key}" type="checkbox"${draft[key] ? " checked" : ""} />
+          <span>${esc(label)}</span></label>`;
       if (type === "textarea")
         return `<label class="admin-field">${esc(label)}
           <textarea data-field="${key}" rows="3">${esc(value)}</textarea></label>`;
@@ -221,7 +258,8 @@ function saveEditor() {
   el("#editor-fields").querySelectorAll("[data-field]").forEach((input) => {
     const key = input.dataset.field;
     const type = FIELDS[active].find(([k]) => k === key)[2];
-    if (type === "number") next[key] = Number(input.value) || 0;
+    if (type === "toggle") next[key] = input.checked;
+    else if (type === "number") next[key] = Number(input.value) || 0;
     else if (type === "list")
       next[key] = input.value.split(",").map((s) => s.trim()).filter(Boolean);
     else next[key] = input.value;
@@ -451,7 +489,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=114");
+  const { applyMode } = await import("./sheet-import.mjs?v=116");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -474,7 +512,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=114");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=116");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -524,7 +562,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=114");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=116");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -548,7 +586,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=114");
+    const { exportCsv } = await import("./sheet-import.mjs?v=116");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -566,7 +604,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=114");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=116");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

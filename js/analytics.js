@@ -1,4 +1,4 @@
-import { POSTHOG_KEY, POSTHOG_HOST, isConfigured } from "./analytics-config.js?v=125";
+import { POSTHOG_KEY, POSTHOG_HOST, isConfigured } from "./analytics-config.js?v=130";
 
 /**
  * Product analytics, and the only file that knows PostHog exists.

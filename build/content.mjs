@@ -47,7 +47,7 @@ async function fromFirestore() {
 
 async function fromFiles() {
   const [{ ACTIVITIES, PACKAGES }, { DESTINATIONS, VISA_TYPES, PAGE_COPY },
-         { MICE_SECTIONS }, { SERVICES }, { HOME_PILLS }] = await Promise.all([
+         { MICE_SECTIONS }, { SERVICES }, { HOME_PILLS, HOME_CARDS }] = await Promise.all([
     import("../data/packages.js"), import("../data/content.js"),
     import("../data/mice.js"), import("../data/navigation.js"),
     import("../data/home.js"),
@@ -55,7 +55,7 @@ async function fromFiles() {
   return {
     activities: ACTIVITIES, packages: PACKAGES, destinations: DESTINATIONS,
     services: SERVICES, visa: VISA_TYPES, mice: MICE_SECTIONS,
-    homePills: HOME_PILLS, copy: PAGE_COPY,
+    homePills: HOME_PILLS, homeCards: HOME_CARDS, copy: PAGE_COPY,
   };
 }
 

@@ -701,3 +701,62 @@ body.admin {
 }
 
 .admin-row-pick .admin-row-name { font-weight: 600; }
+
+
+/* ------------------------------------------------ homepage card ordering */
+
+.admin-card-order {
+  flex: none;
+  width: 1.6rem;
+  font-variant-numeric: tabular-nums;
+  font-size: 0.78rem;
+  color: rgba(13, 27, 42, 0.4);
+}
+
+/* The reference rows carry a number, a name and three buttons, so the two-column
+   grid from the pick rows gets a third track for the ordinal. */
+.admin-row-pick {
+  grid-template-columns: auto 1fr auto;
+}
+
+.admin-row-pick .admin-pick {
+  display: grid;
+  gap: 2px;
+  cursor: default;
+}
+
+.admin-row-pick .admin-row-meta {
+  grid-column: auto;
+  padding-left: 0;
+}
+
+.admin-card-actions {
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.admin-card-actions .admin-btn {
+  padding: 6px 10px;
+  line-height: 1;
+}
+
+.admin-card-actions .admin-btn[disabled] {
+  opacity: 0.35;
+  cursor: not-allowed;
+}
+
+.admin-row-add {
+  gap: 8px;
+  padding-top: 16px;
+}
+
+.admin-row-add select {
+  flex: 1;
+  min-width: 0;
+  padding: 9px 10px;
+  border-radius: 10px;
+  border: 1px solid rgba(13, 27, 42, 0.18);
+  background: var(--white, #fff);
+  color: var(--navy, #0d1b2a);
+}

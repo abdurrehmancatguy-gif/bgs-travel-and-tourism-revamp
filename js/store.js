@@ -1,9 +1,9 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=125";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=125";
-import { MICE_SECTIONS } from "../data/mice.js?v=125";
-import { SERVICES } from "../data/navigation.js?v=125";
-import { HOME_PILLS } from "../data/home.js?v=125";
-import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=125";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=130";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=130";
+import { MICE_SECTIONS } from "../data/mice.js?v=130";
+import { SERVICES } from "../data/navigation.js?v=130";
+import { HOME_PILLS, HOME_CARDS } from "../data/home.js?v=130";
+import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=130";
 
 /**
  * The single door between the site's content and where that content lives.
@@ -35,6 +35,7 @@ const DEFAULTS = {
   visa: VISA_TYPES,
   mice: MICE_SECTIONS,
   homePills: HOME_PILLS,
+  homeCards: HOME_CARDS,
   copy: PAGE_COPY,
 };
 

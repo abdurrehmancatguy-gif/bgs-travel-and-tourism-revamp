@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=125";
+import { PACKAGE_IMAGES } from "./images.js?v=130";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -458,10 +458,49 @@ export function featuredPackages(list = PACKAGES) {
     .slice(0, HOME_PACKAGE_SLUGS.length);
 }
 
+/** What each collection calls the field a card shows as its heading. */
+export const CARD_TITLE_KEY = {
+  packages: "title", activities: "title", visa: "name",
+  destinations: "name", services: "label", mice: "name",
+};
+
+/**
+ * Resolves the ordered homeCards references into live records.
+ *
+ * Each result carries the collection it came from, because the row is mixed and
+ * everything downstream needs to know which kind of record it is holding — the
+ * card to decide whether it shows a duration or a processing time, and the click
+ * to decide which panel to open.
+ *
+ * A reference that matches nothing is dropped. Renaming a visa in the admin
+ * should quietly remove it from the homepage rather than leave a card with no
+ * words on it, and an empty result falls back to the packages the row has always
+ * shown rather than rendering an empty rail.
+ *
+ * @param {Array}    refs   the homeCards list, in order
+ * @param {Function} lookup (collection) => that collection's records
+ */
+export function resolveHomeCards(refs, lookup) {
+  const norm = (v) => String(v ?? "").trim().toLowerCase();
+  const resolved = (refs ?? []).map((ref) => {
+    const list = lookup(ref.collection) ?? [];
+    const key = CARD_TITLE_KEY[ref.collection] ?? "title";
+    const record = list.find((item) => norm(item[key]) === norm(ref.name));
+    return record ? { ...record, __collection: ref.collection } : null;
+  }).filter(Boolean);
+
+  if (resolved.length) return resolved;
+  return featuredPackages(lookup("packages") ?? [])
+    .map((pkg) => ({ ...pkg, __collection: "packages" }));
+}
+
 /** A slug from the title, for records that arrived without one. */
 export const packageSlug = (pkg) =>
   pkg.slug ||
-  String(pkg.title ?? "")
+  // title for a package, name for a visa or destination. Reading only title
+  // gave every visa on the homepage the same empty slug, which is the id the
+  // card is keyed on — so they collapsed into one another.
+  String(pkg.title ?? pkg.name ?? pkg.label ?? "")
     .toLowerCase()
     .replace(/[^a-z0-9]+/g, "-")
     .replace(/^-|-$/g, "");

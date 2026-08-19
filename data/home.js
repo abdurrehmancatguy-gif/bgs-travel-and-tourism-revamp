@@ -26,3 +26,30 @@ export const HOME_PILLS = [
   { label: "Schengen Visa", page: "visa", query: "Schengen Visa" },
   { label: "MICE", page: "mice", query: "" },
 ];
+
+/**
+ * The cards in the homepage carousel, in order.
+ *
+ * References rather than copies: each entry names a collection and a record, and
+ * the carousel looks the live record up when it renders. A card therefore shows
+ * the same title, photograph and detail as the record's own page, and editing it
+ * in one place changes both — which is the point, because a visa quoted at two
+ * prices on two pages is worse than a visa quoted on one.
+ *
+ * An ordered list rather than a flag on each record, because the row is mixed:
+ * a flag can say "show this" but not "show this third, after two visas", and
+ * flags live on the records so they cannot order across two collections at all.
+ *
+ * `name` matches the record's own title field — name for a visa, title for a
+ * package. An entry that matches nothing is skipped rather than rendered blank,
+ * so renaming a visa quietly drops it from the homepage instead of leaving a
+ * card with no words on it.
+ */
+export const HOME_CARDS = [
+  { collection: "visa", name: "Saudi Multiple Entry Visa" },
+  { collection: "visa", name: "Schengen Visa" },
+  { collection: "visa", name: "China Business Visa" },
+  { collection: "packages", name: "Ethiopia Historical Circuit: Lalibela + Addis" },
+  { collection: "packages", name: "Bali Discovery: Temples, Rice Terraces + Beaches" },
+  { collection: "packages", name: "Rajasthan Royal Heritage Tour" },
+];

@@ -543,3 +543,87 @@ body.admin {
   flex: none;
   accent-color: var(--gold, #e8941a);
 }
+
+/* ------------------------------------------------------------ photo picker */
+
+.admin-field-photo {
+  display: grid;
+  gap: 0.55rem;
+}
+
+.photo-search {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.photo-search input {
+  flex: 1;
+  min-width: 0;
+}
+
+.photo-search .admin-btn {
+  flex: none;
+  white-space: nowrap;
+}
+
+.photo-status {
+  margin: 0;
+  font-size: 0.8rem;
+  color: rgba(13, 27, 42, 0.62);
+  min-height: 1em;
+}
+
+/* auto-fill, not auto-fit: the thumbnails keep their size in a narrow dialog
+   and wrap onto a second row instead of stretching into letterboxes. */
+.photo-results {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(104px, 1fr));
+  gap: 0.5rem;
+}
+
+.photo-option {
+  padding: 0;
+  border: 2px solid transparent;
+  border-radius: 10px;
+  overflow: hidden;
+  background: none;
+  cursor: pointer;
+  display: grid;
+  gap: 0.2rem;
+  text-align: left;
+}
+
+.photo-option img {
+  width: 100%;
+  aspect-ratio: 3 / 2;
+  object-fit: cover;
+  display: block;
+  border-radius: 8px;
+}
+
+.photo-option span {
+  font-size: 0.65rem;
+  color: rgba(13, 27, 42, 0.5);
+  padding: 0 0.2rem 0.2rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.photo-option:hover,
+.photo-option:focus-visible {
+  border-color: rgba(232, 148, 26, 0.55);
+}
+
+.photo-option[data-chosen] {
+  border-color: #a35c00;
+}
+
+/* The chosen photograph, at the size it will actually be judged at. */
+.photo-preview {
+  width: 100%;
+  max-height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  display: block;
+}

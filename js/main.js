@@ -1,8 +1,8 @@
-import { SCENE } from "../data/images.js?v=125";
-import "./info-modal.js?v=125";
-import { SCENES } from "../data/navigation.js?v=125";
-import { findPackageBySlug } from "../data/packages.js?v=125";
-import { icon } from "../data/icons.js?v=125";
+import { SCENE } from "../data/images.js?v=130";
+import "./info-modal.js?v=130";
+import { SCENES } from "../data/navigation.js?v=130";
+import { findPackageBySlug } from "../data/packages.js?v=130";
+import { icon } from "../data/icons.js?v=130";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -11,12 +11,13 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=125";
-import { createNavigation } from "./navigation.js?v=125";
-import { getCollection, subscribe } from "./store.js?v=125";
-import { buildPrimaryNav } from "./nav-model.js?v=125";
-import { createCarousel } from "./carousel.js?v=125";
-import { createPackageDialog } from "./package-dialog.js?v=125";
+} from "../utils/whatsapp.js?v=130";
+import { createNavigation } from "./navigation.js?v=130";
+import { getCollection, subscribe } from "./store.js?v=130";
+import { buildPrimaryNav } from "./nav-model.js?v=130";
+import { createCarousel } from "./carousel.js?v=130";
+import { openItem } from "./item-dialog.js?v=130";
+import { createPackageDialog } from "./package-dialog.js?v=130";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -372,7 +373,15 @@ const carousel = createCarousel({
   track,
   controls: railControls,
   filterLabel: railFilter,
-  onOpenPackage: (pkg, card) => dialog.open(pkg, card),
+  // The row is mixed, so the click routes by what the record actually is: a
+  // package opens the package dialog, anything else opens the shared item
+  // panel — the same one its own category page uses, so a visa on the homepage
+  // shows the requirements and processing time it shows everywhere else.
+  onOpenPackage: (record, card) => {
+    const kind = record.__collection ?? "packages";
+    if (kind === "packages") return dialog.open(record, card);
+    openItem(record, kind);
+  },
 });
 
 /* --- "Browse all packages", beside the rail arrows --- */

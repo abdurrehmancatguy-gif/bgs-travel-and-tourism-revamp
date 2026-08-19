@@ -1,13 +1,18 @@
-import { filterPackages, featuredPackages, withSlugs } from "../data/packages.js?v=125";
-import { getCollection } from "./store.js?v=125";
+import { filterPackages, withSlugs, resolveHomeCards, CARD_TITLE_KEY } from "../data/packages.js?v=130";
+import { getCollection } from "./store.js?v=130";
 
 /* Read through the store, not from the data file directly. The carousel used
    to import PACKAGES and HOME_PACKAGES as constants, which meant the homepage
    showed the six packages written into the source and no edit made in the
    admin ever reached it — the one grid on the site that ignored its own CMS. */
 const allPackages = () => withSlugs(getCollection("packages"));
-const homePackages = () => featuredPackages(allPackages());
-import { icon } from "../data/icons.js?v=125";
+/* The homepage row is mixed — visas and packages in a chosen order — so it is
+   resolved from the homeCards references rather than filtered out of one
+   collection. Each card carries __collection so the markup and the click know
+   what they are holding. */
+const homePackages = () =>
+  withSlugs(resolveHomeCards(getCollection("homeCards"), (c) => getCollection(c)));
+import { icon } from "../data/icons.js?v=130";
 
 /**
  * Horizontal package rail.
@@ -48,20 +53,51 @@ const ratingLabel = (pkg) =>
    duration, what is included, what is not. The accessible name drops it too,
    so a screen reader hears what the card actually says rather than a price
    nobody else is shown. The packages page still prices every card. */
+/* A visa has no duration and no rating; it has a processing time and a validity,
+   which are the two things somebody comparing visas actually wants on the card.
+   Read per collection rather than per field so a package cannot accidentally
+   render a visa's furniture. */
+function cardParts(record) {
+  const kind = record.__collection ?? "packages";
+  const title = record[CARD_TITLE_KEY[kind] ?? "title"] ?? "";
+  if (kind === "visa") {
+    return {
+      title,
+      kicker: record.category || record.country || "Visa",
+      desc: record.blurb || record.shortDescription || "",
+      // Validity only. It is the short fact that reads as the parallel of a
+      // package's "6 Days", and it keeps every card the same height —
+      // "Express 4-5 days · Normal 10-15 days" wrapped onto a second line and
+      // made the visa cards taller than the ones beside them. The processing
+      // time is on the panel, next to the price and the documents, where
+      // somebody comparing turnarounds is actually looking.
+      meta: [record.validity].filter((v) => v && !/^n\/?a$/i.test(String(v).trim())),
+      rating: "",
+    };
+  }
+  return {
+    title,
+    kicker: record.category || "",
+    desc: record.shortDescription || record.blurb || "",
+    meta: [record.duration].filter(Boolean),
+    rating: ratingLabel(record),
+  };
+}
+
 function cardMarkup(pkg, index, set) {
-  const rating = ratingLabel(pkg);
-  const label = [pkg.title, pkg.destination, pkg.duration]
-    .filter(Boolean).join(". ");
+  const { title, kicker, desc, meta, rating } = cardParts(pkg);
+  const label = [title, pkg.destination || pkg.country, ...meta].filter(Boolean).join(". ");
   return `
     <article class="package-card" data-index="${index}" data-set="${set}" data-slug="${esc(pkg.slug)}"
+             data-collection="${esc(pkg.__collection ?? "packages")}"
              role="button" tabindex="${set === 1 ? 0 : -1}"
-             aria-label="${esc(label)}. Open package details.">
-      ${pkg.category ? `<span class="package-kicker">${esc(pkg.category)}</span>` : ""}
+             aria-label="${esc(label)}. Open details.">
+      ${kicker ? `<span class="package-kicker">${esc(kicker)}</span>` : ""}
       ${pkg.icon ? `<span class="package-icon" aria-hidden="true">${icon(pkg.icon)}</span>` : ""}
-      <h3>${esc(pkg.title)}</h3>
-      ${pkg.shortDescription ? `<p class="package-desc">${esc(pkg.shortDescription)}</p>` : ""}
+      <h3>${esc(title)}</h3>
+      ${desc ? `<p class="package-desc">${esc(desc)}</p>` : ""}
       <p class="package-meta">
-        ${pkg.duration ? `<span class="package-duration">${esc(pkg.duration)}</span>` : ""}
+        ${meta.map((m) => `<span class="package-duration">${esc(m)}</span>`).join("")}
         ${rating ? `<span class="package-rating">${esc(rating)} &#9733;</span>` : ""}
       </p>
     </article>`;

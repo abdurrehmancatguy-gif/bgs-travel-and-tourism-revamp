@@ -1,9 +1,10 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=125";
-import { photoQuery } from "./photo-query.mjs?v=125";
-import { signIn } from "./cloud.js?v=125";
+} from "./store.js?v=130";
+import { photoQuery } from "./photo-query.mjs?v=130";
+import { CARD_TITLE_KEY } from "../data/packages.js?v=130";
+import { signIn } from "./cloud.js?v=130";
 
 /**
  * The admin console.
@@ -80,10 +81,6 @@ const FIELDS = {
     ["duration", "Duration", "text"], ["price", "Price", "number"],
     ["currency", "Currency", "text"], ["priceUnit", "Price unit", "text"],
     ["rating", "Rating", "number"], ["tags", "Tags (comma separated)", "list"],
-    // Which packages ride the homepage carousel. This was a hardcoded slug
-    // list in data/packages.js, so choosing what the homepage shows meant
-    // editing code.
-    ["featured", "Show on the homepage carousel", "toggle"],
     ["shortDescription", "Short description", "textarea"],
     ["fullDescription", "Full description", "textarea"],
     ["highlights", "Highlights (comma separated)", "list"],
@@ -180,6 +177,7 @@ let active = "activities";
 let draft = null;
 
 const el = (id) => document.querySelector(id);
+const norm = (v) => String(v ?? "").trim().toLowerCase();
 const esc = (s) => String(s ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
 
 /* -------------------------------------------------------------- rendering */
@@ -197,8 +195,13 @@ const TAB_LABEL = {
   homePills: "Homepage",
 };
 
+/* Collections with no tab of their own. copy has its own editor at the end of
+   the strip; homeCards is edited inside the Homepage panel, and a second tab
+   for it would be two doors onto one thing. */
+const HIDDEN_TABS = new Set(["copy", "homeCards"]);
+
 function renderTabs() {
-  el("#admin-tabs").innerHTML = COLLECTIONS.filter((c) => c !== "copy")
+  el("#admin-tabs").innerHTML = COLLECTIONS.filter((c) => !HIDDEN_TABS.has(c))
     .map((c) => `<button class="admin-tab" type="button" data-tab="${c}"
         data-active="${c === active}">${TAB_LABEL[c] ?? c}${isCustomised(c) ? " •" : ""}</button>`)
     .join("") +
@@ -238,8 +241,7 @@ function renderList() {
  */
 function renderHomepageEditor() {
   const pills = getCollection("homePills");
-  const packages = getCollection("packages");
-  const anyFlagged = packages.some((pkg) => pkg.featured);
+  const cards = getCollection("homeCards");
 
   const pillRows = pills.map((pill, i) => `
     <li class="admin-row">
@@ -250,16 +252,43 @@ function renderHomepageEditor() {
     </li>`).join("") ||
     `<li class="admin-empty">No buttons yet — “Add new” makes one.</li>`;
 
-  const packageRows = packages.map((pkg, i) => `
+  const cardRows = cards.map((ref, i) => {
+    const list = getCollection(ref.collection) ?? [];
+    const key = CARD_TITLE_KEY[ref.collection] ?? "title";
+    const found = list.some((r) => norm(r[key]) === norm(ref.name));
+    return `
     <li class="admin-row admin-row-pick">
-      <label class="admin-pick">
-        <input type="checkbox" data-feature="${i}"${pkg.featured ? " checked" : ""} />
-        <span class="admin-row-name">${esc(pkg.title)}</span>
-      </label>
-      <span class="admin-row-meta">${esc(pkg.region || "")}</span>
-      <button class="admin-btn" type="button" data-edit-package="${i}">Edit card</button>
-    </li>`).join("") ||
-    `<li class="admin-empty">No packages yet.</li>`;
+      <span class="admin-card-order">${i + 1}</span>
+      <span class="admin-pick">
+        <span class="admin-row-name">${esc(ref.name)}</span>
+        <span class="admin-row-meta">${esc(TAB_LABEL[ref.collection] ?? ref.collection)}${
+          found ? "" : " · not found, will be skipped"}</span>
+      </span>
+      <span class="admin-card-actions">
+        <button class="admin-btn" type="button" data-card-move="${i}" data-dir="-1"
+                ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button>
+        <button class="admin-btn" type="button" data-card-move="${i}" data-dir="1"
+                ${i === cards.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button>
+        <button class="admin-btn admin-btn-danger" type="button" data-card-remove="${i}">Remove</button>
+      </span>
+    </li>`;
+  }).join("") ||
+    `<li class="admin-empty">No cards chosen — the homepage falls back to its packages.</li>`;
+
+  // Anything not already on the row, grouped so a long visa list stays findable.
+  const options = ["visa", "packages", "activities", "destinations"].map((collection) => {
+    const key = CARD_TITLE_KEY[collection] ?? "title";
+    const items = (getCollection(collection) ?? [])
+      .map((r) => r[key])
+      .filter((name) => name && !cards.some((c) =>
+        c.collection === collection && norm(c.name) === norm(name)));
+    return items.length
+      ? `<optgroup label="${esc(TAB_LABEL[collection] ?? collection)}">${
+          items.map((name) =>
+            `<option value="${esc(collection)}::${esc(name)}">${esc(name)}</option>`).join("")
+        }</optgroup>`
+      : "";
+  }).join("");
 
   el("#admin-list").innerHTML = `
     <li class="admin-section-head"><h3>Buttons under the headline</h3>
@@ -267,17 +296,21 @@ function renderHomepageEditor() {
          names, so a button called Schengen Visa lands on that visa’s panel.</p></li>
     ${pillRows}
     <li class="admin-section-head"><h3>Cards in the homepage carousel</h3>
-      <p>${anyFlagged
-        ? "Tick the packages to show. Untick them all to go back to the default six."
-        : "Showing the default six. Tick any package to choose the row yourself."}
-         “Edit card” opens the package itself — its title, price and photograph
-         are shared with the Packages page.</p></li>
-    ${packageRows}`;
+      <p>In the order shown. A card is a reference to the real record, so its
+         title, photograph and price stay whatever that record says — edit those
+         in ${esc(TAB_LABEL.visa)} or ${esc(TAB_LABEL.packages)} and the card
+         follows.</p></li>
+    ${cardRows}
+    <li class="admin-row admin-row-add">
+      <select id="card-add-pick" aria-label="Record to add to the homepage">
+        <option value="">Add a card…</option>${options}
+      </select>
+      <button class="admin-btn admin-btn-primary" type="button" data-card-add>Add</button>
+    </li>`;
 
   el("#admin-count").textContent =
     `${pills.length} button${pills.length === 1 ? "" : "s"} · ` +
-    `${anyFlagged ? packages.filter((p) => p.featured).length : 6} card${
-      (anyFlagged ? packages.filter((p) => p.featured).length : 6) === 1 ? "" : "s"}`;
+    `${cards.length} card${cards.length === 1 ? "" : "s"}`;
 }
 
 function renderCopyEditor() {
@@ -490,13 +523,40 @@ el("#admin-tabs").addEventListener("click", (event) => {
 });
 
 el("#admin-list").addEventListener("click", (event) => {
-  // "Edit card" on the Homepage panel edits a package, so switch to that
-  // collection first — openEditor reads whichever one is active.
-  const editPackage = event.target.closest("[data-edit-package]");
-  if (editPackage) {
-    active = "packages";
+  /* The homepage row is an ordered list of references, so it is edited by
+     moving and removing entries rather than by ticking records. Saving the
+     list is what the carousel watches. */
+  const saveCards = (next, message) => {
+    saveCollection("homeCards", next);
     refresh();
-    return openEditor(Number(editPackage.dataset.editPackage));
+    toast(message);
+  };
+
+  const move = event.target.closest("[data-card-move]");
+  if (move) {
+    const from = Number(move.dataset.cardMove);
+    const to = from + Number(move.dataset.dir);
+    const cards = getCollection("homeCards").map((c) => ({ ...c }));
+    if (to < 0 || to >= cards.length) return;
+    [cards[from], cards[to]] = [cards[to], cards[from]];
+    return saveCards(cards, "Reordered");
+  }
+
+  const removeCard = event.target.closest("[data-card-remove]");
+  if (removeCard) {
+    const cards = getCollection("homeCards").map((c) => ({ ...c }));
+    const [gone] = cards.splice(Number(removeCard.dataset.cardRemove), 1);
+    return saveCards(cards, `Removed ${gone?.name ?? "card"}`);
+  }
+
+  if (event.target.closest("[data-card-add]")) {
+    const pick = el("#card-add-pick");
+    if (!pick.value) return;
+    // "::" rather than a comma, because titles contain commas.
+    const [collection, ...rest] = pick.value.split("::");
+    const cards = getCollection("homeCards").map((c) => ({ ...c }));
+    cards.push({ collection, name: rest.join("::") });
+    return saveCards(cards, "Added to the homepage");
   }
   const edit = event.target.closest("[data-edit]");
   if (edit) return openEditor(Number(edit.dataset.edit));
@@ -512,18 +572,6 @@ el("#admin-list").addEventListener("click", (event) => {
 });
 
 el("#admin-list").addEventListener("change", (event) => {
-  // Ticking a package on the Homepage panel writes the flag onto the package
-  // itself, because that is where it belongs: the carousel is a view of the
-  // catalogue, not a second copy of it.
-  const feature = event.target.closest("[data-feature]");
-  if (feature) {
-    const packages = getCollection("packages").map((pkg) => ({ ...pkg }));
-    packages[Number(feature.dataset.feature)].featured = feature.checked;
-    saveCollection("packages", packages);
-    refresh();
-    toast(feature.checked ? "Added to the homepage" : "Removed from the homepage");
-    return;
-  }
   const field = event.target.closest("[data-copy]");
   if (!field) return;
   const [page, key] = field.dataset.copy.split(".");
@@ -697,7 +745,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=125");
+  const { applyMode } = await import("./sheet-import.mjs?v=130");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -720,7 +768,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=125");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=130");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -770,7 +818,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=125");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=130");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -794,7 +842,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=125");
+    const { exportCsv } = await import("./sheet-import.mjs?v=130");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -812,7 +860,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=125");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=130");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

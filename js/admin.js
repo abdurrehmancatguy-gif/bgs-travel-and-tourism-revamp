@@ -1,8 +1,9 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
   exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=120";
-import { signIn } from "./cloud.js?v=120";
+} from "./store.js?v=121";
+import { photoQuery } from "./photo-query.mjs?v=121";
+import { signIn } from "./cloud.js?v=121";
 
 /**
  * The admin console.
@@ -88,7 +89,7 @@ const FIELDS = {
     ["highlights", "Highlights (comma separated)", "list"],
     ["included", "Included (comma separated)", "list"],
     ["requirements", "What you'll need (comma separated)", "list"],
-    ["image", "Image URL", "text"], ["icon", "Icon", "text"],
+    ["image", "Image", "photo"], ["icon", "Icon", "text"],
   ],
   // The three pills under the hero headline. `query` names one record and its
   // panel opens on arrival; empty lands on the whole section.
@@ -109,7 +110,7 @@ const FIELDS = {
     ["highlights", "Highlights (comma separated)", "list"],
     ["included", "Included (comma separated)", "list"],
     ["requirements", "What you'll need (comma separated)", "list"],
-    ["image", "Image URL", "text"], ["icon", "Icon", "text"],
+    ["image", "Image", "photo"], ["icon", "Icon", "text"],
   ],
   destinations: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["region", "Region", "text"],
@@ -118,7 +119,7 @@ const FIELDS = {
     ["fullDescription", "Full description", "textarea"],
     ["highlights", "Highlights (comma separated)", "list"],
     ["requirements", "What you'll need (comma separated)", "list"],
-    ["image", "Image URL", "text"],
+    ["image", "Image", "photo"],
   ],
   services: [
     ["label", "Name", "text"], ["key", "Key", "text"], ["icon", "Icon", "text"],
@@ -134,7 +135,7 @@ const FIELDS = {
     ["fullDescription", "Full description", "textarea"],
     ["requirements", "What you'll need (comma separated)", "list"],
     ["icon", "Icon key", "text"],
-    ["image", "Image URL", "text"],
+    ["image", "Image", "photo"],
   ],
   visa: [
     ["name", "Name", "text"], ["key", "Key", "text"], ["country", "Country", "text"],
@@ -153,7 +154,7 @@ const FIELDS = {
     ["blurb", "Description", "textarea"],
     ["requirements", "What you'll need (comma separated)", "list"],
     ["fullDescription", "Full description", "textarea"],
-    ["image", "Image URL", "text"],
+    ["image", "Image", "photo"],
   ],
 };
 FIELDS.packages = FIELDS.activities;
@@ -232,6 +233,25 @@ function openEditor(index) {
   el("#editor-fields").innerHTML = FIELDS[active]
     .map(([key, label, type]) => {
       const value = type === "list" ? (draft[key] || []).join(", ") : draft[key] ?? "";
+      if (type === "photo")
+        // The query is a separate input on purpose, and editable. photoQuery
+        // guesses the place from the product name and is usually right, but
+        // "Schengen" is not somewhere you can photograph — being able to type
+        // "Prague old town" beats any amount of cleverness in the guesser.
+        return `<div class="admin-field admin-field-photo">
+          <label>${esc(label)}
+            <input data-field="${key}" type="text" value="${esc(value)}"
+                   placeholder="Paste a URL, or search below" /></label>
+          <div class="photo-search">
+            <input data-photo-query type="search"
+                   value="${esc(photoQuery(draft[TITLE_KEY[active]] ?? "", active))}"
+                   placeholder="Search photos" aria-label="Photo search" />
+            <button class="admin-btn" type="button" data-photo-find>Find photos</button>
+          </div>
+          <p class="photo-status" data-photo-status role="status"></p>
+          <div class="photo-results" data-photo-results></div>
+          ${value ? `<img class="photo-preview" src="${esc(value)}" alt="" />` : ""}
+        </div>`;
       if (type === "toggle")
         // Checkbox rather than a yes/no text box: a free-text boolean invites
         // "y", "TRUE" and "1" and then something has to guess what they meant.
@@ -250,6 +270,85 @@ function openEditor(index) {
   el("#admin-editor").showModal();
 }
 
+/* ------------------------------------------------------------ photo picker */
+
+/**
+ * Finds photographs for the record being edited and shows them as thumbnails.
+ *
+ * Delegated from the editor rather than bound per field, because the editor
+ * rebuilds its fields every time a record is opened.
+ */
+async function findPhotos(scope) {
+  const queryInput = scope.querySelector("[data-photo-query]");
+  const status = scope.querySelector("[data-photo-status]");
+  const results = scope.querySelector("[data-photo-results]");
+  const query = queryInput.value.trim();
+  if (!query) { status.textContent = "Type something to search for."; return; }
+
+  status.textContent = "Searching…";
+  results.innerHTML = "";
+  try {
+    const res = await fetch(
+      `/api/stock-image?q=${encodeURIComponent(query)}&count=6`
+    );
+    if (!res.ok) throw new Error(`search returned ${res.status}`);
+    const { options = [], reason } = await res.json();
+
+    if (!options.length) {
+      // Say which of the two it is. "No photos" when the key is missing sends
+      // somebody hunting for a better search term for a problem that is not
+      // theirs to solve.
+      status.textContent = reason
+        ? `No photos — ${reason}`
+        : `No photos found for "${query}". Try a place name.`;
+      return;
+    }
+    status.textContent = `${options.length} found — click one to use it.`;
+    results.innerHTML = options.map((o) => `
+      <button class="photo-option" type="button" data-photo-pick="${esc(o.url)}"
+              title="${esc(o.alt || o.photographer)}">
+        <img src="${esc(o.thumb || o.url)}" alt="${esc(o.alt)}" loading="lazy" />
+        ${o.photographer ? `<span>${esc(o.photographer)}</span>` : ""}
+      </button>`).join("");
+  } catch (error) {
+    // The function only exists on Netlify, so this is the normal answer when
+    // the admin is opened from a local server. Worth saying plainly.
+    status.textContent =
+      `Photo search is unavailable here (${error.message}). It runs on the deployed site.`;
+  }
+}
+
+function choosePhoto(scope, url) {
+  const field = scope.querySelector("[data-field]");
+  field.value = url;
+  scope.querySelectorAll("[data-photo-pick]").forEach((b) =>
+    b.toggleAttribute("data-chosen", b.dataset.photoPick === url));
+  let preview = scope.querySelector(".photo-preview");
+  if (!preview) {
+    preview = document.createElement("img");
+    preview.className = "photo-preview";
+    preview.alt = "";
+    scope.append(preview);
+  }
+  preview.src = url;
+}
+
+document.addEventListener("click", (event) => {
+  const find = event.target.closest("[data-photo-find]");
+  if (find) { findPhotos(find.closest(".admin-field-photo")); return; }
+  const pick = event.target.closest("[data-photo-pick]");
+  if (pick) choosePhoto(pick.closest(".admin-field-photo"), pick.dataset.photoPick);
+});
+
+/* Enter in the search box searches rather than submitting the editor. */
+document.addEventListener("keydown", (event) => {
+  if (event.key !== "Enter") return;
+  const box = event.target.closest("[data-photo-query]");
+  if (!box) return;
+  event.preventDefault();
+  findPhotos(box.closest(".admin-field-photo"));
+});
+
 function saveEditor() {
   const items = getCollection(active);
   const next = { ...draft };
@@ -259,6 +358,7 @@ function saveEditor() {
     const key = input.dataset.field;
     const type = FIELDS[active].find(([k]) => k === key)[2];
     if (type === "toggle") next[key] = input.checked;
+    else if (type === "photo") next[key] = input.value.trim();
     else if (type === "number") next[key] = Number(input.value) || 0;
     else if (type === "list")
       next[key] = input.value.split(",").map((s) => s.trim()).filter(Boolean);
@@ -489,7 +589,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=120");
+  const { applyMode } = await import("./sheet-import.mjs?v=121");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -512,7 +612,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=120");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=121");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -562,7 +662,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=120");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=121");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -586,7 +686,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=120");
+    const { exportCsv } = await import("./sheet-import.mjs?v=121");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -604,7 +704,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=120");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=121");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

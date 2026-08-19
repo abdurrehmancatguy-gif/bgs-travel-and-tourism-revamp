@@ -30,7 +30,7 @@ const priceRows = (i) => {
   const unit = (v) => (v ? `${v} ${i.priceUnit ?? ""}`.trim() : "");
   const normal = unit(money(i));
   const express = unit(expressMoney(i));
-  if (normal && express) return [["Normal", normal], ["Express", express]];
+  // Mirrors priceFacts in data/packages.js: express wins where both exist.
   if (express) return [["Express", express]];
   if (normal) return [["Price", normal]];
   return [];

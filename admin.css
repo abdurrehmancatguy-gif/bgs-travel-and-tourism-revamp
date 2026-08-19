@@ -846,3 +846,9 @@ body.admin {
   .admin-row-label { grid-template-columns: 1fr; }
   .admin-subtabs { flex-wrap: wrap; }
 }
+
+/* A refused save is not a confirmation. */
+#admin-toast[data-tone="error"] {
+  background: #8c2f1d;
+  color: #fff6e8;
+}

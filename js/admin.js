@@ -1,11 +1,11 @@
 import {
   COLLECTIONS, getCollection, saveCollection, resetCollection, resetAll,
-  exportAll, importAll, isCustomised, isCloudEnabled,
-} from "./store.js?v=132";
-import { photoQuery } from "./photo-query.mjs?v=132";
-import { CARD_TITLE_KEY } from "../data/packages.js?v=132";
-import { resolvePill } from "../data/home.js?v=132";
-import { signIn } from "./cloud.js?v=132";
+  exportAll, importAll, isCustomised, isCloudEnabled, subscribeSyncFailure,
+} from "./store.js?v=133";
+import { photoQuery } from "./photo-query.mjs?v=133";
+import { CARD_TITLE_KEY } from "../data/packages.js?v=133";
+import { resolvePill } from "../data/home.js?v=133";
+import { signIn } from "./cloud.js?v=133";
 
 /**
  * The admin console.
@@ -548,12 +548,26 @@ function saveEditor() {
 function refresh() { renderTabs(); renderList(); }
 
 let toastTimer = 0;
-function toast(message) {
+subscribeSyncFailure((name, error) => {
+  // The edit is already gone from the page by the time this runs — Firestore
+  // rolled it back — so the message has to explain the disappearance, not just
+  // report an error code.
+  const why = /permission|insufficient|unauthenticated/i.test(error?.message ?? "")
+    ? "your sign-in has expired"
+    : error?.message ?? "the connection failed";
+  toast(`Not saved — ${why}. Sign in again and retry.`, true);
+});
+
+function toast(message, isError = false) {
   const node = el("#admin-toast");
   node.textContent = message;
   node.dataset.shown = "true";
+  node.dataset.tone = isError ? "error" : "ok";
   clearTimeout(toastTimer);
-  toastTimer = setTimeout(() => { node.dataset.shown = "false"; }, 2200);
+  // A failure needs longer than a confirmation: it names a cause and asks for
+  // something back, and 2.2 seconds is not enough to read that and act on it.
+  toastTimer = setTimeout(() => { node.dataset.shown = "false"; },
+    isError ? 7000 : 2200);
 }
 
 /* ------------------------------------------------------------------ events */
@@ -617,22 +631,6 @@ el("#admin-list").addEventListener("click", (event) => {
     return saveHome(homeSection, list, "Added to the homepage");
   }
 
-  const removeCard = event.target.closest("[data-card-remove]");
-  if (removeCard) {
-    const cards = getCollection("homeCards").map((c) => ({ ...c }));
-    const [gone] = cards.splice(Number(removeCard.dataset.cardRemove), 1);
-    return saveCards(cards, `Removed ${gone?.name ?? "card"}`);
-  }
-
-  if (event.target.closest("[data-card-add]")) {
-    const pick = el("#card-add-pick");
-    if (!pick.value) return;
-    // "::" rather than a comma, because titles contain commas.
-    const [collection, ...rest] = pick.value.split("::");
-    const cards = getCollection("homeCards").map((c) => ({ ...c }));
-    cards.push({ collection, name: rest.join("::") });
-    return saveCards(cards, "Added to the homepage");
-  }
   const edit = event.target.closest("[data-edit]");
   if (edit) return openEditor(Number(edit.dataset.edit));
   const remove = event.target.closest("[data-remove]");
@@ -833,7 +831,7 @@ async function backfillImages(records, collection, identity) {
 }
 
 async function applySheet(mode) {
-  const { applyMode } = await import("./sheet-import.mjs?v=132");
+  const { applyMode } = await import("./sheet-import.mjs?v=133");
   el("#sheet-dialog").close();
   sheetStatus("Applying…");
 
@@ -856,7 +854,7 @@ async function handleSheet(file) {
   if (!file) return;
   sheetStatus(`Reading ${file.name}…`);
   try {
-    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=132");
+    const { parseWorkbook, reconcile } = await import("./sheet-import.mjs?v=133");
     const { tabs, problems, ignoredCostColumns } = await parseWorkbook(file);
     if (!tabs.length) {
       sheetStatus(`Nothing to import. ${problems.join(" ")}`);
@@ -906,7 +904,7 @@ el("#sheet-apply-replace").addEventListener("click", () => applySheet("replace")
 el("#sheet-export").addEventListener("click", async () => {
   sheetStatus("Building workbook…");
   try {
-    const { exportWorkbook } = await import("./sheet-import.mjs?v=132");
+    const { exportWorkbook } = await import("./sheet-import.mjs?v=133");
     const blob = await exportWorkbook((name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -930,7 +928,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
   }
   sheetStatus("Building CSV…");
   try {
-    const { exportCsv } = await import("./sheet-import.mjs?v=132");
+    const { exportCsv } = await import("./sheet-import.mjs?v=133");
     const blob = await exportCsv(active, (name) => getCollection(name));
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -948,7 +946,7 @@ el("#sheet-export-csv").addEventListener("click", async () => {
 el("#sheet-template").addEventListener("click", async () => {
   sheetStatus("Building template…");
   try {
-    const { exportTemplate } = await import("./sheet-import.mjs?v=132");
+    const { exportTemplate } = await import("./sheet-import.mjs?v=133");
     const blob = await exportTemplate();
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");

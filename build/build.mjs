@@ -106,7 +106,7 @@ function itemPage(item, collection) {
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>${esc(title)} — BGS Travel &amp; Tourism</title>
   <meta name="description" content="${esc(description)}" />
-  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=132" />
+  <link rel="icon" type="image/png" sizes="32x32" href="/assets/favicon-32.png?v=133" />
   <link rel="stylesheet" href="/styles.css" />
   <link rel="stylesheet" href="/pages.css" />${headExtras({
     url, title: `${title} — BGS Travel & Tourism`, description, image,
@@ -124,7 +124,7 @@ function itemPage(item, collection) {
   <a class="skip-link" href="#main">Skip to content</a>
   <header class="item-page-bar">
     <a class="site-logo" href="/">
-      <img class="site-logo-mark" src="/assets/monogram-96.png?v=132" alt="" width="40" height="40" />
+      <img class="site-logo-mark" src="/assets/monogram-96.png?v=133" alt="" width="40" height="40" />
       <span class="site-logo-text">
         <span class="site-logo-name">BGS Travel &amp; Tourism</span>
         <span class="site-logo-place">Dubai, UAE</span>

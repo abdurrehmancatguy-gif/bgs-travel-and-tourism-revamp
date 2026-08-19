@@ -1,9 +1,9 @@
-import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=132";
-import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=132";
-import { MICE_SECTIONS } from "../data/mice.js?v=132";
-import { SERVICES } from "../data/navigation.js?v=132";
-import { HOME_PILLS, HOME_CARDS } from "../data/home.js?v=132";
-import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=132";
+import { ACTIVITIES, PACKAGES } from "../data/packages.js?v=133";
+import { DESTINATIONS, VISA_TYPES, PAGE_COPY } from "../data/content.js?v=133";
+import { MICE_SECTIONS } from "../data/mice.js?v=133";
+import { SERVICES } from "../data/navigation.js?v=133";
+import { HOME_PILLS, HOME_CARDS } from "../data/home.js?v=133";
+import { cloudEnabled, watchContent, pushCollection, removeCollection } from "./cloud.js?v=133";
 
 /**
  * The single door between the site's content and where that content lives.
@@ -42,6 +42,29 @@ const DEFAULTS = {
 export const COLLECTIONS = Object.keys(DEFAULTS);
 
 const listeners = new Set();
+
+/**
+ * Told when a write reaches localStorage but is refused by Firestore.
+ *
+ * This needs saying out loud, because the failure does not look like one. The
+ * SDK applies a write to its local cache immediately, so the edit lands and the
+ * page re-renders with it; the server then rejects it and the rollback arrives
+ * as an ordinary snapshot, which this store applies as faithfully as any other.
+ * The edit therefore appears, holds for a second or so, and vanishes — which
+ * reads as a button that does not work rather than as a permission problem.
+ *
+ * Nearly always an expired sign-in: the rules require an authenticated admin.
+ */
+const syncFailureListeners = new Set();
+
+export function subscribeSyncFailure(fn) {
+  syncFailureListeners.add(fn);
+  return () => syncFailureListeners.delete(fn);
+}
+
+function reportSyncFailure(name, error) {
+  syncFailureListeners.forEach((fn) => fn(name, error));
+}
 
 function readOverlay() {
   try {
@@ -122,9 +145,10 @@ export function saveCollection(name, items) {
   // Local first, cloud after: the editor sees the change instantly and a failed
   // write surfaces as a warning rather than as lost typing.
   if (cloudEnabled()) {
-    pushCollection(name, items).catch((error) =>
-      console.warn(`store: could not sync "${name}" —`, error.message)
-    );
+    pushCollection(name, items).catch((error) => {
+      console.warn(`store: could not sync "${name}" —`, error.message);
+      reportSyncFailure(name, error);
+    });
   }
 }
 
@@ -133,9 +157,10 @@ export function resetCollection(name) {
   delete overlay[name];
   writeOverlay(overlay);
   if (cloudEnabled()) {
-    removeCollection(name).catch((error) =>
-      console.warn(`store: could not clear "${name}" —`, error.message)
-    );
+    removeCollection(name).catch((error) => {
+      console.warn(`store: could not clear "${name}" —`, error.message);
+      reportSyncFailure(name, error);
+    });
   }
 }
 

@@ -5,16 +5,121 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>BGS Travel &amp; Tourism — Dubai escapes and journeys worldwide</title>
   <meta name="description" content="BGS Travel &amp; Tourism plans Dubai escapes, African safaris and tailor-made journeys across Asia, Europe and beyond — flights, stays, visas and transfers handled by one team." />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=111" />
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=111" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=111" />
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=117" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=117" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=117" />
   <link rel="preconnect" href="https://commons.wikimedia.org" />
   <link rel="preconnect" href="https://upload.wikimedia.org" />
-  <link rel="stylesheet" href="styles.css?v=111" />
-  <script type="module" src="js/analytics.js?v=111"></script>
-  <script type="module" src="js/main.js?v=111"></script>
+  <link rel="preload" as="image" href="assets/monogram-96.png?v=117" fetchpriority="high" />
+  <link rel="stylesheet" href="styles.css?v=117" />
+
+  <!--
+    The opening curtain, inline rather than in styles.css or main.js on purpose.
+
+    A loading screen that arrives late is worse than none: the stylesheet is a
+    blocking request and the module graph lands about a second after that, so an
+    overlay defined in either would flash in after the visitor had already been
+    looking at the page. Inlined here it paints on the first frame.
+
+    It is one screen deep and only shown once a session — see the script at the
+    end of <body>, which also carries the failsafes.
+  -->
+  <style>
+    #boot {
+      position: fixed;
+      inset: 0;
+      z-index: 9999;
+      display: grid;
+      place-items: center;
+      gap: 1.4rem;
+      background: #080f18;
+      color: #fff6e8;
+      font-family: "Inter", system-ui, -apple-system, "Segoe UI", sans-serif;
+      /* Painted out rather than displayed out, so the scene behind it is
+         already composited by the time the fade finishes. */
+      opacity: 1;
+      transition: opacity 520ms ease;
+    }
+    #boot[data-done] { opacity: 0; pointer-events: none; }
+
+    .boot-inner { display: grid; justify-items: center; gap: 1.15rem; text-align: center; }
+
+    .boot-mark {
+      width: 74px; height: 74px;
+      display: grid; place-items: center;
+      border-radius: 50%;
+      /* A ring so the circle reads as deliberate in the moment before the
+         monogram itself decodes. */
+      box-shadow: inset 0 0 0 1px rgba(232, 148, 26, 0.28);
+      animation: boot-breathe 2.4s ease-in-out infinite;
+    }
+    .boot-mark img { width: 46px; height: 46px; display: block; }
+
+    .boot-name {
+      font-size: 0.95rem;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: rgba(255, 246, 232, 0.82);
+    }
+    .boot-place {
+      font-size: 0.68rem;
+      letter-spacing: 0.34em;
+      text-transform: uppercase;
+      color: rgba(255, 246, 232, 0.42);
+      margin-top: -0.7rem;
+    }
+
+    .boot-bar {
+      width: min(190px, 46vw);
+      height: 2px;
+      border-radius: 2px;
+      background: rgba(255, 246, 232, 0.12);
+      overflow: hidden;
+    }
+    /* Width tracks real decoded images, set by the script. A bar that animates
+       on a timer while the page is still fetching is a lie the visitor can
+       feel, because it finishes before the site does. */
+    .boot-fill {
+      display: block;
+      height: 100%;
+      width: 0%;
+      border-radius: inherit;
+      background: linear-gradient(90deg, #e8941a, #f5a832);
+      transition: width 320ms ease;
+    }
+
+    @keyframes boot-breathe {
+      0%, 100% { transform: scale(1);    opacity: 0.9; }
+      50%      { transform: scale(1.06); opacity: 1; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .boot-mark { animation: none; }
+      #boot, .boot-fill { transition: none; }
+    }
+
+    /* Without scripting nothing would ever take the curtain down, so it must
+       not go up in the first place. */
+    .no-js #boot { display: none; }
+  </style>
+  <noscript><style>#boot { display: none !important; }</style></noscript>
+  <script type="module" src="js/analytics.js?v=117"></script>
+  <script type="module" src="js/main.js?v=117"></script>
 </head>
 <body>
+  <!-- role=status rather than a live region that announces every percentage:
+       a screen reader should hear "Loading" once, not a stream of numbers. -->
+  <div id="boot" role="status" aria-label="Loading BGS Travel &amp; Tourism">
+    <div class="boot-inner">
+      <span class="boot-mark">
+        <img src="assets/monogram-96.png?v=117" alt="" width="46" height="46" />
+      </span>
+      <span class="boot-name">BGS Travel &amp; Tourism</span>
+      <span class="boot-place">Dubai, UAE</span>
+      <span class="boot-bar"><span class="boot-fill" id="boot-fill"></span></span>
+    </div>
+  </div>
+
   <a class="skip-link" href="#scene-intro">Skip to main content</a>
 
   <main class="site-shell">
@@ -25,7 +130,7 @@
 
           <header class="site-header" aria-label="Primary navigation">
                   <a class="site-logo" href="#scene-intro" data-scene-link="intro">
-            <img class="site-logo-mark" src="assets/monogram-96.png?v=111" alt="" width="40" height="40" />
+            <img class="site-logo-mark" src="assets/monogram-96.png?v=117" alt="" width="40" height="40" />
             <span class="site-logo-text">
               <span class="site-logo-name">BGS Travel &amp; Tourism</span>
               <span class="site-logo-place">Dubai, UAE</span>
@@ -207,7 +312,10 @@
         <svg viewBox="0 0 24 24" aria-hidden="true" focusable="false" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round"><path d="M6.5 6.5l11 11M17.5 6.5l-11 11"/></svg>
       </button>
       <div class="package-dialog-media">
-        <img id="package-dialog-image" src="" alt="" />
+        <!-- No src attribute: an empty one is not "no image", it resolves to the
+             document URL, so every homepage load fetched index.html a second time
+             to use as a picture. package-dialog.js assigns the real one on open. -->
+        <img id="package-dialog-image" alt="" loading="lazy" decoding="async" />
       </div>
       <div class="package-dialog-body">
         <p class="package-dialog-kicker" id="package-dialog-kicker"></p>
@@ -235,5 +343,74 @@
       </div>
     </article>
   </dialog>
+  <!--
+    Takes the curtain down. Inline and classic (not a module) so it runs during
+    parse rather than after it, which is the whole point of the screen.
+  -->
+  <script>
+  (function () {
+    var boot = document.getElementById("boot");
+    if (!boot) return;
+
+    var SEEN = "bgs.booted";
+    var MAX_WAIT = 5000;   // hard ceiling — see below
+    var MIN_SHOW = 550;    // below this it reads as a flicker, not a greeting
+    var started = Date.now();
+
+    function finish() {
+      if (boot.hasAttribute("data-done")) return;
+      boot.setAttribute("data-done", "");
+      try { sessionStorage.setItem(SEEN, "1"); } catch (e) {}
+      // Removed rather than left transparent over the page: a fixed element at
+      // z-index 9999 still swallows clicks in browsers that skip transitions.
+      window.setTimeout(function () { boot.remove(); }, 560);
+    }
+
+    function done() {
+      var waited = Date.now() - started;
+      window.setTimeout(finish, Math.max(0, MIN_SHOW - waited));
+    }
+
+    // Shown once a session. A returning visitor within the same session — or
+    // anyone navigating back to the homepage — gets the site immediately.
+    try {
+      if (sessionStorage.getItem(SEEN)) { boot.remove(); return; }
+    } catch (e) {
+      // Private mode can throw on sessionStorage. Losing the once-a-session
+      // memory is survivable; a broken homepage is not.
+    }
+
+    var fill = document.getElementById("boot-fill");
+    var layers = [].slice.call(document.querySelectorAll("img.scene-layer"));
+    var total = layers.length;
+    var loaded = 0;
+
+    function tick() {
+      loaded++;
+      if (fill && total) fill.style.width = Math.round((loaded / total) * 100) + "%";
+      if (loaded >= total) done();
+    }
+
+    if (!total) {
+      // No scene to wait for. Fall back to the load event rather than hanging.
+      if (document.readyState === "complete") done();
+      else window.addEventListener("load", done);
+    } else {
+      layers.forEach(function (img) {
+        if (img.complete) { tick(); return; }
+        // Both events, because a layer that 404s must still count. Waiting for
+        // success only would leave the visitor staring at a bar stuck at 85%.
+        img.addEventListener("load", tick, { once: true });
+        img.addEventListener("error", tick, { once: true });
+      });
+    }
+
+    // The failsafe that actually matters. Whatever happens — a hung request, a
+    // decode that never fires, an image the browser silently declines — the
+    // curtain comes up. A loading screen is the one piece of UI that can hide
+    // an entire working website, so it is never allowed to outlast this.
+    window.setTimeout(finish, MAX_WAIT);
+  })();
+  </script>
 </body>
 </html>

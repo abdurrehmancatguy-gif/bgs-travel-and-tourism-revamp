@@ -1,8 +1,8 @@
-import { SCENE } from "../data/images.js?v=111";
-import "./info-modal.js?v=111";
-import { SCENES } from "../data/navigation.js?v=111";
-import { findPackageBySlug } from "../data/packages.js?v=111";
-import { icon } from "../data/icons.js?v=111";
+import { SCENE } from "../data/images.js?v=117";
+import "./info-modal.js?v=117";
+import { SCENES } from "../data/navigation.js?v=117";
+import { findPackageBySlug } from "../data/packages.js?v=117";
+import { icon } from "../data/icons.js?v=117";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -11,12 +11,12 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=111";
-import { createNavigation } from "./navigation.js?v=111";
-import { getCollection, subscribe } from "./store.js?v=111";
-import { buildPrimaryNav } from "./nav-model.js?v=111";
-import { createCarousel } from "./carousel.js?v=111";
-import { createPackageDialog } from "./package-dialog.js?v=111";
+} from "../utils/whatsapp.js?v=117";
+import { createNavigation } from "./navigation.js?v=117";
+import { getCollection, subscribe } from "./store.js?v=117";
+import { buildPrimaryNav } from "./nav-model.js?v=117";
+import { createCarousel } from "./carousel.js?v=117";
+import { createPackageDialog } from "./package-dialog.js?v=117";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -466,14 +466,45 @@ window.addEventListener("resize", placeHeroCategories);
    Each pill declares its own destination in the markup, so changing what they
    point at is an HTML edit rather than a branch in here. A pill with no page
    opens a tailor-made enquiry. */
-document.querySelectorAll(".hero-pill").forEach((pill) => {
-  pill.addEventListener("click", () => {
-    const { page, query } = pill.dataset;
-    if (!page) { openWhatsApp(buildCustomTripUrl()); return; }
-    window.location.href = query
-      ? `${page}.html?q=${encodeURIComponent(query)}`
-      : `${page}.html`;
-  });
+/* Pill text is admin-editable, so it is untrusted the same way catalogue text
+   is: it goes into markup and has to be escaped on the way. */
+const esc = (value) =>
+  String(value ?? "").replace(/[&<>"']/g, (c) => `&#${c.charCodeAt(0)};`);
+
+function renderHeroPills() {
+  const wrap = document.querySelector(".hero-pills");
+  if (!wrap) return;
+  const pills = getCollection("homePills");
+  // Only rewrite when there is something to render. The build writes these into
+  // the HTML so a crawler and the preload scanner see real buttons; replacing
+  // them with nothing on an empty collection would blank the hero.
+  if (!pills.length) return;
+  wrap.innerHTML = pills.map((pill) => `
+    <button class="hero-pill" type="button"
+            data-page="${esc(pill.page ?? "")}"
+            data-query="${esc(pill.query ?? "")}">${esc(pill.label ?? "")}</button>`).join("");
+}
+
+renderHeroPills();
+subscribe(renderHeroPills);
+
+/* The carousel was built once and only ever recalculated on resize, so it was
+   the one grid on the site that ignored an admin edit. */
+subscribe(() => carousel.reload());
+
+/* Delegated, because renderHeroPills replaces the buttons whenever the store
+   changes and listeners bound to the old nodes would go with them. */
+document.querySelector(".hero-pills")?.addEventListener("click", (event) => {
+  const pill = event.target.closest(".hero-pill");
+  if (!pill) return;
+  const { page, query } = pill.dataset;
+  if (!page) { openWhatsApp(buildCustomTripUrl()); return; }
+  // open=1 is the same signal the dropdown menus use: it asks the category page
+  // to open the panel for the record whose title matches, so a pill named after
+  // one visa lands on that visa rather than on a filtered list of one.
+  window.location.href = query
+    ? `${page}.html?q=${encodeURIComponent(query)}&open=1`
+    : `${page}.html`;
 });
 
 /* --- scene CTAs --- */

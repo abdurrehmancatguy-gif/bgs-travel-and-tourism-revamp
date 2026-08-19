@@ -1,5 +1,13 @@
-import { PACKAGES, HOME_PACKAGES, filterPackages } from "../data/packages.js?v=111";
-import { icon } from "../data/icons.js?v=111";
+import { filterPackages, featuredPackages } from "../data/packages.js?v=117";
+import { getCollection } from "./store.js?v=117";
+
+/* Read through the store, not from the data file directly. The carousel used
+   to import PACKAGES and HOME_PACKAGES as constants, which meant the homepage
+   showed the six packages written into the source and no edit made in the
+   admin ever reached it — the one grid on the site that ignored its own CMS. */
+const allPackages = () => getCollection("packages");
+const homePackages = () => featuredPackages(allPackages());
+import { icon } from "../data/icons.js?v=117";
 
 /**
  * Horizontal package rail.
@@ -37,7 +45,8 @@ function cardMarkup(pkg, index, set) {
 }
 
 export function createCarousel({ rail, track, controls, filterLabel, onOpenPackage }) {
-  let list = HOME_PACKAGES;
+  let list = homePackages();
+  let currentFilter = null;
   let cards = [];
   let baseCount = 0;
   let active = 0;
@@ -245,9 +254,10 @@ export function createCarousel({ rail, track, controls, filterLabel, onOpenPacka
      *   fall back to a WhatsApp enquiry and the rail is left untouched.
      */
     setFilter(filter, label) {
-      const next = filterPackages(filter);
+      const next = filterPackages(filter, allPackages());
       if (!next.length) return 0;
       list = next;
+      currentFilter = filter;
       render();
       filterLabel.textContent =
         filter && filter.type && filter.type !== "all" ? `Showing: ${label}` : "";
@@ -255,9 +265,26 @@ export function createCarousel({ rail, track, controls, filterLabel, onOpenPacka
     },
     /** Reset the row to the curated home selection and clear any filter label. */
     showHome() {
-      list = HOME_PACKAGES;
+      list = homePackages();
+      currentFilter = null;
       render();
       filterLabel.textContent = "";
+    },
+
+    /**
+     * Re-read the packages after the store changed, keeping whatever the
+     * visitor is currently looking at.
+     *
+     * Needed because the row is built once and then only ever recalculated on
+     * resize, so an edit made in the admin — a new price, a package added to
+     * the homepage — reached every other grid on the site and not this one.
+     * A filtered row re-applies its filter rather than snapping back to the
+     * home selection under the visitor.
+     */
+    reload() {
+      list = currentFilter ? filterPackages(currentFilter, allPackages()) : homePackages();
+      if (!list.length) { list = homePackages(); currentFilter = null; }
+      render();
     },
     /** Re-centre the row and hand keyboard focus to the active card. */
     restart() {
@@ -273,8 +300,9 @@ export function createCarousel({ rail, track, controls, filterLabel, onOpenPacka
       // is not currently on it. Fall back to the full catalogue before giving
       // up, otherwise deep links to the Dubai day-tours silently do nothing.
       if (!list.some((pkg) => pkg.slug === slug)) {
-        if (!PACKAGES.some((pkg) => pkg.slug === slug)) return false;
-        list = PACKAGES;
+        if (!allPackages().some((pkg) => pkg.slug === slug)) return false;
+        list = allPackages();
+        currentFilter = null;
         render();
         filterLabel.textContent = "";
       }

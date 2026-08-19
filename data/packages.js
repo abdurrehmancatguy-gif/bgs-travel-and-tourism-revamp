@@ -1,4 +1,4 @@
-import { PACKAGE_IMAGES } from "./images.js?v=111";
+import { PACKAGE_IMAGES } from "./images.js?v=117";
 
 /**
  * The single source of truth for package content. Frontend-only: nothing here
@@ -423,6 +423,26 @@ export const HOME_PACKAGES = HOME_PACKAGE_SLUGS.map((slug) => {
   return pkg;
 }).filter(Boolean);
 
+/**
+ * Which packages the homepage carousel shows, from a live list.
+ *
+ * `featured` is the admin's answer and wins whenever any package carries it.
+ * When none does — nobody has touched the flag yet — this falls back to
+ * HOME_PACKAGE_SLUGS above, so an untouched site keeps exactly the six it has
+ * always shown rather than emptying its own carousel on upgrade.
+ *
+ * Takes the list as an argument rather than reading the store, because
+ * data/*.js files are the store's shipped defaults and importing it here would
+ * be a cycle.
+ */
+export function featuredPackages(list = PACKAGES) {
+  const flagged = list.filter((pkg) => pkg.featured);
+  if (flagged.length) return flagged;
+  return HOME_PACKAGE_SLUGS
+    .map((slug) => list.find((pkg) => pkg.slug === slug))
+    .filter(Boolean);
+}
+
 /** "AED 180 per person" — the bare figure, used in the WhatsApp message.
     Empty when there is no price: some visas are quoted per nationality, and a
     record without one must render as silence rather than "AED undefined". */
@@ -436,6 +456,37 @@ export const formatPrice = (pkg) =>
 export const priceLabel = (pkg) => {
   const figure = formatPrice(pkg);
   return figure ? `From ${figure}` : "";
+};
+
+/**
+ * The express tier, for records whose rate sheet quoted two turnarounds at two
+ * prices. Same shape as formatPrice and empty for the same reason: most rows
+ * have one price, and those must not sprout a blank "Express" row.
+ */
+export const formatExpressPrice = (item) =>
+  item?.expressPrice
+    ? `${item.currency ?? "AED"} ${Number(item.expressPrice).toLocaleString("en-US")}${
+        item.priceUnit ? ` ${item.priceUnit}` : ""}`
+    : "";
+
+/**
+ * Price rows for the detail panel, as [label, value] pairs ready to drop into
+ * a facts list.
+ *
+ * Deliberately driven by what the record holds rather than by a fixed layout:
+ * with both tiers you get "Normal" and "Express" and the distinction is worth
+ * naming; with one you get a plain "Price", because labelling a lone figure
+ * "Normal" implies an express option that this record does not offer. A record
+ * with no price at all returns nothing and the row disappears — some visas are
+ * quoted per nationality and have to be asked about.
+ */
+export const priceFacts = (item) => {
+  const normal = formatPrice(item);
+  const express = formatExpressPrice(item);
+  if (normal && express) return [["Normal", normal], ["Express", express]];
+  if (express) return [["Express", express]];
+  if (normal) return [["Price", normal]];
+  return [];
 };
 
 export const findPackageBySlug = (slug) =>

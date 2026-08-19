@@ -1,5 +1,5 @@
 import { SHEETS, PRESERVED, COST_HEADER, collectionForTab, fieldForHeader, inferCollection }
-  from "./sheet-schema.mjs?v=111";
+  from "./sheet-schema.mjs?v=117";
 
 /**
  * Reads a workbook and works out what it would change — without changing
@@ -272,9 +272,14 @@ export async function exportCsv(collection, currentFor) {
  * site now sells a visa to nowhere.
  */
 const EXAMPLES = {
+  // The example carries both price tiers so the expressPrice column is not just
+  // an empty heading somebody has to guess the purpose of. Its processing text
+  // names both turnarounds to match, because a sheet quoting two prices and one
+  // timing reads like a mistake.
   visa: { name: "EXAMPLE Japan Visa", country: "Japan", category: "E-Visa",
-    visaType: "Single Entry", processing: "2 to 3 weeks", validity: "1 month",
-    price: 1000, currency: "AED", priceUnit: "per applicant",
+    visaType: "Single Entry", processing: "Express 5-7 days \u00b7 Normal 2 to 3 weeks",
+    validity: "1 month",
+    price: 1000, expressPrice: 1450, currency: "AED", priceUnit: "per applicant",
     blurb: "One line shown on the card.",
     fullDescription: "Longer text, plus any important notes.",
     requirements: "Passport scan copy\n2 recent photographs\nUAE Emirates ID copy" },
@@ -321,6 +326,11 @@ export async function exportTemplate() {
     ["take one item per line. Press Alt+Enter inside the cell for a new line."],
     [""],
     ["Delete the EXAMPLE rows before uploading. They are ignored if you forget."],
+    [""],
+    ["Visa prices: price is the normal rate, expressPrice the faster one. Fill in"],
+    ["expressPrice only for visas you offer at two turnarounds — the detail panel"],
+    ["then shows Normal and Express side by side. Leave it blank and the visa"],
+    ["shows a single price, which is what most of them should do."],
     [""],
     ["Do not add a cost or vendor column. It is refused on import and never"],
     ["reaches the website."],

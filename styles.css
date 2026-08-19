@@ -1010,6 +1010,14 @@ a.info-contact-value:hover { color: var(--gold-ink); }
    Scene layers
    ========================================================================= */
 
+/* The scene layers are wrapped in <picture> by the build so AVIF browsers get
+   the smaller encode. `display: contents` removes the wrapper's own box, which
+   matters here: .scene-layer is absolutely positioned against .world, and an
+   inline wrapper would otherwise leave a stray line box inside it. */
+picture:has(> .scene-layer) {
+  display: contents;
+}
+
 .scene-layer {
   display: block;
   user-select: none;

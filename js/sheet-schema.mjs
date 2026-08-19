@@ -24,10 +24,35 @@ const norm = (s) => String(s ?? "")
 
 /** Shared shapes, so packages and activities do not drift apart. */
 const PRICED = [
-  { field: "price", type: "number", aliases: ["price", "selling price", "selling price in aed", "selling price in aed bgs", "package price", "package price bgs", "from"] },
+  { field: "price", type: "number", aliases: ["price", "selling price", "selling price in aed", "selling price in aed bgs", "package price", "package price bgs", "from",
+      // A sheet that quotes two turnarounds labels the slower one; a sheet that
+      // quotes one leaves it bare. Both mean the same column.
+      "normal price", "normal selling price", "normal selling price in aed", "normal selling price in aed bgs",
+      "standard price", "standard selling price", "regular price"] },
   { field: "currency", type: "text", aliases: ["currency"] },
   { field: "priceUnit", type: "text", aliases: ["price unit", "per"] },
 ];
+
+/**
+ * The faster turnaround's rate, spliced in beside the price it varies.
+ *
+ * Visa only — express is a processing tier, which is a visa idea; a package has
+ * no faster version of itself. A column the importer accepts and no page ever
+ * renders would be a silent hole for somebody's data to fall into.
+ *
+ * Matching is exact on the normalised header, so this cannot collide with the
+ * plain "selling price" column, and COST_HEADER refuses anything like
+ * "EXPRESS BUYING PRICE IN AED - VENDOR" before aliases are consulted at all.
+ */
+const EXPRESS_PRICE = { field: "expressPrice", type: "number",
+  aliases: ["express price", "express selling price", "express selling price in aed",
+            "express selling price in aed bgs", "urgent price", "urgent selling price",
+            "express fee", "express charge"] };
+
+/** PRICED with the express rate immediately after price. This list is also the
+ *  column order of the template and both exports. */
+const PRICED_WITH_EXPRESS =
+  PRICED.flatMap((col) => (col.field === "price" ? [col, EXPRESS_PRICE] : [col]));
 
 export const SHEETS = {
   visa: {
@@ -39,7 +64,7 @@ export const SHEETS = {
       { field: "visaType", type: "text", aliases: ["visa type", "entry", "entry type"] },
       { field: "processing", type: "text", aliases: ["processing", "processing time", "lead time"] },
       { field: "validity", type: "text", aliases: ["validity", "valid for"] },
-      ...PRICED,
+      ...PRICED_WITH_EXPRESS,
       { field: "blurb", type: "textarea", aliases: ["description", "blurb", "summary", "details"] },
       { field: "fullDescription", type: "textarea", aliases: ["full description", "notes", "important notes", "process"] },
       { field: "requirements", type: "list", aliases: ["requirements", "required documents", "documents", "what you'll need", "what you will need"] },

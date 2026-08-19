@@ -1,8 +1,8 @@
-import { SCENE } from "../data/images.js?v=100";
-import "./info-modal.js?v=100";
-import { SCENES } from "../data/navigation.js?v=100";
-import { findPackageBySlug } from "../data/packages.js?v=100";
-import { icon } from "../data/icons.js?v=100";
+import { SCENE } from "../data/images.js?v=106";
+import "./info-modal.js?v=106";
+import { SCENES } from "../data/navigation.js?v=106";
+import { findPackageBySlug } from "../data/packages.js?v=106";
+import { icon } from "../data/icons.js?v=106";
 import {
   buildCustomTripUrl,
   buildDestinationEnquiryUrl,
@@ -11,11 +11,12 @@ import {
   openWhatsApp,
   CONTACT_EMAIL,
   WHATSAPP_DISPLAY,
-} from "../utils/whatsapp.js?v=100";
-import { createNavigation } from "./navigation.js?v=100";
-import { getCollection, subscribe } from "./store.js?v=100";
-import { createCarousel } from "./carousel.js?v=100";
-import { createPackageDialog } from "./package-dialog.js?v=100";
+} from "../utils/whatsapp.js?v=106";
+import { createNavigation } from "./navigation.js?v=106";
+import { getCollection, subscribe } from "./store.js?v=106";
+import { buildPrimaryNav } from "./nav-model.js?v=106";
+import { createCarousel } from "./carousel.js?v=106";
+import { createPackageDialog } from "./package-dialog.js?v=106";
 
 const section = document.querySelector(".cinema-scroll");
 const root = document.documentElement;
@@ -180,7 +181,12 @@ function update() {
 
   const sharedHeroY = progress * -74 * m;
   const sharedHeroScale = progress * 0.23 * m;
-  const railScreenTop = Math.min(220, Math.max(112, window.innerHeight * 0.19)) - 50;
+  // On a phone the category strip occupies the band under the header, so the
+  // rail starts lower there to leave it room. Desktop is unchanged: the strip
+  // is not rendered above 760px.
+  const stripAllowance = window.innerWidth <= 760 ? 26 : 0;
+  const railScreenTop =
+    Math.min(220, Math.max(112, window.innerHeight * 0.19)) - 50 + stripAllowance;
   const railParentTop = window.innerHeight - (window.innerHeight - railScreenTop) / depthScale;
 
   const px = (v) => `${v.toFixed(2)}px`;
@@ -426,6 +432,35 @@ createNavigation({
 /* The homepage reads the same store as the category pages, so a service edited
    in the admin re-renders here too. */
 subscribe(renderServices);
+
+/* --- category strip, phones only ---
+   The header on a phone is one row: wordmark and the menu icon, with the
+   categories behind that icon. The band beneath it is empty sky, which is
+   enough room for the categories to be one tap away instead of two. Built from
+   the same menus the header and drawer use, so it cannot list a category that
+   no longer exists. */
+function renderHeroCategories() {
+  const strip = document.querySelector("#hero-categories");
+  if (!strip) return;
+  strip.innerHTML = buildPrimaryNav()
+    .map((menu) => `<a class="hero-category" href="${menu.page}.html">${menu.label}</a>`)
+    .join("");
+}
+/* The header is absolutely positioned, so the strip cannot simply follow it in
+   flow — it is told where the header actually ends, remeasured on resize. */
+function placeHeroCategories() {
+  const header = document.querySelector(".site-header");
+  const strip = document.querySelector("#hero-categories");
+  if (!header || !strip) return;
+  document.documentElement.style.setProperty(
+    "--hero-cat-top", `${Math.round(header.getBoundingClientRect().bottom) + 8}px`
+  );
+}
+
+renderHeroCategories();
+placeHeroCategories();
+subscribe(renderHeroCategories);
+window.addEventListener("resize", placeHeroCategories);
 
 /* --- hero pills ---
    Each pill declares its own destination in the markup, so changing what they

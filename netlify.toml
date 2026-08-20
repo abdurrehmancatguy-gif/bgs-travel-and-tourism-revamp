@@ -26,10 +26,35 @@
 
 # Hashed-by-version assets can be cached hard; HTML must not be, or an edit
 # takes a day to show up.
+# HTML is the one thing that must never go stale in a browser, and the one
+# thing worth caching at the edge.
+#
+# max-age=0 keeps the browser honest: a visitor always revalidates, so an edit
+# is never more than a refresh away.
+#
+# s-maxage lets Cloudflare answer from the edge instead of asking Netlify every
+# single time. That round trip was the largest fixed cost on the whole site —
+# measured at 350-850ms of server wait on a 6.6KB document, on top of 280ms of
+# connect and TLS, before a single byte could render.
+#
+# stale-while-revalidate is what makes it safe to keep s-maxage short: for a day
+# after a page goes stale the edge serves the old copy immediately and fetches
+# the new one behind the visitor's back, so nobody ever waits for a rebuild.
+#
+# Five minutes of staleness costs nothing here. The catalogue reaches the
+# browser from Firestore on every load regardless of what the HTML says, so a
+# slightly old document affects only what a crawler sees, and only briefly.
 [[headers]]
   for = "/*.html"
   [headers.values]
-    Cache-Control = "public, max-age=0, must-revalidate"
+    Cache-Control = "public, max-age=0, s-maxage=300, stale-while-revalidate=86400, must-revalidate"
+
+# Netlify serves "/" and "/visa" from the same files, and the rule above matches
+# only the .html spelling.
+[[headers]]
+  for = "/"
+  [headers.values]
+    Cache-Control = "public, max-age=0, s-maxage=300, stale-while-revalidate=86400, must-revalidate"
 
 # The comment above was aspirational: no rule ever granted it, so Netlify's
 # default applied and every asset came back "max-age=0, must-revalidate". A

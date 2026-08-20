@@ -1,13 +1,14 @@
-import { getCollection, subscribe } from "./store.js?v=133";
-import "./info-modal.js?v=133";
-import { createNavigation } from "./navigation.js?v=133";
-import { icon } from "../data/icons.js?v=133";
-import { priceLabel } from "../data/packages.js?v=133";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=133";
-import { MICE_SERVICES } from "../data/mice.js?v=133";
-import { openItem, itemTitle } from "./item-dialog.js?v=133";
-import { track } from "./analytics.js?v=133";
-import { contactStripMarkup } from "./info-modal.js?v=133";
+import { getCollection, subscribe } from "./store.js?v=134";
+import "./info-modal.js?v=134";
+import { createNavigation } from "./navigation.js?v=134";
+import { icon } from "../data/icons.js?v=134";
+import { priceLabel } from "../data/packages.js?v=134";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=134";
+import { MICE_SERVICES } from "../data/mice.js?v=134";
+import { openItem, itemTitle } from "./item-dialog.js?v=134";
+import { buildPrimaryNav } from "./nav-model.js?v=134";
+import { track } from "./analytics.js?v=134";
+import { contactStripMarkup } from "./info-modal.js?v=134";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -356,3 +357,49 @@ subscribe(() => {
   renderChips();
   render();
 });
+
+
+/* ---------------------------------------------------- mobile category strip */
+
+/**
+ * The categories, on a phone, on every page.
+ *
+ * Above 760px the header row lists them already. Below it the row is gone and
+ * the only way across the site is the menu icon, so reaching Packages from Visa
+ * costs two taps and a read. This is the same strip the homepage carries,
+ * brought to the pages where somebody is actually browsing.
+ *
+ * Built from buildPrimaryNav, like the header and the drawer, so it cannot
+ * offer a category that no longer exists.
+ */
+function renderPageCategories() {
+  const strip = document.querySelector("#page-categories");
+  if (!strip) return;
+  strip.innerHTML = buildPrimaryNav()
+    .map((menu) => {
+      // The page you are on is marked rather than removed: a gap where one
+      // category should be is harder to read than a highlighted one, and it
+      // keeps the strip the same width on every page.
+      const here = menu.page === page;
+      return `<a class="page-category" href="${menu.page}.html"${
+        here ? ' data-here="true" aria-current="page"' : ""}>${menu.label}</a>`;
+    })
+    .join("");
+}
+
+/* The header is sticky, so the strip has to know how tall it is to sit under
+   it rather than behind it. Remeasured on resize because the pill wraps at
+   narrow widths. */
+function placePageCategories() {
+  const header = document.querySelector(".site-header");
+  const strip = document.querySelector("#page-categories");
+  if (!header || !strip) return;
+  document.documentElement.style.setProperty(
+    "--page-cat-top", `${Math.round(header.getBoundingClientRect().height) + 12}px`
+  );
+}
+
+renderPageCategories();
+placePageCategories();
+subscribe(renderPageCategories);
+window.addEventListener("resize", placePageCategories);

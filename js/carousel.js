@@ -1,5 +1,5 @@
-import { filterPackages, withSlugs, resolveHomeCards, CARD_TITLE_KEY } from "../data/packages.js?v=133";
-import { getCollection } from "./store.js?v=133";
+import { filterPackages, withSlugs, resolveHomeCards, CARD_TITLE_KEY } from "../data/packages.js?v=134";
+import { getCollection } from "./store.js?v=134";
 
 /* Read through the store, not from the data file directly. The carousel used
    to import PACKAGES and HOME_PACKAGES as constants, which meant the homepage
@@ -12,7 +12,7 @@ const allPackages = () => withSlugs(getCollection("packages"));
    what they are holding. */
 const homePackages = () =>
   withSlugs(resolveHomeCards(getCollection("homeCards"), (c) => getCollection(c)));
-import { icon } from "../data/icons.js?v=133";
+import { icon } from "../data/icons.js?v=134";
 
 /**
  * Horizontal package rail.

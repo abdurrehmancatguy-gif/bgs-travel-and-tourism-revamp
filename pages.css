@@ -811,8 +811,12 @@ body.item-page .site-logo-place { color: rgba(255, 246, 232, 0.6); }
     line-height: 1.4;
     white-space: nowrap;
     text-decoration: none;
-    color: var(--page-ink, #0d1b2a);
-    background: rgba(255, 255, 255, 0.82);
+    /* Navy explicitly, not --page-ink. That variable is cream on these pages,
+       because the hero sets white text over a photograph — inheriting it put
+       near-white words on a near-white chip and made the strip unreadable. The
+       chip carries its own light background, so it needs its own dark ink. */
+    color: #0d1b2a;
+    background: rgba(255, 255, 255, 0.88);
     backdrop-filter: blur(14px) saturate(180%);
     -webkit-backdrop-filter: blur(14px) saturate(180%);
     /* A hairline rather than a drop shadow: a shadow on every chip stacks into

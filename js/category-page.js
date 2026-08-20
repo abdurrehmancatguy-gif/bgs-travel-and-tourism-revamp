@@ -1,14 +1,14 @@
-import { getCollection, subscribe } from "./store.js?v=134";
-import "./info-modal.js?v=134";
-import { createNavigation } from "./navigation.js?v=134";
-import { icon } from "../data/icons.js?v=134";
-import { priceLabel } from "../data/packages.js?v=134";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=134";
-import { MICE_SERVICES } from "../data/mice.js?v=134";
-import { openItem, itemTitle } from "./item-dialog.js?v=134";
-import { buildPrimaryNav } from "./nav-model.js?v=134";
-import { track } from "./analytics.js?v=134";
-import { contactStripMarkup } from "./info-modal.js?v=134";
+import { getCollection, subscribe } from "./store.js?v=135";
+import "./info-modal.js?v=135";
+import { createNavigation } from "./navigation.js?v=135";
+import { icon } from "../data/icons.js?v=135";
+import { priceLabel } from "../data/packages.js?v=135";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=135";
+import { MICE_SERVICES } from "../data/mice.js?v=135";
+import { openItem, itemTitle } from "./item-dialog.js?v=135";
+import { buildPrimaryNav } from "./nav-model.js?v=135";
+import { track } from "./analytics.js?v=135";
+import { contactStripMarkup } from "./info-modal.js?v=135";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -164,15 +164,29 @@ const matches = (item, q) => {
     .some((field) => String(field).toLowerCase().includes(needle));
 };
 
+/* The markup the grid is currently showing.
+ *
+ * Seeded from what the build already wrote into the page, which is what stops
+ * the cards appearing twice. Three things want to draw this grid on a first
+ * load — the pre-rendered HTML, the first render() as the module runs, and the
+ * Firestore snapshot arriving a moment later — and until now each one replaced
+ * innerHTML unconditionally. Replacing identical markup still throws away every
+ * <img> and fetches it again, so the cards visibly blinked out and came back.
+ *
+ * Comparing the string is cheap next to what a needless re-render costs. */
+let lastMarkup = grid.innerHTML;
+
 function render() {
   const visible = items.filter((item) => matches(item, query));
   visibleItems = visible;
 
-  grid.innerHTML = visible.length
-    ? visible.map(shape.card).join("")
-    : "";
-  // Stamped after render rather than woven through every shape's card builder.
-  grid.querySelectorAll(".item-card").forEach((el, i) => { el.dataset.idx = i; });
+  const markup = visible.length ? visible.map(shape.card).join("") : "";
+  if (markup !== lastMarkup) {
+    grid.innerHTML = markup;
+    lastMarkup = markup;
+    // Stamped after render rather than woven through every shape's card builder.
+    grid.querySelectorAll(".item-card").forEach((el, i) => { el.dataset.idx = i; });
+  }
 
   const empty = document.querySelector("#page-empty");
   empty.hidden = visible.length > 0;

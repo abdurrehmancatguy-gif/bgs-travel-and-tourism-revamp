@@ -61,3 +61,17 @@
   for = "/utils/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+
+# The Netlify address still serves the whole site, so until this rule the same
+# 74 pages existed on two hosts with nothing saying which was real. One 301 to
+# the domain, so a link to the old address keeps working and a crawler only ever
+# indexes one copy.
+#
+# force = true because the path exists on both hosts; without it Netlify would
+# serve the file rather than redirect.
+[[redirects]]
+  from = "https://bgs-travel-and-tourism.netlify.app/*"
+  to = "https://bgstravelandtourism.com/:splat"
+  status = 301
+  force = true

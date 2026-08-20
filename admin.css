@@ -852,3 +852,15 @@ body.admin {
   background: #8c2f1d;
   color: #fff6e8;
 }
+
+/* Lifted from pages.css, which the admin no longer loads. Two elements use it —
+   the wordmark above the login box and the one above the console — and they are
+   not worth 36KB of category-page styling. */
+.page-eyebrow {
+  margin: 0 0 10px;
+  color: var(--gold-light, #f5a832);
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0.24em;
+  text-transform: uppercase;
+}

@@ -1,13 +1,14 @@
-import { getCollection, subscribe } from "./store.js?v=133";
-import "./info-modal.js?v=133";
-import { createNavigation } from "./navigation.js?v=133";
-import { icon } from "../data/icons.js?v=133";
-import { priceLabel } from "../data/packages.js?v=133";
-import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=133";
-import { MICE_SERVICES } from "../data/mice.js?v=133";
-import { openItem, itemTitle } from "./item-dialog.js?v=133";
-import { track } from "./analytics.js?v=133";
-import { contactStripMarkup } from "./info-modal.js?v=133";
+import { getCollection, subscribe } from "./store.js?v=137";
+import "./info-modal.js?v=137";
+import { createNavigation } from "./navigation.js?v=137";
+import { icon } from "../data/icons.js?v=137";
+import { priceLabel } from "../data/packages.js?v=137";
+import { openWhatsApp, buildWhatsAppUrl } from "../utils/whatsapp.js?v=137";
+import { MICE_SERVICES } from "../data/mice.js?v=137";
+import { openItem, itemTitle } from "./item-dialog.js?v=137";
+import { buildPrimaryNav } from "./nav-model.js?v=137";
+import { track } from "./analytics.js?v=137";
+import { contactStripMarkup } from "./info-modal.js?v=137";
 
 /**
  * Every category page runs this one module. The page declares which collection
@@ -163,15 +164,29 @@ const matches = (item, q) => {
     .some((field) => String(field).toLowerCase().includes(needle));
 };
 
+/* The markup the grid is currently showing.
+ *
+ * Seeded from what the build already wrote into the page, which is what stops
+ * the cards appearing twice. Three things want to draw this grid on a first
+ * load — the pre-rendered HTML, the first render() as the module runs, and the
+ * Firestore snapshot arriving a moment later — and until now each one replaced
+ * innerHTML unconditionally. Replacing identical markup still throws away every
+ * <img> and fetches it again, so the cards visibly blinked out and came back.
+ *
+ * Comparing the string is cheap next to what a needless re-render costs. */
+let lastMarkup = grid.innerHTML;
+
 function render() {
   const visible = items.filter((item) => matches(item, query));
   visibleItems = visible;
 
-  grid.innerHTML = visible.length
-    ? visible.map(shape.card).join("")
-    : "";
-  // Stamped after render rather than woven through every shape's card builder.
-  grid.querySelectorAll(".item-card").forEach((el, i) => { el.dataset.idx = i; });
+  const markup = visible.length ? visible.map(shape.card).join("") : "";
+  if (markup !== lastMarkup) {
+    grid.innerHTML = markup;
+    lastMarkup = markup;
+    // Stamped after render rather than woven through every shape's card builder.
+    grid.querySelectorAll(".item-card").forEach((el, i) => { el.dataset.idx = i; });
+  }
 
   const empty = document.querySelector("#page-empty");
   empty.hidden = visible.length > 0;
@@ -356,3 +371,49 @@ subscribe(() => {
   renderChips();
   render();
 });
+
+
+/* ---------------------------------------------------- mobile category strip */
+
+/**
+ * The categories, on a phone, on every page.
+ *
+ * Above 760px the header row lists them already. Below it the row is gone and
+ * the only way across the site is the menu icon, so reaching Packages from Visa
+ * costs two taps and a read. This is the same strip the homepage carries,
+ * brought to the pages where somebody is actually browsing.
+ *
+ * Built from buildPrimaryNav, like the header and the drawer, so it cannot
+ * offer a category that no longer exists.
+ */
+function renderPageCategories() {
+  const strip = document.querySelector("#page-categories");
+  if (!strip) return;
+  strip.innerHTML = buildPrimaryNav()
+    .map((menu) => {
+      // The page you are on is marked rather than removed: a gap where one
+      // category should be is harder to read than a highlighted one, and it
+      // keeps the strip the same width on every page.
+      const here = menu.page === page;
+      return `<a class="page-category" href="${menu.page}.html"${
+        here ? ' data-here="true" aria-current="page"' : ""}>${menu.label}</a>`;
+    })
+    .join("");
+}
+
+/* The header is sticky, so the strip has to know how tall it is to sit under
+   it rather than behind it. Remeasured on resize because the pill wraps at
+   narrow widths. */
+function placePageCategories() {
+  const header = document.querySelector(".site-header");
+  const strip = document.querySelector("#page-categories");
+  if (!header || !strip) return;
+  document.documentElement.style.setProperty(
+    "--page-cat-top", `${Math.round(header.getBoundingClientRect().height) + 12}px`
+  );
+}
+
+renderPageCategories();
+placePageCategories();
+subscribe(renderPageCategories);
+window.addEventListener("resize", placePageCategories);

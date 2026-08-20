@@ -62,6 +62,24 @@
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
 
+# The two stylesheets sit at the root, so the /js/* and /assets/* rules never
+# reached them and they fell through to a four-hour revalidate. They carry ?v=
+# like everything else and are just as immutable.
+[[headers]]
+  for = "/styles.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/pages.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/admin.css"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
 
 # The Netlify address still serves the whole site, so until this rule the same
 # 74 pages existed on two hosts with nothing saying which was real. One 301 to

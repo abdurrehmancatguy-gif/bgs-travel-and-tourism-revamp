@@ -5,22 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Activities & Experiences — BGS Travel &amp; Tourism</title>
   <meta name="description" content="Desert, water, culture and sky — single experiences in Dubai and beyond, bookable on their own or folded into a longer trip." />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=133" />
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=133" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=133" />
-  <link rel="preconnect" href="https://commons.wikimedia.org" />
-  <link rel="preconnect" href="https://upload.wikimedia.org" />
-  <link rel="stylesheet" href="styles.css?v=133" />
-  <link rel="stylesheet" href="pages.css?v=133" />
-  <script type="module" src="js/analytics.js?v=133"></script>
-  <script type="module" src="js/category-page.js?v=133"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=137" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=137" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=137" />
+  <!-- The typeface, which blocks nothing but is wanted early: font-display is
+       swap, so a late arrival means the headline visibly re-renders in a
+       different face. crossorigin because fonts are fetched in CORS mode, and
+       a preconnect without it opens the wrong kind of connection and is simply
+       not reused.
+
+       The two Wikimedia preconnects that used to sit here were removed: the
+       homepage contacts neither, so they were two speculative handshakes that
+       never carried a byte. -->
+  <link rel="preconnect" href="https://dcym8fthxf5uu.cloudfront.net" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=137" />
+  <link rel="stylesheet" href="pages.css?v=137" />
+  <script type="module" src="js/analytics.js?v=137"></script>
+  <script type="module" src="js/category-page.js?v=137"></script>
 </head>
 <body class="page" data-collection="activities">
   <a class="skip-link" href="#card-grid">Skip to content</a>
 
   <header class="site-header" aria-label="Primary navigation">
     <a class="site-logo" href="index.html">
-      <img class="site-logo-mark" src="assets/monogram-96.png?v=133" alt="" width="40" height="40" />
+      <img class="site-logo-mark" src="assets/monogram-96.png?v=137" alt="" width="40" height="40" />
       <span class="site-logo-text">
         <span class="site-logo-name">BGS Travel &amp; Tourism</span>
         <span class="site-logo-place">Dubai, UAE</span>
@@ -36,6 +44,11 @@
         </button>
     </div>
   </header>
+
+  <!-- Filled by js/category-page.js from the same menus the header and drawer
+       use, so it cannot offer a category that no longer exists. Shown on
+       phones only; on a wide screen the header row already lists these. -->
+  <nav class="page-categories" id="page-categories" aria-label="Browse categories"></nav>
 
   <main>
     <section class="page-hero">

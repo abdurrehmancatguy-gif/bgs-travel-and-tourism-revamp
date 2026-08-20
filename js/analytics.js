@@ -1,4 +1,4 @@
-import { POSTHOG_KEY, POSTHOG_HOST, isConfigured } from "./analytics-config.js?v=135";
+import { POSTHOG_KEY, POSTHOG_HOST, isConfigured } from "./analytics-config.js?v=137";
 
 /**
  * Product analytics, and the only file that knows PostHog exists.
@@ -66,5 +66,25 @@ export function track(event, properties = {}) {
 
 export const analyticsEnabled = () => isConfigured();
 
-/* Start as the module loads, so the pageview is not delayed by a first event. */
-if (isConfigured()) connect();
+/*
+ * Started after the page has, not alongside it.
+ *
+ * PostHog costs three hosts — the CDN the module comes from and two of its own
+ * — and every one of them competes with the artwork and the catalogue for the
+ * same connections. It is measuring a load it was making slower.
+ *
+ * requestIdleCallback runs it in the first quiet moment instead, with a load
+ * event fallback for Safari, which has no idle callback. Nothing is lost: the
+ * pageview is captured whenever init happens, and a visitor who leaves before
+ * the browser is ever idle was never going to be a useful datapoint.
+ */
+if (isConfigured()) {
+  const start = () => connect();
+  if (document.readyState === "complete") queueIdle(start);
+  else window.addEventListener("load", () => queueIdle(start), { once: true });
+}
+
+function queueIdle(fn) {
+  if (typeof requestIdleCallback === "function") requestIdleCallback(fn, { timeout: 3000 });
+  else setTimeout(fn, 1200);
+}

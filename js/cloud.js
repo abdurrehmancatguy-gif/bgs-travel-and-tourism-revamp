@@ -1,6 +1,6 @@
 import {
   FIREBASE_CONFIG, CONTENT_COLLECTION, SDK_VERSION, isConfigured,
-} from "./firebase-config.js?v=135";
+} from "./firebase-config.js?v=137";
 
 /**
  * Everything that talks to Firebase. The rest of the site never imports the
@@ -23,19 +23,26 @@ const CDN = (module) =>
 
 let ready = null;
 
-/** Loads the SDK and signs in nobody. Cached, so concurrent callers share it. */
+/**
+ * Loads the SDK and signs in nobody. Cached, so concurrent callers share it.
+ *
+ * Firestore only. Auth used to be loaded here too, which meant every visitor to
+ * the public site paid for a sign-in system they will never use — the module
+ * itself, and then the calls getAuth makes to apis.google.com and the project's
+ * firebaseapp.com domain. Two more hosts to resolve and shake hands with, on a
+ * page whose visitors cannot log in to anything. See connectAuth below.
+ */
 function connect() {
   if (!isConfigured()) return Promise.resolve(null);
   if (ready) return ready;
 
   ready = (async () => {
-    const [appMod, dbMod, authMod] = await Promise.all([
+    const [appMod, dbMod] = await Promise.all([
       import(CDN("app")),
       import(CDN("firestore")),
-      import(CDN("auth")),
     ]);
     const app = appMod.initializeApp(FIREBASE_CONFIG);
-    return { app, db: dbMod.getFirestore(app), auth: authMod.getAuth(app), dbMod, authMod };
+    return { app, db: dbMod.getFirestore(app), dbMod };
   })().catch((error) => {
     // A blocked CDN or a bad config must not take the site down: the local
     // content is still perfectly serviceable.
@@ -105,8 +112,31 @@ export async function removeCollection(name) {
  * client-side gate and never was security — anyone can read the source. This
  * is the part that actually stops a stranger rewriting the catalogue.
  */
+let authReady = null;
+
+/**
+ * The auth half, loaded on demand.
+ *
+ * Separate from connect() so the cost lands only where somebody actually signs
+ * in — the admin — rather than on every visitor to every page.
+ */
+function connectAuth() {
+  if (authReady) return authReady;
+  authReady = (async () => {
+    const fb = await connect();
+    if (!fb) return null;
+    const authMod = await import(CDN("auth"));
+    return { ...fb, authMod, auth: authMod.getAuth(fb.app) };
+  })().catch((error) => {
+    console.warn("cloud: auth unavailable —", error.message);
+    authReady = null;
+    return null;
+  });
+  return authReady;
+}
+
 export async function signIn(email, password) {
-  const fb = await connect();
+  const fb = await connectAuth();
   if (!fb) throw new Error("Firebase is not configured");
   const { auth, authMod } = fb;
   const credential = await authMod.signInWithEmailAndPassword(auth, email, password);
@@ -114,14 +144,14 @@ export async function signIn(email, password) {
 }
 
 export async function signOutAdmin() {
-  const fb = await connect();
+  const fb = await connectAuth();
   if (!fb) return;
   await fb.authMod.signOut(fb.auth);
 }
 
 /** Calls back with the user (or null) now and on every change. */
 export async function watchAuth(onChange) {
-  const fb = await connect();
+  const fb = await connectAuth();
   if (!fb) { onChange(null); return () => {}; }
   return fb.authMod.onAuthStateChanged(fb.auth, onChange);
 }

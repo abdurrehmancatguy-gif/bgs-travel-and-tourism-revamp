@@ -5,22 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
   <title>Visa Services — BGS Travel &amp; Tourism</title>
   <meta name="description" content="Applications prepared, submitted and tracked, so the paperwork is never the reason a trip does not happen." />
-  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=135" />
-  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=135" />
-  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=135" />
-  <link rel="preconnect" href="https://commons.wikimedia.org" />
-  <link rel="preconnect" href="https://upload.wikimedia.org" />
-  <link rel="stylesheet" href="styles.css?v=135" />
-  <link rel="stylesheet" href="pages.css?v=135" />
-  <script type="module" src="js/analytics.js?v=135"></script>
-  <script type="module" src="js/category-page.js?v=135"></script>
+  <link rel="icon" type="image/png" sizes="32x32" href="assets/favicon-32.png?v=137" />
+  <link rel="icon" type="image/png" sizes="512x512" href="assets/icon-512.png?v=137" />
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png?v=137" />
+  <!-- The typeface, which blocks nothing but is wanted early: font-display is
+       swap, so a late arrival means the headline visibly re-renders in a
+       different face. crossorigin because fonts are fetched in CORS mode, and
+       a preconnect without it opens the wrong kind of connection and is simply
+       not reused.
+
+       The two Wikimedia preconnects that used to sit here were removed: the
+       homepage contacts neither, so they were two speculative handshakes that
+       never carried a byte. -->
+  <link rel="preconnect" href="https://dcym8fthxf5uu.cloudfront.net" crossorigin />
+  <link rel="stylesheet" href="styles.css?v=137" />
+  <link rel="stylesheet" href="pages.css?v=137" />
+  <script type="module" src="js/analytics.js?v=137"></script>
+  <script type="module" src="js/category-page.js?v=137"></script>
 </head>
 <body class="page" data-collection="visa">
   <a class="skip-link" href="#card-grid">Skip to content</a>
 
   <header class="site-header" aria-label="Primary navigation">
     <a class="site-logo" href="index.html">
-      <img class="site-logo-mark" src="assets/monogram-96.png?v=135" alt="" width="40" height="40" />
+      <img class="site-logo-mark" src="assets/monogram-96.png?v=137" alt="" width="40" height="40" />
       <span class="site-logo-text">
         <span class="site-logo-name">BGS Travel &amp; Tourism</span>
         <span class="site-logo-place">Dubai, UAE</span>
